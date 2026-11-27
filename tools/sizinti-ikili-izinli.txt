@@ -1,6 +1,8 @@
-# İçerik taramasına giremeyen (ikili) ama yayınlanmasına izin verilen dosyalar — satır başına tam yol.
-# tools/sizinti-tara.sh bu liste dışındaki her ikili dosyayı ENGELLER. Ekleme: dosyayı elle doğrula, gerekçeyi yaz.
-# Kanca listeyi YAYINLANMIŞ sürümden okur: yeni girdi ekleyen push yalnız `SIZINTI_IKILI_ONAY=1 git push ...` ile geçer.
+# İçerik taramasına giremeyen (ikili) ama yayınlanmasına izin verilen dosyalar — satır başına `<tam yol> <blob-sha>`
+# (sha: `git hash-object <yol>`). tools/sizinti-tara.sh bu liste dışındaki ve blob'u girdidekinden farklı her ikili
+# dosyayı ENGELLER. Ekleme/güncelleme: dosyayı elle doğrula, gerekçeyi yaz.
+# Kanca listeyi YAYINLANMIŞ sürümden okur: yeni/değişen girdi ekleyen push yalnız push edilen ucun 12 haneli kısa
+# sha'sıyla geçer: `SIZINTI_IKILI_ONAY=<git rev-parse --short=12 <uç>> git push ...` (kanca tam değeri yazar).
 
 # Maven Wrapper (resmî Apache ikilisi; ./mvnw indirir/çalıştırır)
-.mvn/wrapper/maven-wrapper.jar
+.mvn/wrapper/maven-wrapper.jar 2cc7d4a55c0cd0092912bf49ae38b3a9e3fd0054

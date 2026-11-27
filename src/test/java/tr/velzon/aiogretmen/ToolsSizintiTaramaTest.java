@@ -15,7 +15,8 @@ import static org.junit.jupiter.api.Assumptions.assumeTrue;
 /**
  * Faz 11 inceleme düzeltmeleri: depo herkese açık; sızıntıya karşı tek koruma {@code tools/sizinti-tara.sh} +
  * {@code tools/git-kancalari/pre-push}. Bunların senaryo testi {@code tools/sizinti-tara-test.sh} (geçici depoda
- * push/tarama: kapalı-güvenli git grep, env dosyaları, commit mesajı, eski geçmiş, silme push'u …) —
+ * push/tarama: kapalı-güvenli git grep, env dosyaları, commit mesajı, eski geçmiş, silme push'u, yol adları,
+ * sembolik bağlar, sha'ya bağlı ikili onayı …) —
  * {@code ./mvnw verify} onu da koşsun diye buradan çağrılır. bash ya da git yoksa atlanır.
  */
 class ToolsSizintiTaramaTest {
@@ -42,7 +43,7 @@ class ToolsSizintiTaramaTest {
                     .redirectErrorStream(true)
                     .redirectOutput(ciktiDosyasi.toFile())
                     .start();
-            boolean bitti = p.waitFor(180, TimeUnit.SECONDS);
+            boolean bitti = p.waitFor(300, TimeUnit.SECONDS);  // ~85 senaryo, yerelde ~50 sn
             if (!bitti) {
                 p.destroyForcibly().waitFor(10, TimeUnit.SECONDS);
             }
