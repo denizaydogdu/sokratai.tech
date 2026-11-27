@@ -33,6 +33,8 @@ git config core.hooksPath tools/git-kancalari
 git config commit.gpgsign false
 git remote add origin "$UZAK"
 echo "tools/" >> .git/info/exclude   # tarayıcı/kanca izlenmez; yalnız senaryo dosyaları commit edilir
+# İkili izin listesi ise gerçek repodaki gibi COMMIT EDİLİR (tarayıcı listeyi commit'ten / yayınlanmış sürümden okur)
+git add -f tools/sizinti-ikili-izinli.txt
 
 # Çalışma anında üretilen sızıntı örnekleri
 IP4="198.51.100"; IP4="$IP4.7"
@@ -68,7 +70,7 @@ tara() {  # tarayıcıyı doğrudan çalıştırır
 
 # 1) Temiz commit geçer
 echo "merhaba" > oku.md
-commitle "ilk temiz commit"
+commitle "ilk temiz commit"   # izin listesi de bu commit'te
 pushla origin main; sonuc "temiz commit push edilir" gecer $? "$CIKTI"
 
 # 2) Sızıntı eklenip sonraki commit'te silinirse ENGEL (geçmişte kalır)
@@ -249,6 +251,44 @@ git branch -q -D eski-kok-2
 kanca=tools/git-kancalari/pre-push
 sed "s/^ESKI_KOKLER=.*/ESKI_KOKLER=\"$eski_kok2\"/" "$kanca" > "$GECICI/kanca"; cat "$GECICI/kanca" > "$kanca"
 pushla origin eski2-turev-b; sonuc "sabit eski kökten türeyen push (dal yok)" engel $? "$CIKTI"
+
+# 17) Ref adları: yerel VE uzak ref adı içerik desenleriyle taranır (ad tek başına sızıntı taşıyabilir)
+IPT="203.0.113"; IPT="$IPT.5"
+RADI="ozellik/ro""ot@ornek"
+git tag "deploy-$IPT" main
+pushla origin "deploy-$IPT"; sonuc "hafif etiket deploy-<IP> (push)" engel $? "$CIKTI"
+case "$CIKTI" in *"deploy-$IPT"*) ;; *) sonuc "engel mesajı ref adını söyler" engel 0 "$CIKTI" ;; esac
+git branch "$RADI" main
+pushla origin "$RADI"; sonuc "dal ozellik/root@… (push)" engel $? "$CIKTI"
+pushla origin "main:refs/heads/yedek-$IPT"; sonuc "yalnız UZAK ref adında IP (push)" engel $? "$CIKTI"
+git tag v1.0 main
+pushla origin v1.0; sonuc "normal etiket v1.0 (push)" gecer $? "$CIKTI"
+echo "ana" > ana.md; commitle "ana dal güncellemesi"
+pushla origin main; sonuc "normal dal main (push)" gecer $? "$CIKTI"
+
+# 18) İkili izin listesi YAYINLANMIŞ sürümden okunur: aynı commit'te ikili + liste satırı eklemek onaysız ENGEL
+git checkout -q -b ikili-onay
+printf '\x00\x01xbin' > x.bin; echo "x.bin" >> tools/sizinti-ikili-izinli.txt; commitle "x.bin ve izin satırı"
+pushla origin ikili-onay; sonuc "ikili + izin satırı aynı commit'te (onaysız push)" engel $? "$CIKTI"
+case "$CIKTI" in *"+ x.bin"*) ;; *) sonuc "onay gereken girdi (x.bin) yazılır" engel 0 "$CIKTI" ;; esac
+CIKTI=$(SIZINTI_IKILI_ONAY=1 git push origin ikili-onay 2>&1); sonuc "aynısı SIZINTI_IKILI_ONAY=1 ile" gecer $? "$CIKTI"
+git checkout -q -f main
+#     Yayınlanmış listede olan .mvn/wrapper/maven-wrapper.jar (11'deki dal) onaysız geçer
+pushla origin ikili-izinli; sonuc "izinli maven-wrapper.jar (push)" gecer $? "$CIKTI"
+#     Tarayıcı tek başına: liste ÇALIŞMA AĞACINDAN değil taranan commit'ten okunur
+git checkout -q -b calisma-agaci
+printf '\x00\x01zbin' > z.bin; commitle "z.bin izinsiz"
+echo "z.bin" >> tools/sizinti-ikili-izinli.txt   # yalnız çalışma ağacında (commit edilmedi)
+tara HEAD; sonuc "çalışma ağacındaki liste satırı sayılmaz (tarayıcı)" engel $? "$CIKTI"
+git checkout -q -- tools/sizinti-ikili-izinli.txt
+git checkout -q -f main
+#     İlk push (taban yok: uzakta da refs/remotes/<uzak>/main'de de yok) → commit'in KENDİ listesi
+git init -q --bare "$GECICI/ilk.git"; git remote add ilk "$GECICI/ilk.git"
+git checkout -q -b ilk-push
+printf '\x00\x01ybin' > y.bin; echo "y.bin" >> tools/sizinti-ikili-izinli.txt; commitle "y.bin ve izin satırı"
+git checkout -q main -- tools/sizinti-ikili-izinli.txt 2>/dev/null; git reset -q tools/sizinti-ikili-izinli.txt
+pushla ilk ilk-push; sonuc "ilk push (taban yok) commit'in kendi listesiyle" gecer $? "$CIKTI"
+git checkout -q -f main
 
 if [ "$basarisiz" -ne 0 ]; then
   echo "SONUÇ: sızıntı tarayıcı testleri BAŞARISIZ" >&2

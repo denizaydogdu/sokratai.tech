@@ -15,6 +15,13 @@
 #  (c) Silme push'u (sha sıfır) denetlenmez.
 #  (d) Etiketler: açıklamalı etiketin metni (ad, tagger, mesaj) taranır (tarayıcıya etiket verilir); ref'in
 #      soyulmuş (^{}) nesnesi commit değilse (blob/ağaç etiketi vb.) ENGEL — içeriği taranamaz.
+#  (e) Ref adları: yerel VE uzak ref adı içerik desenlerinin hepsiyle taranır (`sizinti-tara.sh --ref-adi`);
+#      bulgu → ENGEL, ref adı yazılır (ör. `deploy-<genel IP>` etiketi, `x/root@…` dalı).
+#  (f) İkili izin listesi YAYINLANMIŞ sürümden: güvenilen liste = `git show <taban>:tools/sizinti-ikili-izinli.txt`;
+#      <taban> = uzak ref'in eski sha'sı (yerelde varsa), yoksa refs/remotes/<uzak>/main (varsa); ikisi de yoksa
+#      (ilk push) her commit kendi listesiyle taranır. Push edilen commit'ler listeye <taban>'da olmayan girdi
+#      ekliyorsa (ekleme ya da değiştirme) ENGEL — o push için SIZINTI_IKILI_ONAY=1 verilmedikçe; onay gereken
+#      girdiler tek tek yazılır. Onaylı push'ta güvenilen liste = taban + yeni girdiler.
 # Senaryo testi: tools/sizinti-tara-test.sh (JUnit: ToolsSizintiTaramaTest).
 set -u
 
@@ -31,13 +38,44 @@ if git rev-parse -q --verify refs/heads/eski-gecmis >/dev/null; then
   eski_kokler="$eski_kokler $(git rev-list --max-parents=0 refs/heads/eski-gecmis)"
 fi
 
+IZIN_YOLU="tools/sizinti-ikili-izinli.txt"
+gecici=$(mktemp -d) || { echo "ENGEL: geçici dizin açılamadı; push edilmedi." >&2; exit 1; }
+trap 'rm -rf "$gecici"' EXIT
+
+izin_oku() {  # $1 commit → izin listesinin ham içeriği (commit'te yoksa boş); okuma hatası → çıkış ≠ 0
+  if git cat-file -e "$1:$IZIN_YOLU" 2>/dev/null </dev/null; then
+    git cat-file blob "$1:$IZIN_YOLU" </dev/null
+  fi
+}
+izin_ayikla() {  # stdin ham liste → girdiler (# yorum, sondaki boşluk, boş satır atılır; tarayıcıyla AYNI kural)
+  sed -e 's/[[:space:]]*#.*$//' -e 's/[[:space:]]*$//' -e '/^$/d'
+}
+
 engel=0
-while read -r yerel_ref yerel_sha _uzak_ref uzak_sha; do
+ref_no=0
+while read -r yerel_ref yerel_sha uzak_ref uzak_sha; do
   [ -n "${yerel_sha:-}" ] || continue
   case "$yerel_sha" in
     *[!0]*) ;;          # gerçek commit
     *) continue ;;      # (c) silme push'u
   esac
+
+  ref_no=$((ref_no + 1))
+
+  if [ ! -f "$tarayici" ]; then
+    echo "ENGEL: sızıntı tarayıcısı yok ($tarayici); push edilmedi." >&2
+    engel=1
+    continue
+  fi
+
+  # (e) ref adları (yerel + uzak)
+  for ad in "$yerel_ref" "${uzak_ref:-}"; do
+    [ -n "$ad" ] || continue
+    if ! bash "$tarayici" --ref-adi "$ad" >/dev/null </dev/null; then
+      echo "ENGEL: ref adı sızıntı taramasından geçmedi: $ad" >&2
+      engel=1
+    fi
+  done
 
   # (d) soyulmuş nesne commit olmalı
   if [ "$(git cat-file -t "$yerel_sha^{}" 2>/dev/null </dev/null)" != commit ]; then
@@ -59,33 +97,72 @@ while read -r yerel_ref yerel_sha _uzak_ref uzak_sha; do
     done
   fi
 
-  if [ ! -f "$tarayici" ]; then
-    echo "ENGEL: sızıntı tarayıcısı yok ($tarayici); push edilmedi." >&2
-    engel=1
-    continue
-  fi
-  # (d) açıklamalı etiket: etiket metni (+ işaret ettiği commit) taranır
-  if [ "$(git cat-file -t "$yerel_sha" </dev/null)" = tag ]; then
-    if ! bash "$tarayici" "$yerel_sha" >/dev/null </dev/null; then
-      echo "ENGEL: sızıntı taraması başarısız — etiket $(git rev-parse --short "$yerel_sha" </dev/null) ($yerel_ref)." >&2
-      engel=1
-    fi
-  fi
   # Yeni commit'ler (stdin = kanca girdisi; döngü içi komutlar onu yutmasın → </dev/null)
   case "${uzak_sha:-0}" in
     *[!0]*) uzak_var=1 ;;
     *) uzak_var=0 ;;
   esac
+  taban=""
   if [ "$uzak_var" -eq 1 ] && git cat-file -e "$uzak_sha^{commit}" 2>/dev/null </dev/null; then
+    taban="$uzak_sha"
     yeniler=$(git rev-list "$hedef" "^$uzak_sha" </dev/null) || { echo "ENGEL: rev-list başarısız ($yerel_ref)." >&2; engel=1; continue; }
   else
     yeniler=$(git rev-list "$hedef" --not --remotes="$uzak_adi" </dev/null) || { echo "ENGEL: rev-list başarısız ($yerel_ref)." >&2; engel=1; continue; }
+  fi
+  if [ -z "$taban" ] && [ -n "$uzak_adi" ] \
+      && git rev-parse -q --verify "refs/remotes/$uzak_adi/main^{commit}" >/dev/null 2>&1 </dev/null; then
+    taban="refs/remotes/$uzak_adi/main"
+  fi
+
+  # (f) güvenilen ikili izin listesi = tabandaki (yayınlanmış) sürüm; yeni girdiler açık onay ister
+  liste_secenegi=()
+  if [ -n "$taban" ]; then
+    taban_ham=$(izin_oku "$taban") || { echo "ENGEL: yayınlanmış izin listesi okunamadı ($taban, $yerel_ref)." >&2; engel=1; continue; }
+    taban_liste=$(izin_ayikla <<<"$taban_ham")
+    yeni_girdiler=""
+    okunamadi=0
+    for c in $yeniler; do
+      c_ham=$(izin_oku "$c") || { okunamadi=1; break; }
+      while IFS= read -r g; do
+        [ -n "$g" ] || continue
+        grep -qxF -e "$g" <<<"$taban_liste" && continue
+        grep -qxF -e "$g" <<<"$yeni_girdiler" && continue
+        yeni_girdiler="$yeni_girdiler$g"$'\n'
+      done < <(izin_ayikla <<<"$c_ham")
+    done
+    if [ "$okunamadi" -eq 1 ]; then
+      echo "ENGEL: izin listesi commit'ten okunamadı ($yerel_ref)." >&2; engel=1; continue
+    fi
+    liste_dosyasi="$gecici/izin-$ref_no.txt"
+    printf '%s\n' "$taban_liste" >"$liste_dosyasi"
+    if [ -n "$yeni_girdiler" ]; then
+      if [ "${SIZINTI_IKILI_ONAY:-}" = 1 ]; then
+        echo "pre-push: $yerel_ref — ikili izin listesine yeni girdiler SIZINTI_IKILI_ONAY=1 ile onaylandı:" >&2
+        while IFS= read -r g; do [ -n "$g" ] && echo "  + $g" >&2; done <<<"$yeni_girdiler"
+        printf '%s' "$yeni_girdiler" >>"$liste_dosyasi"
+      else
+        echo "ENGEL: $yerel_ref ikili izin listesine ($IZIN_YOLU) yayınlanmamış girdi ekliyor/değiştiriyor;" \
+          "onay gerekenler:" >&2
+        while IFS= read -r g; do [ -n "$g" ] && echo "  + $g" >&2; done <<<"$yeni_girdiler"
+        echo "  Dosyaları elle doğruladıysan yalnız bu push için: SIZINTI_IKILI_ONAY=1 git push ..." >&2
+        engel=1
+      fi
+    fi
+    liste_secenegi=(--ikili-izin "$liste_dosyasi")
+  fi
+
+  # (d) açıklamalı etiket: etiket metni (+ işaret ettiği commit) taranır
+  if [ "$(git cat-file -t "$yerel_sha" </dev/null)" = tag ]; then
+    if ! bash "$tarayici" ${liste_secenegi[@]+"${liste_secenegi[@]}"} "$yerel_sha" >/dev/null </dev/null; then
+      echo "ENGEL: sızıntı taraması başarısız — etiket $(git rev-parse --short "$yerel_sha" </dev/null) ($yerel_ref)." >&2
+      engel=1
+    fi
   fi
 
   sayi=0
   for c in $yeniler; do
     sayi=$((sayi + 1))
-    if ! bash "$tarayici" "$c" >/dev/null </dev/null; then
+    if ! bash "$tarayici" ${liste_secenegi[@]+"${liste_secenegi[@]}"} "$c" >/dev/null </dev/null; then
       # mesajın kendisi sızıntı olabilir → yalnız kısa hash yazılır
       echo "ENGEL: sızıntı taraması başarısız — commit $(git rev-parse --short "$c" </dev/null) ($yerel_ref)." >&2
       engel=1

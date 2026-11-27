@@ -3,9 +3,13 @@
 # root@ SSH hedefi, kişisel e-posta, özel anahtar, API anahtarı, şifre ataması, sunucu adı; git dışı kalması
 # gereken yollar). Repo herkese açık (denizaydogdu/sokratai.tech).
 #
-# Kullanım:  bash tools/sizinti-tara.sh [<commit>|<etiket>]     (varsayılan HEAD)
+# Kullanım:  bash tools/sizinti-tara.sh [--ikili-izin <dosya>] [<commit>|<etiket>]     (varsayılan HEAD)
 #            Açıklamalı etiket verilirse etiket zincirinin metni (etiket adı, tagger, mesaj) üstveri desenleriyle
 #            taranır, sonra işaret ettiği commit taranır; etiket commit dışı bir nesneye (blob/ağaç) işaret ediyorsa ENGEL.
+#            --ikili-izin <dosya>: ikili izin listesi bu dosyadan okunur (kanca YAYINLANMIŞ sürümü verir). Verilmezse
+#            liste TARANAN COMMIT'teki tools/sizinti-ikili-izinli.txt'dir (commit'te yoksa boş) — çalışma ağacı ASLA.
+#            bash tools/sizinti-tara.sh --ref-adi <ad>
+#            Yalnız bir ref adını (dal/etiket; kanca yerel ve uzak adı verir) içerik desenlerinin hepsiyle tarar.
 # Çıkış:     0 temiz · 1 bulgu (bulgular stderr'e, her desen için en çok 10 satır, satır başına 200 karakter)
 #            · 2 tarama YAPILAMADI (commit çözülemedi, git grep -P çalışmıyor ya da bir desende git grep hatası)
 #            — kapalı-güvenli: tarama yapılamazsa push engellenir.
@@ -17,7 +21,27 @@
 # Senaryo testi: tools/sizinti-tara-test.sh (JUnit: ToolsSizintiTaramaTest).
 set -euo pipefail
 
+IZIN_KAYNAGI=""   # --ikili-izin <dosya>
+REF_ADI=""
+ref_kipi=0
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --ikili-izin)
+      [ $# -ge 2 ] || { echo "HATA: --ikili-izin bir dosya ister — tarama yapılamadı." >&2; exit 2; }
+      IZIN_KAYNAGI="$2"; shift 2 ;;
+    --ref-adi)
+      [ $# -ge 2 ] || { echo "HATA: --ref-adi bir ad ister — tarama yapılamadı." >&2; exit 2; }
+      REF_ADI="$2"; ref_kipi=1; shift 2 ;;
+    --) shift; break ;;
+    -*) echo "HATA: bilinmeyen seçenek: $1 — tarama yapılamadı." >&2; exit 2 ;;
+    *) break ;;
+  esac
+done
 KAYNAK="${1:-HEAD}"
+case "$IZIN_KAYNAGI" in
+  /*|"") ;;
+  *) IZIN_KAYNAGI="$PWD/$IZIN_KAYNAGI" ;;   # aşağıdaki cd'den önce mutlak yola çevir
+esac
 
 cd "$(dirname "$0")/.."
 
@@ -37,6 +61,65 @@ bildir() {  # $1 başlık, $2 bulgu metni
 
 gecici=$(mktemp -d)
 trap 'rm -rf "$gecici"' EXIT
+
+# --- Desenler (ağaç, commit/etiket üstverisi ve ref adı için ORTAK) ---
+# 127.0.0.1, 0.0.0.0 ve özel ağ blokları (10/8, 172.16/12, 192.168/16) ders örneği sayılır; gerisi gerçek sunucu.
+D_IPV4='(?<![\d.])(?!127\.0\.0\.1(?![\d.]))(?!0\.0\.0\.0(?![\d.]))(?!10\.)(?!192\.168\.)(?!172\.(1[6-9]|2\d|3[01])\.)(\d{1,3}\.){3}\d{1,3}(?![\d.])'
+# Genel IPv6 = küresel tek yayın 2000::/3 (ilk grup 2xxx/3xxx, en az iki ':'); belge bloğu 2001:db8::/32 ve
+# bloğun kendi gösterimi (2000:: — adres değil, ağ öneki) hariç. ::1, link-local fe80::/10 ve ULA fc00::/7 bu
+# bloğun dışında kaldığından zaten eşleşmez.
+D_IPV6='(?i)(?<![\w:.])(?!2001:0?db8:)(?!2000::(?![0-9a-f]))[23][0-9a-f]{3}:(?:[0-9a-f]{0,4}:){1,6}(?:[0-9a-f]{1,4})?(?![\w:.])'
+D_ROOT='root@[A-Za-z0-9.-]+'
+D_ANAHTAR_OZEL='-----BEGIN [A-Z ]*PRIVATE KEY'
+D_API='(sk-or-v1-[A-Za-z0-9]{20,}|sk-ant-[A-Za-z0-9_-]{20,}|gh[pousr]_[A-Za-z0-9]{30,}|AKIA[0-9A-Z]{16})'
+# Ortam/env biçiminde şifre ataması (ANAHTAR=değer, '=' çevresinde boşluk yok). Eşleşmez: <yer-tutucu>, boş değer,
+# ${...}, "..." ve XSRF-TOKEN gibi tireli adlar (çerez adı); Java `X = "..."` sabitleri (boşluklu) yanlış pozitif vermesin diye.
+D_SIFRE='(?<![\w-])(?:[A-Z0-9_]*_)?(?:PASSWORD|SECRET|TOKEN|API_KEY)=["\x27]?(?!\.\.\.)[^<\s$"\x27\x60]'
+# Spring/YAML/kabuk biçimleri (satır başında anahtar; büyük-küçük harf duyarsız): spring.datasource.password=x,
+# YAML `  password: x`, PGPASSWORD=x, export DB_PASS=x. Eşleşmez: ${...}, <yer-tutucu>, ..., boş değer; satır
+# başına bağlı olduğundan Java/JS kodundaki `String password = ...` gibi tanımlar da eşleşmez.
+D_SIFRE_AYAR='(?i)^\s*(export\s+)?[\w.-]*(password|passwd|_pass|secret|api[_-]?key)\s*[=:]\s*["\x27]?(?!\$\{|<|\.\.\.|["\x27]?\s*$)[^\s"\x27\x60]'
+
+D_EPOSTA='[A-Za-z0-9._%+-]+@(gmail|hotmail|outlook|yahoo|icloud)\.com'
+D_HOSTINGER='hstgr\.cloud'
+
+# Metin taraması (commit/etiket üstverisi, ref adı): geçici dizindeki ustveri*.txt dosyaları, aynı PCRE motoru
+# (git grep --no-index).
+USTVERI_BASLIGI="commit/etiket üstverisinde"
+tara_ustveri() {  # $1 açıklama, $2 PCRE
+  local bulgu rc=0
+  bulgu=$(git -C "$gecici" grep --no-index -n -I -P -e "$2" -- 'ustveri*.txt') || rc=$?
+  case "$rc" in
+    0) bildir "$USTVERI_BASLIGI $1" "$bulgu" ;;
+    1) ;;
+    *) yapilamadi "$USTVERI_BASLIGI '$1' deseninde git grep çıkış $rc" ;;
+  esac
+}
+# --ref-adi kipi: ad TÜM içerik desenleriyle (e-posta, şifre ataması, Hostinger dahil) taranır. Ad hem bütün hâliyle
+# hem '/' ile bölünmüş parçalarıyla yazılır → satır başına bağlı şifre deseni `refs/heads/<dal>/<ANAHTAR>=<değer>` içinde de
+# çalışır.
+if [ "$ref_kipi" -eq 1 ]; then
+  printf 'abc\n' >"$gecici/ozsinama.txt"
+  git -C "$gecici" grep --no-index -q -P -e 'a(?=b)' -- ozsinama.txt >/dev/null 2>&1 \
+    || yapilamadi "git grep -P öz-sınaması başarısız (PCRE desteği?)"
+  printf '%s\n%s\n' "$REF_ADI" "${REF_ADI//\//$'\n'}" >"$gecici/ustveri-ref.txt"
+  USTVERI_BASLIGI="ref adında"
+  tara_ustveri "genel IPv4 adresi" "$D_IPV4"
+  tara_ustveri "genel IPv6 adresi" "$D_IPV6"
+  tara_ustveri "root SSH hedefi"   "$D_ROOT"
+  tara_ustveri "e-posta adresi"    "$D_EPOSTA"
+  tara_ustveri "özel anahtar"      "$D_ANAHTAR_OZEL"
+  tara_ustveri "API anahtarı"      "$D_API"
+  tara_ustveri "şifre ataması"     "$D_SIFRE"
+  tara_ustveri "şifre ataması (ayar dosyası biçimi)" "$D_SIFRE_AYAR"
+  tara_ustveri "sunucu adı (Hostinger)" "$D_HOSTINGER"
+  if [ "$sizinti" -ne 0 ]; then
+    echo "HATA: ref adı sızıntı taramasından geçmedi: $REF_ADI" >&2
+    exit 1
+  fi
+  echo "Ref adı temiz ($REF_ADI)."
+  exit 0
+fi
 
 # Etiket zinciri: her açıklamalı etiketin metni ustveri-etiket-N.txt'ye yazılır (aşağıda taranır); en sondaki
 # nesne commit olmalı — blob/ağaç etiketi içerik taramasından kaçan veri taşırdı.
@@ -76,33 +159,15 @@ tara() {  # $1 açıklama, $2 PCRE
   esac
 }
 
-# --- Desenler (ağaç ve commit üstverisi için ORTAK) ---
-# 127.0.0.1, 0.0.0.0 ve özel ağ blokları (10/8, 172.16/12, 192.168/16) ders örneği sayılır; gerisi gerçek sunucu.
-D_IPV4='(?<![\d.])(?!127\.0\.0\.1(?![\d.]))(?!0\.0\.0\.0(?![\d.]))(?!10\.)(?!192\.168\.)(?!172\.(1[6-9]|2\d|3[01])\.)(\d{1,3}\.){3}\d{1,3}(?![\d.])'
-# Genel IPv6 = küresel tek yayın 2000::/3 (ilk grup 2xxx/3xxx, en az iki ':'); belge bloğu 2001:db8::/32 ve
-# bloğun kendi gösterimi (2000:: — adres değil, ağ öneki) hariç. ::1, link-local fe80::/10 ve ULA fc00::/7 bu
-# bloğun dışında kaldığından zaten eşleşmez.
-D_IPV6='(?i)(?<![\w:.])(?!2001:0?db8:)(?!2000::(?![0-9a-f]))[23][0-9a-f]{3}:(?:[0-9a-f]{0,4}:){1,6}(?:[0-9a-f]{1,4})?(?![\w:.])'
-D_ROOT='root@[A-Za-z0-9.-]+'
-D_ANAHTAR_OZEL='-----BEGIN [A-Z ]*PRIVATE KEY'
-D_API='(sk-or-v1-[A-Za-z0-9]{20,}|sk-ant-[A-Za-z0-9_-]{20,}|gh[pousr]_[A-Za-z0-9]{30,}|AKIA[0-9A-Z]{16})'
-# Ortam/env biçiminde şifre ataması (ANAHTAR=değer, '=' çevresinde boşluk yok). Eşleşmez: <yer-tutucu>, boş değer,
-# ${...}, "..." ve XSRF-TOKEN gibi tireli adlar (çerez adı); Java `X = "..."` sabitleri (boşluklu) yanlış pozitif vermesin diye.
-D_SIFRE='(?<![\w-])(?:[A-Z0-9_]*_)?(?:PASSWORD|SECRET|TOKEN|API_KEY)=["\x27]?(?!\.\.\.)[^<\s$"\x27\x60]'
-# Spring/YAML/kabuk biçimleri (satır başında anahtar; büyük-küçük harf duyarsız): spring.datasource.password=x,
-# YAML `  password: x`, PGPASSWORD=x, export DB_PASS=x. Eşleşmez: ${...}, <yer-tutucu>, ..., boş değer; satır
-# başına bağlı olduğundan Java/JS kodundaki `String password = ...` gibi tanımlar da eşleşmez.
-D_SIFRE_AYAR='(?i)^\s*(export\s+)?[\w.-]*(password|passwd|_pass|secret|api[_-]?key)\s*[=:]\s*["\x27]?(?!\$\{|<|\.\.\.|["\x27]?\s*$)[^\s"\x27\x60]'
-
 tara "genel IPv4 adresi"   "$D_IPV4"
 tara "genel IPv6 adresi"   "$D_IPV6"
 tara "root SSH hedefi"     "$D_ROOT"
-tara "e-posta adresi"      '[A-Za-z0-9._%+-]+@(gmail|hotmail|outlook|yahoo|icloud)\.com'
+tara "e-posta adresi"      "$D_EPOSTA"
 tara "özel anahtar"        "$D_ANAHTAR_OZEL"
 tara "API anahtarı"        "$D_API"
 tara "şifre ataması"       "$D_SIFRE"
 tara "şifre ataması (ayar dosyası biçimi)" "$D_SIFRE_AYAR"
-tara "sunucu adı (Hostinger)" 'hstgr\.cloud'
+tara "sunucu adı (Hostinger)" "$D_HOSTINGER"
 
 # Git dışı kalması gereken yollar (ls-tree hatası da tarama hatasıdır — `|| true` ile yutulmaz)
 # core.quotePath=false + -z: ASCII dışı adlar "thoughts/oturum-\304\261.md" gibi tırnaklanıp ^thoughts/ denetimini
@@ -119,27 +184,31 @@ yasak=$(printf '%s\n%s\n' "$yasak" "$envler" | sed '/^$/d')
 # kişisel e-posta deseni HARİÇ — yazar e-postası kullanıcı kararıdır). Aynı PCRE motoru: git grep --no-index
 # geçici dizindeki ustveri*.txt dosyalarında.
 git log -1 --format='%an%n%ae%n%cn%n%ce%n%B' "$KAYNAK" >"$gecici/ustveri.txt" || yapilamadi "git log başarısız"
-tara_ustveri() {  # $1 açıklama, $2 PCRE
-  local bulgu rc=0
-  bulgu=$(git -C "$gecici" grep --no-index -n -I -P -e "$2" -- 'ustveri*.txt') || rc=$?
-  case "$rc" in
-    0) bildir "commit/etiket üstverisinde $1" "$bulgu" ;;
-    1) ;;
-    *) yapilamadi "commit üstverisi '$1' deseninde git grep çıkış $rc" ;;
-  esac
-}
 tara_ustveri "genel IPv4 adresi" "$D_IPV4"
 tara_ustveri "genel IPv6 adresi" "$D_IPV6"
 tara_ustveri "root SSH hedefi"   "$D_ROOT"
 tara_ustveri "özel anahtar"      "$D_ANAHTAR_OZEL"
 tara_ustveri "API anahtarı"      "$D_API"
 
-# İkili dosyalar (-I ile içerik taramasına girmedi): izin listesi dışındaki her biri ENGEL. Liste repoda, satır başına
-# tam yol (# yorum, boş satır serbest). Yerel .git/info/attributes ya da küresel öznitelik dosyası bir metni ikili
+# İkili dosyalar (-I ile içerik taramasına girmedi): izin listesi dışındaki her biri ENGEL. Liste satır başına tam yol
+# (# yorum, boş satır serbest). Yerel .git/info/attributes ya da küresel öznitelik dosyası bir metni ikili
 # saydırırsa o dosya da burada görünür → ENGEL (kapalı-güvenli).
-izin_dosyasi="tools/sizinti-ikili-izinli.txt"
-[ -f "$izin_dosyasi" ] || yapilamadi "ikili izin listesi yok: $izin_dosyasi"
-izinliler=$(sed -e 's/[[:space:]]*#.*$//' -e 's/[[:space:]]*$//' -e '/^$/d' "$izin_dosyasi")
+# Liste ÇALIŞMA AĞACINDAN okunmaz (commit ikiliyi ve izin satırını birlikte ekleyebilirdi): kanca --ikili-izin ile
+# yayınlanmış sürümü verir; tek başına çalışınca taranan commit'teki sürüm (commit'te yoksa boş liste → hiçbir
+# ikiliye izin yok).
+izin_yolu="tools/sizinti-ikili-izinli.txt"
+if [ -n "$IZIN_KAYNAGI" ]; then
+  [ -f "$IZIN_KAYNAGI" ] || yapilamadi "ikili izin listesi yok: $IZIN_KAYNAGI"
+  izin_ham=$(cat "$IZIN_KAYNAGI") || yapilamadi "ikili izin listesi okunamadı: $IZIN_KAYNAGI"
+  izin_dosyasi="yayınlanmış $izin_yolu"
+elif git cat-file -e "$KAYNAK:$izin_yolu" 2>/dev/null; then
+  izin_ham=$(git cat-file blob "$KAYNAK:$izin_yolu") || yapilamadi "ikili izin listesi commit'ten okunamadı"
+  izin_dosyasi="$izin_yolu @ taranan commit"
+else
+  izin_ham=""
+  izin_dosyasi="$izin_yolu (taranan commit'te yok → boş)"
+fi
+izinliler=$(sed -e 's/[[:space:]]*#.*$//' -e 's/[[:space:]]*$//' -e '/^$/d' <<<"$izin_ham")
 izinli_mi() {  # $1 yol
   [ -n "$izinliler" ] && grep -qxF -e "$1" <<<"$izinliler"
 }
