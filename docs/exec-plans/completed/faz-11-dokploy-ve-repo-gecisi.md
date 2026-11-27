@@ -1,7 +1,7 @@
 # ExecPlan: Faz 11 — Dokploy dağıtımı, sokratai.tech ve yeni herkese açık repo
 
-> Tamamlandı (kod ve belge: 2026-11-27). Canlıya alma adımları (DNS, Dokploy uygulaması, TLS, ilk dağıtım)
-> henüz yapılmadı — aşağıda "Sıradakiler". Karar kaydı: [ADR-0018](../../adr/0018-dokploy-konteyner-dagitimi.md).
+> Tamamlandı (kod ve belge: 2026-11-27). Canlıya alma adımları (DNS, Dokploy uygulaması, TLS, ilk dağıtım) aynı gün
+> bitti: **https://sokratai.tech yayında**. Karar kaydı: [ADR-0018](../../adr/0018-dokploy-konteyner-dagitimi.md).
 
 ## Neden önemli (kullanıcı bakışı)
 Girişsiz site (Faz 10) hazırdı ama bir sunucusu yoktu. Kullanıcı Hostinger'dan `sokratai.tech` alan adını ve bir
@@ -48,10 +48,14 @@ Halka açık site adı **SokratAI (sokratai.tech)**; proje ve kod adları (AI Ö
 - #20: site testlerinde `csrf()` yardımcısı dağınık.
 
 ## Sıradakiler
-1. DNS: Hostinger'da `sokratai.tech` için `@` ve `www` A kayıtları → VPS (ekleniyor).
-2. Dokploy'da uygulamayı kur (Dockerfile, port 8090, env değişkenleri `docs/kurulum-site.md` §10.3, PostgreSQL
-   servisi, kalıcı `/app/data` volume'u, sağlık kontrolü `/api/saglik`). Sunucu tarafını ayrı "hostinger" oturumu yönetir.
-3. TLS: Traefik + Let's Encrypt ile `sokratai.tech` sertifikası; `APP_SITE_IZINLI_ORIGINLER` alan adına ayarlanır.
-4. İlk gerçek dağıtım + duman testi: kök adres 200, `/api/saglik` 200, çerezler `Secure`, bir görevi işaretle,
-   ilerleme kodunu başka tarayıcıda geri yükle; `SitePostgresEntegrasyonTest` gerçek PostgreSQL'e karşı bir kez.
-5. Karar bekleyenler: `__Host-` çerez öneki (#19), JS davranış testi (#11).
+Hepsi 2026-11-27'de tamamlandı:
+1. DNS: `sokratai.tech` için `@` ve `www` A kayıtları VPS'e yönlendi. (Tamam)
+2. Dokploy uygulaması (Dockerfile, port 8090, env değişkenleri `docs/kurulum-site.md` §10.3, PostgreSQL servisi,
+   kalıcı `/app/data` volume'u, sağlık kontrolü) kuruldu; sunucu tarafını ayrı "hostinger" oturumu yürüttü. (Tamam)
+3. TLS: Traefik + Let's Encrypt sertifikası alındı; `APP_SITE_IZINLI_ORIGINLER` alan adına ayarlandı. (Tamam)
+4. İlk gerçek dağıtım + duman testi geçti (kök adres, `/api/saglik`, `Secure` çerezler, görev işaretleme, sahte
+   anahtarla sohbet → 401); `SitePostgresEntegrasyonTest` PostgreSQL 14.15'e karşı 5/5. (Tamam)
+5. Karar bekleyen: `__Host-` çerez öneki (tech-debt #19) hâlâ açık; JS davranış testi (#11) Faz 13'te ADR-0021 ile
+   kapandı.
+
+Dağıtım notu: Dokploy'da autoDeploy kapalı; push sonrası yeni sürüm panelden **Redeploy** ile yayına alınır.

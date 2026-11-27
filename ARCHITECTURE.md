@@ -40,8 +40,15 @@ types → config → repo → service → ai → web
   (Docker konteyneri + Traefik/TLS + Dokploy PostgreSQL, kalıcı `/app/data`) ile çalışır; konteyner içinde
   `0.0.0.0:8090`, host portu yayınlanmaz. Canlılık ucu `GET /api/saglik/canli` (Docker `HEALTHCHECK`, DB'siz), hazırlık/izleme
   `GET /api/saglik` (DB). Loopback dışı bind yalnız `site` profiliyle (`config/BindAdresiDenetimi`). Adımlar: `docs/kurulum-site.md` §10.
+- **Herkese açık sayfalar ve SEO (Faz 12, ADR-0019/0020, yalnız `site`):** JS'siz, çerezsiz, salt okunur `/dersler`,
+  `/hafta/N[/gun/G]`, `/kaynak/<slug>` (mülakat HARİÇ), `/llms.txt`, `/llms-full.txt`, `robots.txt`, `sitemap.xml`
+  (112 adres); sayfalar açılışta üretilir, gzip'lenir. GA4 yalnız `APP_SITE_GA_OLCUM_KIMLIGI` verilirse yüklenir
+  (onay bandı yok); canonical/sitemap `APP_SITE_TEMEL_URL` ile; `/api/**` `X-Robots-Tag: noindex`.
+- **"OpenRouter ile bağlan" (Faz 13):** OAuth PKCE tamamen tarayıcıda (CSP `connect-src` + `openrouter.ai`); sunucu
+  anahtarı görmez, yalnız sohbet isteğinin `X-OpenRouter-Anahtar` başlığında gelir.
 - **`mcp` / `mcp-http`** (ADR-0007/0008): MCP sunucusu; `mcp-http` JWT kimlikli.
 
 ## Doğrulama
+`./mvnw verify`: 527 test (5 atlanan PostgreSQL opt-in) + ön yüz için 14 Playwright gerçek tarayıcı testi (ADR-0021).
 Bu kurallar `src/test/java/tr/velzon/aiogretmen/MimariTestleri.java` (ArchUnit) ile
 CI'da bloklayıcı olarak test edilir. Kural ihlali = build kırmızı.

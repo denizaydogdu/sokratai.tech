@@ -3,7 +3,7 @@
 > Pera (pera-soft) ile ilişik kalmadı (2026-11-27); repo denizaydogdu/sokratai.tech; deploy: Hostinger VPS üzerinde Dokploy.
 
 ## Komutlar
-- Derle+test: `./mvnw verify`
+- Derle+test: `./mvnw verify` (527 test, 5 atlanan PostgreSQL opt-in; 14 Playwright ön yüz testi dahil)
 - Çalıştır: `OPENROUTER_API_KEY=... ./mvnw spring-boot:run`  (http://127.0.0.1:8090; sağlayıcı: OpenRouter, ADR-0004)
   - Mülakat modülü varsayılan KAPALI; açmak için başına `APP_MULAKAT_ETKIN=true` ekle (ADR-0011)
   - Girişsiz çok ziyaretçili site (ADR-0017): `--spring.profiles.active=site` + `SPRING_DATASOURCE_URL`
@@ -23,7 +23,10 @@
 - PostgreSQL uyumluluk testi (opt-in, atılabilir DB ile): `PG_TEST_URL=jdbc:postgresql://localhost:5432/<db>
   PG_TEST_USERNAME=... ./mvnw -Dtest=SitePostgresEntegrasyonTest test` (değişken yoksa atlanır)
 - Sadece mimari testleri: `./mvnw -Dtest=MimariTestleri test`
-- Ön yüz (JS) davranış testleri (Playwright, ADR-0021): `./mvnw -Dtest=OnYuzDavranisTest test` — Chromium bir kez: `./mvnw exec:java -e -Dexec.mainClass=com.microsoft.playwright.CLI -Dexec.args="install chromium" -Dexec.classpathScope=test` (kurulu değilse atlanır)
+- Ön yüz (JS) davranış testleri (Playwright, ADR-0021): `./mvnw -Dtest=OnYuzDavranisTest test` — Chromium bir kez: `./mvnw exec:java -e -Dexec.mainClass=com.microsoft.playwright.CLI -Dexec.args="install chromium" -Dexec.classpathScope=test` (Chromium yoksa CI'da hata verir)
+- Docker derlemesi Playwright indirmez: `-Donyuz.atla -Dmaven.test.skip=true` (Dockerfile'da hazır)
+- Sızıntı taraması (push öncesi kancada otomatik): `bash tools/sizinti-tara.sh [<commit>]`; yeni ikili dosya
+  girdisi için `SIZINTI_IKILI_ONAY=<uç sha12> git push ...` (bkz. "Repo ve yayın")
 - Müfredat üret (HTML → content/): `node tools/html-to-content.mjs`
 
 ## Sınırlar
@@ -48,16 +51,17 @@
   yeniden üretmek.
 
 ## Nerede ne var
-- Mimari: ARCHITECTURE.md · Kararlar: docs/adr/ · Planlar: docs/exec-plans/
+- Mimari: ARCHITECTURE.md · Kararlar: docs/adr/ (0001–0021) · Planlar: docs/exec-plans/ (tamamlananlar: completed/, Faz 0–13)
 - Müfredat: content/ (frontmatter'lı md) · Prompt şablonları: prompts/
 - Öğrenci hafızası (Faz 2, AI yazar): data/hafiza/ (git dışı)
 - Borç listesi: docs/tech-debt-tracker.md
 - Oturum defterleri: thoughts/ledgers/ (git DIŞI — sunucu/SSH ayrıntısı içerir; /clear öncesi güncellenir)
 - İkinci beyin (git dışı): `~/Documents/Obsidian Vault/AI ÖĞRETMEN/` — kurallar:
   docs/obsidian-vault-rehberi.md (İLK vault işleminden önce OKU)
-- Canlı site: **sokratai.tech** ("SokratAI"; proje adı AI Öğretmen kalır) — Hostinger VPS üzerinde Dokploy
+- Canlı site: **https://sokratai.tech YAYINDA** ("SokratAI"; proje adı AI Öğretmen kalır) — Hostinger VPS üzerinde Dokploy
   (Docker + Traefik, konteyner portu 8090, Dokploy PostgreSQL, kalıcı `/app/data`; ADR-0018,
-  `docs/kurulum-site.md` §10). Sunucu adresi/SSH bilgisi repoda YOK.
+  `docs/kurulum-site.md` §10; autoDeploy kapalı: push sonrası Dokploy'da Redeploy). SEO/GA4 (ADR-0019), JS'siz ders
+  sayfaları + llms.txt (ADR-0020), "OpenRouter ile bağlan" (Faz 13) yayında. Sunucu adresi/SSH bilgisi repoda YOK.
 - MCP sunucusu: kod duruyor (`mcp-http` profili, ADR-0007); eski canlı sunucular (ai.velzon.tr,
   mulakat.velzon.tr) 2026-10-21'de KAPATILDI — o MCP dağıtımı yok, MCP yalnız yerelde.
 

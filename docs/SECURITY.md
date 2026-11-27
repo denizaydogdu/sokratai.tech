@@ -30,6 +30,9 @@ Yukarıdaki yerel model `local` için geçerlidir. `site` profili internete (ngi
 | Maliyet / yetkisiz AI | Sohbet dışı AI uçları sitede 404; maliyet ziyaretçinin kendi anahtarına yazılır | `web/` |
 | Terk edilmiş veri | Her gece 03:30, 180 gün gelmeyen ziyaretçinin tüm verisi silinir | temizlik işi |
 | XSS | Güvenilmeyen metin (AI çıktısı, kullanıcı girdisi) `textContent` ile basılır; CSP korunur | `app.js` |
+| OAuth (OpenRouter ile bağlan, Faz 13) | PKCE tamamen tarayıcıda; `state` doğrulanır; anahtar yalnız tarayıcıda durur, sunucu görmez; CSP `connect-src` yalnız `openrouter.ai` ekler | `app.js`, `index.html` |
+| Herkese açık ders sayfaları (Faz 12, ADR-0020) | Salt okunur, çerezsiz, mülakat içeriği HARİÇ; SVG yalnız izin listesi süzgecinden geçer; sızıntı taraması her push'ta kancada | `web/`, `tools/sizinti-tara.sh` |
+| Analitik (Faz 12, ADR-0019) | GA4 yalnız ölçüm kimliği verilirse; ziyaretçi kimliği, ilerleme kodu, sohbet metni, anahtar gönderilmez; CSP yalnız gerekli Google adreslerine genişler | `app.js`, `index.html` |
 - Ziyaretçi kodu (ilerleme kodu) bir sır gibi davranır: bilen, ilerlemeyi geri yükleyebilir; hesap/şifre yoktur.
 - Bilinçli sınır: hız sınırları tek JVM'de bellektedir (çok pod'a çıkılırsa paylaşımlı depo gerekir).
 

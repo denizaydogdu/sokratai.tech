@@ -212,6 +212,9 @@ Site modunda (`site` profili, ADR-0017) uygulama herkese açık bir eğitim site
   kullanıp unutur — veritabanına, loga, hafıza dosyasına, hata mesajına yazılmaz. Sunucuda
   OpenRouter anahtarı yoktur; `OPENROUTER_API_KEY` verilse bile sitede okunmaz. Maliyet ziyaretçinin
   kendi hesabına yazılır.
+- **"OpenRouter ile bağlan" (Faz 13, ADR-0021 testleriyle korunur):** anahtarı elle yapıştırmak yerine tek tıkla
+  OpenRouter'a gidilir (OAuth PKCE); dönüşte anahtarı tarayıcı doğrudan OpenRouter'dan alır ve yalnız tarayıcıda
+  saklar — sunucu anahtarı görmez. Elle yapıştırma kutusu kartın üstünde durur. Sol menü masaüstünde (>= 900px) açık gelir.
 - **Görevler:** anahtarı olmayan ziyaretçi görevleri **kendisi işaretler** ("Okudum ✓", "Yaptım ✓",
   "Tartıştım ✓"); anahtarı olan oku ve tartış görevlerini isterse YZ öğretmenle geçer. Yaz görevi
   sitede herkes için "Yaptım ✓" ile biter (YZ değerlendirmesi sitede yok). Sıra/kilit mantığı aynıdır.
@@ -577,11 +580,14 @@ kendiliğinden kurulur); Docker `HEALTHCHECK` canlılık ucu `GET /api/saglik/ca
 açılır (yoksa uygulama başlamaz).
 Adımlar: **[docs/kurulum-site.md §10](docs/kurulum-site.md#10-dokploy-ile-kurulum-docker--traefik)**.
 
-> Durum (2026-11-27, Faz 11): herkese açık site adı **SokratAI — sokratai.tech** (alan adı Hostinger'dan alındı;
-> DNS A kayıtları `@` ve `www` → VPS ekleniyor, TLS Traefik + Let's Encrypt). Sunucu: Hostinger VPS (Ubuntu 24.04)
-> üzerinde Dokploy; aynı VPS'te başka projeler de çalışır. Kod: herkese açık depo
-> [denizaydogdu/sokratai.tech](https://github.com/denizaydogdu/sokratai.tech) (`main`). `SitePostgresEntegrasyonTest`
-> dağıtımdan önce bir kez gerçek PostgreSQL'e karşı koşulmalı (bkz. [Test ve kalite](#test-ve-kalite)).
+> Durum (2026-11-27): herkese açık site **SokratAI — https://sokratai.tech YAYINDA** (alan adı Hostinger'dan; DNS A
+> kayıtları `@` ve `www` VPS'te, TLS Traefik + Let's Encrypt). Sunucu: Hostinger VPS (Ubuntu 24.04) üzerinde Dokploy;
+> aynı VPS'te başka projeler de çalışır. Kod: herkese açık depo
+> [denizaydogdu/sokratai.tech](https://github.com/denizaydogdu/sokratai.tech) (`main`). Dokploy'da otomatik dağıtım
+> (autoDeploy) kapalıdır: push sonrası yeni sürüm panelden **Redeploy** ile yayına alınır. İlk dağıtımda duman testi
+> geçti; `SitePostgresEntegrasyonTest` PostgreSQL 14.15'e karşı 5/5 koştu.
+> Google Search Console (alan adı mülkü, DNS TXT doğrulaması KALICI kalmalı) ve Bing Webmaster kurulu; GA4 mülkü
+> "SokratAI" (bkz. `docs/kurulum-site.md` §10.7).
 
 #### Site modunu yerelde denemek (PostgreSQL olmadan)
 ```bash
@@ -1104,8 +1110,9 @@ yetkilidir) — ADR-0017.
 ./mvnw -Dtest='DegerlendirmeServiceTest#*' test # bir sınıfın tüm metotları (desen örneği)
 ```
 
-- `./mvnw verify` şu an **71 test sınıfında 427 test** çalıştırır ve yeşildir; bunların **5'i
-  atlanır** (aşağıdaki isteğe bağlı PostgreSQL testi).
+- `./mvnw clean verify` şu an **527 test** çalıştırır (0 hata) ve yeşildir; bunların **5'i
+  atlanır** (aşağıdaki isteğe bağlı PostgreSQL testi). Ayrıca **14 Playwright gerçek tarayıcı testi** koşar
+  (`OnYuzDavranisTest`, ADR-0021; Chromium kurulu olmalı — kurulu değilse CI'da hata verir).
 - Testler katman katman düzenlenmiştir: `ai/` (prompt doldurma, JSON ayrıştırma, anlam araması),
   `repo/` (içerik ve atölye ayrıştırıcıları, kullanım sorguları, şema taşınabilirliği), `service/`
   (değerlendirme, sohbet, quiz, rapor, hafıza, kitap, sıfırlama, kullanıcı izolasyonu, ilerleme yarış
@@ -1211,6 +1218,9 @@ kayıtlıdır.
 | 0016 | Araç idempotency'si ve AI ölçümü | Görev işaretleme idempotent hedef durum (`POST /api/gorev/durum`, MCP `hedef_durum`); `ai_kullanim` süre + cevap modeli; `statik_quiz_kaydet` tekrarı, bağlam bütçesi ve yedek model zinciri yeniden açma koşullu kabul |
 | 0017 | Girişsiz site ve kendi anahtarın | Sitede giriş/kayıt/e-posta yok; `aio_ziyaretci` çerezi (`z-<kimlik>`) + ilerleme kodu; YZ yalnız sohbet, ziyaretçinin kendi OpenRouter anahtarıyla (sunucuda saklanmaz); anahtarsız ziyaretçi görevleri kendisi işaretler; IP/ziyaretçi hız sınırları; 180 gün temizliği (tek JVM, ShedLock'suz) |
 | 0018 | Dokploy (Docker + Traefik) konteyner dağıtımı | Bind kuralına konteyner istisnası (`SERVER_ADDRESS=0.0.0.0`, host portu yayınlanmaz, dış erişim yalnız Traefik/TLS); kalıcı volume `/app/data`; actuator yerine `GET /api/saglik`; `APP_SITE_GUVENILIR_VEKIL` ile vekil güveni daraltılır; çoklu ziyaretçi çerezinde yeni kimlik (sabitleme notu); systemd/nginx yolu başka sunucular için durur |
+| 0019 | Google Analytics 4 ve SEO | Çerez onay penceresi yok (kullanıcı kararı); ölçüm kimliği yalnız `APP_SITE_GA_OLCUM_KIMLIGI` ile, boşsa analitik kapalı; Google'a ziyaretçi kimliği/ilerleme kodu/sohbet/anahtar gitmez; `APP_SITE_TEMEL_URL` ile canonical + sitemap; `/api/**` `noindex`; CSP yalnız gerekli Google adreslerine genişler |
+| 0020 | Herkese açık JS'siz ders sayfaları ve `llms.txt` | `/dersler`, `/hafta/N[/gun/G]`, `/kaynak/<slug>` sunucuda HTML (salt okunur, çerezsiz, mülakat HARİÇ), `/llms.txt`, `/llms-full.txt`, 112 adreslik sitemap; AI tarayıcılarına açık izin; sayfalar açılışta üretilir, gzip; SVG izin listesi süzgeci |
+| 0021 | Playwright ön yüz davranış testleri | Playwright for Java (`test` kapsamı) ile gerçek Chromium'da 14 test (`OnYuzDavranisTest`); profil `onyuz-testleri`, Docker derlemesi `-Donyuz.atla -Dmaven.test.skip=true`; kurulu tarayıcı yoksa CI'da hata; tech-debt #11 kapandı |
 
 ---
 
@@ -1243,10 +1253,9 @@ Proje kuralları `AGENTS.md`'de özetlenmiştir. Başlıcaları:
 
 Kaynak: `docs/tech-debt-tracker.md`, `docs/exec-plans/` ve ADR-0017.
 
-**Girişsiz site (Faz 10) — açık işler ve sınırlar:**
-- **Sunucuya kurulum bekliyor:** kod, testler ve dağıtım paketi hazır; site henüz canlıda değildir.
-  Kurulumdan önce `SitePostgresEntegrasyonTest` bir kez gerçek PostgreSQL'e karşı koşulmalı (Faz 10
-  dalında koşulmadı).
+**Girişsiz site (Faz 10–13) — açık işler ve sınırlar:**
+- **Canlıda:** site https://sokratai.tech adresinde yayındadır (Faz 11, ADR-0018); `SitePostgresEntegrasyonTest`
+  PostgreSQL 14.15'e karşı 5/5 geçti.
 - **Kitap notları kişiye ayrılmadı:** notlar ve vektör deposu ortak veri olduğu için sitede kapalıdır;
   ziyaretçi başına ayırmak ayrı bir iştir.
 - **PostgreSQL testi CI'da değil:** `SitePostgresEntegrasyonTest` yalnız `PG_TEST_URL` verilince
@@ -1258,7 +1267,8 @@ Kaynak: `docs/tech-debt-tracker.md`, `docs/exec-plans/` ve ADR-0017.
   yazmamış ziyaretçinin kodu geri yüklenemez (422).
 - **Sahipsiz hafıza dizini kalabilir:** temizlikte dosya silme başarısız olursa veritabanı satırları
   silinir, dizin kalır (veritabanı yetkilidir).
-- **"OpenRouter ile bağlan" (OAuth PKCE) yok;** ziyaretçi anahtarını elle yapıştırır (ADR-0017).
+- **"OpenRouter ile bağlan" (OAuth PKCE) var (Faz 13)**, tamamen tarayıcıda; elle yapıştırma da durur. Gerçek bir
+  OpenRouter hesabıyla uçtan uca deneme kullanıcıda bekliyor (testler OpenRouter'ı taklit eder).
 - **Yönetici paneli, sıralama tablosu ve kota bilinçli olarak yok.**
 - **Göç aracı yok:** şema yalnız ekleyerek büyür (idempotent `schema.sql`); yıkıcı bir şema değişikliği
   gerekirse Flyway/Liquibase yeniden değerlendirilir. Faz 9'dan kalan `kullanici`/`kullanici_token`

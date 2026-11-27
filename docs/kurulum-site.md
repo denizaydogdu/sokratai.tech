@@ -473,8 +473,9 @@ kullanır. Ayrıca https ile girince `aio_ziyaretci` çerezi `Secure` olmalı (d
   `curl -s -H 'Accept-Encoding: gzip' -D - -o /dev/null https://<alan-adi>/llms-full.txt | grep -i content-encoding` → `gzip`;
   `curl -s https://<alan-adi>/sitemap.xml | grep -c '<loc>'` → ana sayfa + `/dersler` + hafta + gün + kaynak sayısı.
   `curl -s https://<alan-adi>/robots.txt` → `GPTBot`, `ClaudeBot`… grupları `Allow: /`.
+  Canlı sokratai.tech'te bu kontroller geçti (sitemap 112 adres).
 - **Google Search Console:** <https://search.google.com/search-console> → *Mülk ekle* → **Alan adı** →
-  verilen `google-site-verification=…` TXT kaydını alan adının DNS'ine (Hostinger → DNS) ekle → *Doğrula*. Sonra
+  verilen `google-site-verification=…` TXT kaydını alan adının DNS'ine (Hostinger → DNS) ekle → *Doğrula*. Bu TXT kaydı **KALICI kalmalı** (silinirse doğrulama düşer). Sonra
   *Site haritaları* → `https://<alan-adi>/sitemap.xml` gönder.
 - **Google Analytics 4:** <https://analytics.google.com> → mülk oluştur → *Veri akışı* → **Web** → adres
   `https://<alan-adi>` → ölçüm kimliğini (`G-…`) `APP_SITE_GA_OLCUM_KIMLIGI`'ye yaz → Redeploy. Sanal sayfa
