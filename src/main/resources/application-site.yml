@@ -1,0 +1,58 @@
+# Girişsiz çok ziyaretçili eğitim sitesi profili (Faz 10, ADR-0017) — kimlik: ziyaretçi çerezi (aio_ziyaretci).
+# Çalıştırma:  java -jar target/ai-ogretmen-0.1.0-SNAPSHOT.jar --spring.profiles.active=site
+# Yerel http denemesi:  APP_SITE_GUVENLI_CEREZ=false (yoksa Secure çerez http'de geri gönderilmez)
+#
+# Uygulama yine 127.0.0.1'e bağlanır (AGENTS.md NEVER); dışarıya yalnız önündeki nginx/TLS açılır.
+# İstisna — Docker konteyneri (ADR-0018): imaj SERVER_ADDRESS=0.0.0.0 verir, host portu yayınlanmaz, dış erişim
+# yalnız Traefik/TLS.
+# Varsayılan (profilsiz) yerel mod BU dosyadan etkilenmez: kimliksiz, tek kullanıcı ('yerel').
+
+server:
+  # nginx/Traefik arkasında X-Forwarded-Proto/For yalnız güvenilen vekilden (Tomcat RemoteIpValve) kabul edilir
+  # → https algılanır (Secure çerez, doğru yönlendirmeler), istemci IP'si (hız sınırı) çözülür. 'framework'
+  # herkese güvenirdi.
+  forward-headers-strategy: native
+  tomcat:
+    remoteip:
+      # Güvenilen vekil (Java regex). Varsayılan = Tomcat/Boot'un kendi varsayılanı (10/8, 192.168/16, 169.254/16,
+      # 127/8, 100.64/10, 172.16/12, ::1, fe80::/10, fc00::/7) → APP_SITE_GUVENILIR_VEKIL yoksa davranış değişmez.
+      # Docker/Dokploy'da AYNI ağdaki komşu konteynerler de bu aralıkta → X-Forwarded-For taklidiyle IP başına hız
+      # sınırını atlatabilirler: Traefik konteynerinin IP'sine/alt ağına DARALT (ADR-0018; docs/kurulum-site.md
+      # "Dokploy ile kurulum"). Ör. APP_SITE_GUVENILIR_VEKIL=10\.0\.1\.\d{1,3}
+      internal-proxies: '${APP_SITE_GUVENILIR_VEKIL:10\.\d{1,3}\.\d{1,3}\.\d{1,3}|192\.168\.\d{1,3}\.\d{1,3}|169\.254\.\d{1,3}\.\d{1,3}|127\.\d{1,3}\.\d{1,3}\.\d{1,3}|100\.6[4-9]{1}\.\d{1,3}\.\d{1,3}|100\.[7-9]{1}\d{1}\.\d{1,3}\.\d{1,3}|100\.1[0-1]{1}\d{1}\.\d{1,3}\.\d{1,3}|100\.12[0-7]{1}\.\d{1,3}\.\d{1,3}|172\.1[6-9]{1}\.\d{1,3}\.\d{1,3}|172\.2[0-9]{1}\.\d{1,3}\.\d{1,3}|172\.3[0-1]{1}\.\d{1,3}\.\d{1,3}|0:0:0:0:0:0:0:1|::1|fe[89ab]\p{XDigit}:.*|f[cd]\p{XDigit}{2}+:.*}'
+
+app:
+  site:
+    guvenli-cerez: ${APP_SITE_GUVENLI_CEREZ:true}         # ziyaretçi + XSRF-TOKEN çerezleri için
+    izinli-originler: ${APP_SITE_IZINLI_ORIGINLER:}       # ör. https://egitim.ornek.com (virgülle çoklu)
+    # Hız sınırları (bellek içi, IP/ziyaretçi başına; pencereler sabit). Tek NAT arkasındaki sınıf/ofis için
+    # yükseltilebilir — docs/kurulum-site.md §7.6. Ortam değişkeni adları aşağıdaki placeholder'lardır;
+    # değişken yoksa boş kalır ve config/SiteAyarlari.Hiz'daki @DefaultValue (TEK kaynak: 60/20/10/20) geçerli olur.
+    hiz:
+      yazma-dakika: ${APP_SITE_HIZ_YAZMA_DAKIKA:}                 # yazan istek / dakika / IP
+      sohbet-dakika: ${APP_SITE_HIZ_SOHBET_DAKIKA:}               # sohbet mesajı / dakika / ziyaretçi
+      geri-yukle-saat: ${APP_SITE_HIZ_GERI_YUKLE_SAAT:}           # ilerleme kodu geri yükleme / saat / IP
+      yeni-ziyaretci-saat: ${APP_SITE_HIZ_YENI_ZIYARETCI_SAAT:}   # yeni ziyaretçi / saat / IP
+
+spring:
+  # AI (Faz 10, ADR-0017): sohbet ziyaretçinin KENDİ OpenRouter anahtarıyla (X-OpenRouter-Anahtar başlığı,
+  # istek başına). Sunucu anahtarı sitede zorla boş — OPENROUTER_API_KEY ortamda olsa bile kullanılmaz
+  # (AiYapilandirma site yolunda bu özelliği zaten okumaz; bu satır ikinci kilit).
+  ai:
+    openai:
+      api-key: ""
+  # Veritabanı (Faz 9d, ADR-0014) — canlıda PostgreSQL, YALNIZ ortam değişkeninden:
+  #   SPRING_DATASOURCE_URL=jdbc:postgresql://127.0.0.1:5432/ai_ogretmen
+  #   SPRING_DATASOURCE_USERNAME, SPRING_DATASOURCE_PASSWORD
+  # URL'in varsayılanı YOK → verilmezse site AÇILMAZ (canlı sessizce yerel H2 dosyasına düşmesin).
+  # Sürücü URL'den çıkarılır (application.yml'deki org.h2.Driver burada temizlenir); yerel duman testi
+  # açık bir H2 URL'i verebilir: SPRING_DATASOURCE_URL='jdbc:h2:file:./data/site-deneme'
+  datasource:
+    url: ${SPRING_DATASOURCE_URL}
+    driver-class-name: ${SPRING_DATASOURCE_DRIVER_CLASS_NAME:}
+    hikari:
+      maximum-pool-size: ${APP_SITE_DB_HAVUZ:10}   # 60 kişi, tek örnek: 10 bağlantı bol
+      # Havuzdan bağlantı bekleme üst sınırı (ms). Boot varsayılanı 30 sn: veritabanı tamamen düşükken
+      # /api/saglik (ve her istek) o kadar asılı kalırdı, Docker HEALTHCHECK zaman aşımı (10 sn) aşılırdı.
+      # 5 sn + sağlık sorgusu zaman aşımı 2 sn = 7 sn < 10 sn (ADR-0018). Dolu havuzda da istek en çok bu kadar bekler.
+      connection-timeout: ${APP_SITE_DB_BAGLANTI_ZAMAN_ASIMI_MS:5000}

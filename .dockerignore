@@ -1,0 +1,27 @@
+# Docker derleme bağlamından DIŞLANANLAR (Faz 11, ADR-0018).
+# KESİNLİKLE imaja girmez: thoughts/ (sunucu/SSH ayrıntısı), data/ (kişisel veri), sırlar.
+.git
+.gitignore
+target/
+data/
+thoughts/
+.superpowers/
+.claude/
+.playwright-mcp/
+deploy/
+tools/
+node_modules/
+
+# Sırlar / yerel ortam
+.env
+.env*
+*.env
+
+# IDE / işletim sistemi
+.classpath
+.project
+.settings/
+.idea/
+.vscode/
+*.iml
+.DS_Store

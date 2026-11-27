@@ -1,0 +1,75 @@
+#!/usr/bin/env bash
+# Push öncesi koruma (repo herkese açık: denizaydogdu/sokratai.tech). Her uzak depo için çalışır.
+# Kurulum (repo başına bir kez): git config core.hooksPath tools/git-kancalari
+#
+# Push edilen her ref için:
+#  (a) Kök commit'lerinden biri yerel `eski-gecmis` dalının kök commit'iyle aynıysa ENGEL — eski geçmiş gerçek
+#      mülakat dökümleri ve eski sunucu ayrıntıları taşır, hiçbir yere push edilmez. `eski-gecmis` yoksa atlanır.
+#  (b) Push edilen HER yeni commit'in ağacı VE üstverisi (yazar adı/e-postası + mesaj) tools/sizinti-tara.sh ile
+#      taranır (yalnız uç değil: arada eklenip sonra silinen sızıntı da geçmişte kalıp yayılırdı); bulgu (çıkış 1)
+#      ya da tarama yapılamaması (çıkış 2 — kapalı-güvenli) ENGEL'dir; commit'in kısa hash'i yazılır.
+#      Yeni commit'ler = rev-list <yerel_sha> ^<uzak_sha>; uzak sha sıfırsa (yeni dal) ya da yerelde yoksa
+#      rev-list <yerel_sha> --not --remotes=<uzak_adı>.
+#  (c) Silme push'u (sha sıfır) denetlenmez.
+# Senaryo testi: tools/sizinti-tara-test.sh (JUnit: ToolsSizintiTaramaTest).
+set -u
+
+uzak_adi="${1:-}"
+
+kok=$(git rev-parse --show-toplevel) || exit 1
+tarayici="$kok/tools/sizinti-tara.sh"
+
+eski_kokler=""
+if git rev-parse -q --verify refs/heads/eski-gecmis >/dev/null; then
+  eski_kokler=$(git rev-list --max-parents=0 refs/heads/eski-gecmis)
+fi
+
+engel=0
+while read -r yerel_ref yerel_sha _uzak_ref uzak_sha; do
+  [ -n "${yerel_sha:-}" ] || continue
+  case "$yerel_sha" in
+    *[!0]*) ;;          # gerçek commit
+    *) continue ;;      # (c) silme push'u
+  esac
+
+  if [ -n "$eski_kokler" ]; then
+    for k in $(git rev-list --max-parents=0 "$yerel_sha" </dev/null); do
+      for e in $eski_kokler; do
+        if [ "$k" = "$e" ]; then
+          echo "ENGEL: eski geçmiş push edilemez ($yerel_ref, kök $k = eski-gecmis kökü)." >&2
+          echo "  Eski geçmiş yalnız bu bilgisayarda kalır; yeni repoya yalnız temiz geçmişten türeyen commit'ler gider." >&2
+          engel=1
+        fi
+      done
+    done
+  fi
+
+  if [ ! -f "$tarayici" ]; then
+    echo "ENGEL: sızıntı tarayıcısı yok ($tarayici); push edilmedi." >&2
+    engel=1
+    continue
+  fi
+  # Yeni commit'ler (stdin = kanca girdisi; döngü içi komutlar onu yutmasın → </dev/null)
+  case "${uzak_sha:-0}" in
+    *[!0]*) uzak_var=1 ;;
+    *) uzak_var=0 ;;
+  esac
+  if [ "$uzak_var" -eq 1 ] && git cat-file -e "$uzak_sha^{commit}" 2>/dev/null </dev/null; then
+    yeniler=$(git rev-list "$yerel_sha" "^$uzak_sha" </dev/null) || { echo "ENGEL: rev-list başarısız ($yerel_ref)." >&2; engel=1; continue; }
+  else
+    yeniler=$(git rev-list "$yerel_sha" --not --remotes="$uzak_adi" </dev/null) || { echo "ENGEL: rev-list başarısız ($yerel_ref)." >&2; engel=1; continue; }
+  fi
+
+  sayi=0
+  for c in $yeniler; do
+    sayi=$((sayi + 1))
+    if ! bash "$tarayici" "$c" >/dev/null </dev/null; then
+      # mesajın kendisi sızıntı olabilir → yalnız kısa hash yazılır
+      echo "ENGEL: sızıntı taraması başarısız — commit $(git rev-parse --short "$c" </dev/null) ($yerel_ref)." >&2
+      engel=1
+    fi
+  done
+  [ "$engel" -eq 0 ] && echo "pre-push: $yerel_ref — $sayi yeni commit tarandı, temiz." >&2
+done
+
+exit "$engel"

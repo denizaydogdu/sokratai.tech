@@ -1,0 +1,47 @@
+# ARCHITECTURE.md — AI Öğretmen
+
+## Katman haritası (tek yönlü, ArchUnit ile zorlanır)
+
+```
+types → config → repo → service → ai → web
+```
+
+| Katman | Paket | İçerik | Erişebilir |
+|---|---|---|---|
+| Types | `tr.velzon.aiogretmen.types` | record'lar, enum'lar, DTO'lar | (hiçbir şey) |
+| Config | `..config` | AppProperties, model adları, content yolu | types |
+| Repo | `..repo` | H2/PostgreSQL erişimi (Spring Data JDBC) + ContentRepo (markdown okuyucu) | types, config |
+| Service | `..service` | MufredatService, IlerlemeService, (Faz 2: Degerlendirme/Quiz/Rapor) | types, config, repo, ai |
+| AI (runtime) | `..ai` | Claude entegrasyonu — Spring AI ChatClient BURADA yaşar, tek çıkış noktası | types, config |
+| Web (UI) | `..web` | REST controller'lar + static/ frontend — SADECE service'i çağırır | types, service |
+
+## Kurallar
+- `types` hiçbir katmana bağımlı olamaz.
+- `web` doğrudan `repo` veya `ai`'a erişemez — her şey `service` üzerinden.
+- Claude API çağrısı SADECE `ai` paketinde (Spring AI sınıfları başka pakette import edilemez).
+- Kesişen kaygılar (ileride: telemetri, feature flag) arayüz üzerinden girer.
+
+## Veri
+- H2 file DB: `./data/ogrenme.mv.db` (yerel/mcp); `site` profilinde PostgreSQL (ADR-0014). Şema tek ve
+  taşınabilir: `src/main/resources/schema.sql` (H2 + PostgreSQL, idempotent).
+- Müfredat: `content/hafta-NN/{hafta.md, gun-N.md}` — frontmatter'lı markdown, açılışta belleğe yüklenir.
+- Öğrenci hafızası (Faz 2): `data/hafiza/` markdown ağacı — AI öğretmen yazar, prompt'lara enjekte edilir.
+
+## Çalışma modları (profiller)
+- **Yerel** (profil yok): tek kullanıcı (`yerel`), kimlik yok; tüm AI özellikleri sunucu anahtarıyla
+  (`OPENROUTER_API_KEY`).
+- **`site`** (ADR-0017): girişsiz, çok ziyaretçili. Kimlik = `aio_ziyaretci` çerezi → `kullanici_id` `z-<kimlik>`
+  (`config.ZiyaretciKullaniciBaglami`, fail-closed); hesap/e-posta yok. AI yalnız sohbet ve **ziyaretçinin kendi
+  anahtarıyla** (`X-OpenRouter-Anahtar` → `config.BaslikAiAnahtarBaglami` → `ai.ZiyaretciChatModelKaynagi`,
+  istek başına; sunucu anahtarı okunmaz, anahtar hiçbir yerde saklanmaz). Sohbet dışı AI uçları
+  `@Profile("!site")`. IP/ziyaretçi hız sınırları (`web.HizSiniriInterceptor`), 180 gün temizliği
+  (`service.ZiyaretciTemizlikService`).
+- **Dağıtım (Faz 11, ADR-0018):** `site` profili canlıda **sokratai.tech** olarak Hostinger VPS üzerinde Dokploy
+  (Docker konteyneri + Traefik/TLS + Dokploy PostgreSQL, kalıcı `/app/data`) ile çalışır; konteyner içinde
+  `0.0.0.0:8090`, host portu yayınlanmaz. Canlılık ucu `GET /api/saglik/canli` (Docker `HEALTHCHECK`, DB'siz), hazırlık/izleme
+  `GET /api/saglik` (DB). Loopback dışı bind yalnız `site` profiliyle (`config/BindAdresiDenetimi`). Adımlar: `docs/kurulum-site.md` §10.
+- **`mcp` / `mcp-http`** (ADR-0007/0008): MCP sunucusu; `mcp-http` JWT kimlikli.
+
+## Doğrulama
+Bu kurallar `src/test/java/tr/velzon/aiogretmen/MimariTestleri.java` (ArchUnit) ile
+CI'da bloklayıcı olarak test edilir. Kural ihlali = build kırmızı.
