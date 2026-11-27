@@ -16,6 +16,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -58,13 +59,36 @@ class SiteSeoAnalitikTest {
                 .andExpect(jsonPath("$.kullanici").doesNotExist());
     }
 
+    /**
+     * I2: {@code /api/} robots.txt'te KAPATILMAZ — Googlebot SPA'yı çizerken {@code /api/**} GET'lerine ihtiyaç duyar.
+     * Dizine girmemesini {@code X-Robots-Tag: noindex} yanıt başlığı sağlar.
+     */
     @Test
-    void robotsTxtApiyiKapatirSitemapGosterir() throws Exception {
+    void robotsTxtHerSeyeIzinVerirSitemapGosterir() throws Exception {
         MvcResult r = mvc.perform(get("/robots.txt")).andExpect(status().isOk()).andReturn();
         String govde = r.getResponse().getContentAsString();
         assertThat(r.getResponse().getContentType()).startsWith("text/plain");
-        assertThat(govde).contains("User-agent: *").contains("Allow: /").contains("Disallow: /api/")
+        assertThat(govde).contains("User-agent: *").contains("Allow: /").doesNotContain("Disallow")
                 .contains("Sitemap: https://ornek.example/sitemap.xml");
+    }
+
+    @Test
+    void apiYanitlariNoindexSayfalarDegil() throws Exception {
+        for (String yol : List.of("/api/ozellikler", "/api/program", "/api/saglik/canli")) {
+            assertThat(mvc.perform(get(yol)).andReturn().getResponse().getHeader("X-Robots-Tag")).as(yol)
+                    .isEqualTo("noindex");
+        }
+        for (String yol : List.of("/", "/robots.txt", "/sitemap.xml")) {
+            assertThat(mvc.perform(get(yol)).andReturn().getResponse().getHeader("X-Robots-Tag")).as(yol).isNull();
+        }
+    }
+
+    /** M3: muafiyet yalnız okuyan yöntemlerde — {@code POST /robots.txt} ziyaretçi çerezi filtresinden geçer. */
+    @Test
+    void postRobotsCerezFiltresindenMuafDegil() throws Exception {
+        MvcResult r = mvc.perform(post("/robots.txt").cookie(new Cookie(ZiyaretciCerezi.AD, CEREZ))).andReturn();
+        assertThat(r.getRequest().getAttribute(ZiyaretciCerezi.ISTEK_OZNITELIGI)).isEqualTo(CEREZ);
+        assertThat(r.getResponse().getHeaders("Set-Cookie")).anyMatch(c -> c.startsWith(ZiyaretciCerezi.AD + "="));
     }
 
     @Test

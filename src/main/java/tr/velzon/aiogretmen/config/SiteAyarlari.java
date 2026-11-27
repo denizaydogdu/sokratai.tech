@@ -21,6 +21,7 @@ import java.util.regex.Pattern;
  * @param temelUrl        sitenin genel kök adresi ({@code APP_SITE_TEMEL_URL}, ör. {@code https://egitim.ornek.com});
  *                        canonical, {@code og:url}, {@code robots.txt} Sitemap satırı ve {@code sitemap.xml} için.
  *                        Sondaki {@code /} atılır; boş/geçersiz = bu etiketler/uçlar yok (alan adı koda gömülmez).
+ *                        Yalnız {@code https://}; {@code http://} yalnız yerel http denemesinde ({@code guvenliCerez=false}).
  */
 @ConfigurationProperties(prefix = "app.site")
 public record SiteAyarlari(@DefaultValue List<String> izinliOriginler,
@@ -34,12 +35,15 @@ public record SiteAyarlari(@DefaultValue List<String> izinliOriginler,
     /** GA4 web akışı ölçüm kimliği (eski UA-/AW- kimlikleri ve keyfi metin dışarıda kalır). */
     private static final Pattern GA_KIMLIGI = Pattern.compile("^G-[A-Z0-9]{4,20}$");
 
-    /** Yalnız şema + ASCII ana makine (+ isteğe bağlı port, sondaki {@code /}); yol/sorgu/tırnak yok → HTML/XML-güvenli. */
-    private static final Pattern TEMEL_URL = Pattern.compile("^https?://[A-Za-z0-9.-]+(:[0-9]{1,5})?/?$");
+    /** Yalnız https + ASCII ana makine (+ isteğe bağlı port, sondaki {@code /}); yol/sorgu/tırnak yok → HTML/XML-güvenli. */
+    private static final Pattern TEMEL_URL = Pattern.compile("^https://[A-Za-z0-9.-]+(:[0-9]{1,5})?/?$");
+
+    /** Yerel http denemesi ({@code guvenliCerez=false}) için http de kabul eden biçim. */
+    private static final Pattern TEMEL_URL_HTTP = Pattern.compile("^https?://[A-Za-z0-9.-]+(:[0-9]{1,5})?/?$");
 
     public SiteAyarlari {
         gaOlcumKimligi = gaKimligiNormallestir(gaOlcumKimligi);
-        temelUrl = temelUrlNormallestir(temelUrl);
+        temelUrl = temelUrlNormallestir(temelUrl, !guvenliCerez);
     }
 
     /** @return kırpılmış geçerli kimlik; boş ya da biçim dışıysa {@code ""} (biçim dışında WARN — değer loglanmaz). */
@@ -55,13 +59,16 @@ public record SiteAyarlari(@DefaultValue List<String> izinliOriginler,
         return deger;
     }
 
-    /** @return sondaki {@code /} atılmış kök adres; boş ya da biçim dışıysa {@code ""} (biçim dışında WARN). */
-    public static String temelUrlNormallestir(String ham) {
+    /**
+     * @param httpIzinli yalnız yerel http denemesinde ({@code guvenliCerez=false}) {@code true}; canlıda https şart
+     * @return sondaki {@code /} atılmış kök adres; boş ya da biçim dışıysa {@code ""} (biçim dışında WARN).
+     */
+    public static String temelUrlNormallestir(String ham, boolean httpIzinli) {
         String deger = ham == null ? "" : ham.strip();
         if (deger.isEmpty()) {
             return "";
         }
-        if (!TEMEL_URL.matcher(deger).matches()) {
+        if (!(httpIzinli ? TEMEL_URL_HTTP : TEMEL_URL).matcher(deger).matches()) {
             log.warn("APP_SITE_TEMEL_URL geçersiz (beklenen biçim https://alan-adi, yol yok) — canonical/sitemap KAPALI");
             return "";
         }

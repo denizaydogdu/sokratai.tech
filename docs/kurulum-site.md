@@ -450,9 +450,11 @@ kullanır. Ayrıca https ile girince `aio_ziyaretci` çerezi `Secure` olmalı (d
 > ADR-0019. İki değişken de isteğe bağlıdır; verilmezse site eskisi gibi çalışır.
 
 - **Ne var:** Türkçe `<title>` + `description`, Open Graph / Twitter kartı, schema.org `Course` (JSON-LD),
-  `favicon.svg`, `GET /robots.txt` (herkese açık, `/api/` kapalı) ve `GET /sitemap.xml`. Bot uçları çerez yazmaz,
+  `favicon.svg`, `GET /robots.txt` (her şeye izin — `/api/` kapatılmaz, Googlebot SPA'yı çizerken ona ihtiyaç duyar; `/api/**`
+  yanıtları bunun yerine `X-Robots-Tag: noindex` taşır) ve `GET /sitemap.xml`. Bot uçları çerez yazmaz,
   ziyaretçi kaydı açmaz (sağlık uçları gibi).
-- **`APP_SITE_TEMEL_URL=https://<alan-adi>`:** ana sayfaya canonical + `og:url`, `robots.txt`'ye `Sitemap:` satırı
+- **`APP_SITE_TEMEL_URL=https://<alan-adi>`** (yalnız `https://`; `http://` yalnız `APP_SITE_GUVENLI_CEREZ=false`
+  ile yerel denemede kabul edilir, yoksa boş + WARN): ana sayfaya canonical + `og:url`, `robots.txt`'ye `Sitemap:` satırı
   eklenir, `sitemap.xml` açılır (yoksa 404). `www` kullanıyorsan tercih ettiğin TEK adresi yaz.
 - **Sınır (SPA):** hafta/gün/kaynak görünümleri tarayıcıda JS ile çizilir, sunucuda ayrı adresleri yok → site
   haritasında yalnız ana sayfa var. Derslerin aramada tek tek çıkması sunucuda üretilen ders sayfaları ister.
@@ -461,7 +463,11 @@ kullanır. Ayrıca https ile girince `aio_ziyaretci` çerezi `Secure` olmalı (d
   *Site haritaları* → `https://<alan-adi>/sitemap.xml` gönder.
 - **Google Analytics 4:** <https://analytics.google.com> → mülk oluştur → *Veri akışı* → **Web** → adres
   `https://<alan-adi>` → ölçüm kimliğini (`G-…`) `APP_SITE_GA_OLCUM_KIMLIGI`'ye yaz → Redeploy. Sanal sayfa
-  görüntülemelerini uygulama kendisi gönderir (adres çubuğu değişmez); *Gelişmiş ölçüm* ayarına dokunmak gerekmez.
+  görüntülemelerini uygulama kendisi gönderir (adres çubuğu değişmez).
+- **GA4 veri akışı → Gelişmiş ölçüm (enhanced measurement) → ayarlar:** **tarayıcı geçmişi olaylarına dayalı sayfa
+  değişiklikleri**, **form etkileşimleri** ve **site içi arama**yı KAPAT (ilk ikisi sanal sayfa/olaylarla çift sayar
+  ya da form alanı adları gönderir; site içi arama yok). Veri akışındaki **kullanıcı tarafından sağlanan veri
+  toplama** (user-provided data collection) KAPALI kalsın.
   Doğrulama: siteyi aç, bir haftaya tıkla → GA4 *Gerçek zamanlı*'da `/hafta/N` görünmeli.
 - **"Şu an kaç kişi var?":** GA4 → *Raporlar* → **Gerçek zamanlı** (son 30 dakikadaki etkin kullanıcılar).
 - **Ne gönderilir:** sanal sayfa görüntülemesi (`/`, `/hafta/3`, `/hafta/3/gun/2`, `/kaynak/<slug>`, `/atolye`) ve
@@ -470,7 +476,8 @@ kullanır. Ayrıca https ile girince `aio_ziyaretci` çerezi `Secure` olmalı (d
   kişiselleştirmesi kapalı; GA4 IP adresini saklamaz.
 - **Çerez onay bandı yok** (kullanıcı kararı, ADR-0019). GA4 `_ga` çerezlerini Google yazar.
 - **CSP:** `index.html` yalnız `www.googletagmanager.com` (betik) ve `*.google-analytics.com`,
-  `*.analytics.google.com`, `*.googletagmanager.com` (bağlantı/görsel) için genişletildi; satır içi betik yok.
+  `*.analytics.google.com`, `*.googletagmanager.com` (bağlantı/görsel) için genişletildi; satır içi betik yok. Analitik kodu ayrı dosyada değil, `app.js` içinde (engelleyici
+  gtag.js'i engellerse site çalışmaya devam eder).
 - **Kapatmak:** `APP_SITE_GA_OLCUM_KIMLIGI`'yi sil → Redeploy (betik yüklenmez, hiçbir istek gitmez).
 - **Paylaşım görseli yok:** `og:image` (1200×630 PNG) eklenmedi — ikili dosya sızıntı taramasının izin listesine
   (`tools/sizinti-ikili-izinli.txt`) girmeden işlenemez; eklenince `twitter:card` `summary_large_image` yapılır.

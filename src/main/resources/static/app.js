@@ -27,6 +27,63 @@ const durum = {
   site: false,      // GET /api/ozellikler → site (ADR-0017): girişsiz site — anahtar kartı, ilerleme kodu, site metinleri
 };
 
+// ---------- analitik (ADR-0019) ----------
+// Google Analytics 4 — YALNIZ sunucu geçerli bir ölçüm kimliği verirse (site profili + APP_SITE_GA_OLCUM_KIMLIGI);
+// yoksa gtag.js yüklenmez, Google'a hiçbir istek gitmez. Ayrı dosya DEĞİL (inceleme I1): takip engelleyiciler
+// dosya adına göre betiği engellerse çağrılar ReferenceError atıp siteyi düşürürdü. Yalnız Google'ın gtag.js'i
+// engellenebilir; o zaman veri kuyrukta kalır, işlevler hata yutar — gezinti ve görev kaydı etkilenmez.
+// Gizlilik sınırı: yalnız sanal sayfa yolu/başlığı ve adı sabit olaylar (parametre yalnız tam sayı). Ziyaretçi
+// kimliği, kullanıcı kimliği, sohbet metni, OpenRouter bilgisi, çerez değeri GÖNDERİLMEZ; bu bölüm onlara erişmez.
+// Google sinyalleri ve reklam kişiselleştirmesi kapalı; page_location kökten kurulur (sorgu dizesi taşınmaz).
+const GA_KIMLIK_BICIMI = /^G-[A-Z0-9]{4,20}$/; // sunucudaki doğrulamanın aynısı (ikinci kilit)
+let analitikEtkin = false;
+
+/** Ölçüm kimliği geçerliyse gtag.js'i yükler ve yapılandırır; sayfa ömründe en çok bir kez. */
+function analitikBaslat(kimlik) {
+  try {
+    if (analitikEtkin || typeof kimlik !== "string" || !GA_KIMLIK_BICIMI.test(kimlik)) return;
+    window.dataLayer = window.dataLayer || [];
+    // gtag.js arguments nesnesi bekler (dizi değil)
+    window.gtag = function gtag() { window.dataLayer.push(arguments); };
+    window.gtag("js", new Date());
+    window.gtag("config", kimlik, {
+      send_page_view: false,
+      page_location: window.location.origin + "/",
+      allow_google_signals: false,
+      allow_ad_personalization_signals: false,
+    });
+    const betik = document.createElement("script");
+    betik.async = true;
+    betik.src = "https://www.googletagmanager.com/gtag/js?id=" + encodeURIComponent(kimlik);
+    document.head.appendChild(betik);
+    analitikEtkin = true;
+  } catch (e) { /* analitik hiçbir zaman uygulamayı düşürmez */ }
+}
+
+/** Sanal sayfa görüntülemesi (tek sayfalık uygulama: hafta/gün/kaynak görünümleri). yol örn. "/hafta/3/gun/2". */
+function analitikSayfa(baslik, yol) {
+  try {
+    if (!analitikEtkin || typeof window.gtag !== "function") return;
+    window.gtag("event", "page_view", {
+      page_title: String(baslik).slice(0, 100),
+      page_location: window.location.origin + yol,
+    });
+  } catch (e) { /* sessiz */ }
+}
+
+/** Adı sabit olay; parametreler yalnız tam sayı (hafta/gün numarası gibi) — metin taşımaz. */
+function analitikOlay(ad, sayilar) {
+  try {
+    if (!analitikEtkin || typeof window.gtag !== "function") return;
+    const temiz = {};
+    for (const [k, v] of Object.entries(sayilar || {})) {
+      if (Number.isInteger(v)) temiz[k] = v;
+    }
+    window.gtag("event", ad, temiz);
+  } catch (e) { /* sessiz */ }
+}
+// ---------- analitik sonu ----------
+
 // ---------- ziyaretçinin OpenRouter anahtarı (yalnız site; ADR-0017) ----------
 // Anahtar YALNIZ bu tarayıcıda durur ("Bu cihazda hatırla" → localStorage, değilse sekme ömürlü sessionStorage)
 // ve YALNIZ sohbet isteğine başlıkla eklenir (gonder). Hiçbir yere loglanmaz.
@@ -1875,7 +1932,7 @@ const ozellikler = api("/api/ozellikler").catch(() => ({ mulakat: false }));
 (async function basla() {
   try {
     const oz = await ozellikler;
-    analitikBaslat(oz.gaOlcumKimligi); // analitik.js (ADR-0019): kimlik yoksa hiçbir şey yüklenmez/gönderilmez
+    analitikBaslat(oz.gaOlcumKimligi); // analitik bölümü (ADR-0019): kimlik yoksa hiçbir şey yüklenmez/gönderilmez
     durum.mulakatEtkin = !!oz.mulakat;
     durum.site = !!oz.site;
     durum.sunucuAi = !!oz.sunucuAi; // sitede hep false

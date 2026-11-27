@@ -19,13 +19,15 @@ Uygulayıcı kararları:
    yüklenmez, istek gitmez; biçim dışında WARN). Yerel mod asla izlenmez.
 2. **CSP yalnız GA alanları için genişler:** `script-src https://www.googletagmanager.com`; `connect-src` ve
    `img-src` `*.google-analytics.com`, `*.analytics.google.com`, `*.googletagmanager.com`. Satır içi betik yok:
-   `static/analitik.js` gtag.js'i dinamik yükler. JSON-LD çalıştırılmayan veri bloğudur, CSP'ye takılmaz.
+   `app.js`'in analitik bölümü gtag.js'i dinamik yükler (ayrı dosya değil: engelleyici dosya adına göre
+   engellerse çağrılar siteyi düşürmesin; işlevler hata yutar, gtag yoksa no-op). JSON-LD çalıştırılmayan veri bloğudur, CSP'ye takılmaz.
 3. **Kişisel veri gönderilmez:** `user_id` yok; ziyaretçi kimliği, ilerleme kodu, sohbet metni, anahtar Google'a
    gitmez. Yalnız sanal sayfa yolu/başlığı (`/hafta/N/gun/M`, `/kaynak/<slug>`) ve adı sabit olaylar
    (`gorev_tamamlandi` + hafta/gün numarası, `sohbet_mesaji`, `anahtar_eklendi`). Google sinyalleri ve reklam
    kişiselleştirmesi kapalı; `page_location` kökten kurulur (sorgu dizesi taşınmaz). Ön yüz kaynak testleri bekçi.
 4. **SEO:** Türkçe başlık/açıklama, Open Graph/Twitter, schema.org `Course`, `favicon.svg`; `robots.txt` ve
-   `sitemap.xml` site profilinde dinamik. Alan adı koda gömülmez: `APP_SITE_TEMEL_URL` varsa canonical/`og:url`
+   `sitemap.xml` site profilinde dinamik. `robots.txt` `/api/`'yi kapatmaz (Googlebot SPA'yı çizerken bu GET'lere
+   ihtiyaç duyar); `/api/**` yanıtları `X-Robots-Tag: noindex` taşır. Alan adı koda gömülmez: `APP_SITE_TEMEL_URL` (yalnız `https://`; `http://` yalnız `APP_SITE_GUVENLI_CEREZ=false` yerel denemede) varsa canonical/`og:url`
    (ana sayfa sunucuda yer tutucu yorumdan doldurulur), Sitemap satırı ve site haritası; yoksa bunlar yok.
 5. **Bot uçları çerezsiz:** `robots.txt`, `sitemap.xml`, `favicon.svg` ziyaretçi/XSRF çerezi almaz, ziyaretçi
    satırı açmaz (`config/TaramaYolu`, sağlık uçlarıyla aynı desen).
@@ -33,6 +35,8 @@ Uygulayıcı kararları:
 ## Sonuçlar
 - Ziyaretçi verisi (sayfa görüntüleme, cihaz/konum özeti, GA çerezleri `_ga*`) **Google'a gider**; onay bandı
   olmadığından KVKK/GDPR açısından risk kullanıcı tarafından kabul edildi. Geri alma: değişkeni silip Redeploy.
+- GA verisi Google'ın ABD altyapısında işlenir (yurt dışına aktarım); kullanıcı kararıyla aydınlatma metni/onay
+  penceresi yok.
 - `og:image` yok: ikili PNG sızıntı taramasının ikili izin listesine girmeden işlenemez (ayrı iş).
 - SPA sınırı: site haritasında yalnız ana sayfa; ders sayfalarının dizine girmesi sunucuda üretilen sayfalar ister.
 - Googlebot sayfayı JS ile çizerken `/api/**` GET'leri ziyaretçi satırı açmaz (ADR-0017 kuralı), çerez alır.

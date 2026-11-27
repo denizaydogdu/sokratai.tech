@@ -94,10 +94,23 @@ class SiteAyarlariTest {
 
     @Test
     void temelUrlSondakiEgikCizgisizSaklanir() {
-        assertThat(SiteAyarlari.temelUrlNormallestir("https://ornek.example/")).isEqualTo("https://ornek.example");
-        assertThat(SiteAyarlari.temelUrlNormallestir(" https://egitim.ornek.example ")).isEqualTo("https://egitim.ornek.example");
-        assertThat(SiteAyarlari.temelUrlNormallestir("http://127.0.0.1:8090")).isEqualTo("http://127.0.0.1:8090");
-        assertThat(SiteAyarlari.temelUrlNormallestir(null)).isEmpty();
+        assertThat(SiteAyarlari.temelUrlNormallestir("https://ornek.example/", false)).isEqualTo("https://ornek.example");
+        assertThat(SiteAyarlari.temelUrlNormallestir(" https://egitim.ornek.example ", false))
+                .isEqualTo("https://egitim.ornek.example");
+        assertThat(SiteAyarlari.temelUrlNormallestir(null, false)).isEmpty();
+    }
+
+    /** M1: canlıda yalnız https; http yalnız yerel http denemesinde ({@code guvenli-cerez=false}). */
+    @Test
+    void httpYalnizGuvensizCerezDenemesinde(CapturedOutput cikti) {
+        assertThat(SiteAyarlari.temelUrlNormallestir("http://ornek.example", false)).isEmpty();
+        assertThat(cikti.getOut()).contains("APP_SITE_TEMEL_URL");
+        assertThat(SiteAyarlari.temelUrlNormallestir("http://127.0.0.1:8090", true)).isEqualTo("http://127.0.0.1:8090");
+        assertThat(SiteAyarlari.temelUrlNormallestir("https://ornek.example", true)).isEqualTo("https://ornek.example");
+        calistirici.withPropertyValues("app.site.temel-url=http://ornek.example")
+                .run(b -> assertThat(b.getBean(SiteAyarlari.class).temelUrl()).isEmpty());
+        calistirici.withPropertyValues("app.site.temel-url=http://127.0.0.1:8090", "app.site.guvenli-cerez=false")
+                .run(b -> assertThat(b.getBean(SiteAyarlari.class).temelUrl()).isEqualTo("http://127.0.0.1:8090"));
     }
 
     /** Yol, sorgu, tırnak, şemasız adres → boş + WARN (canonical/sitemap'e keyfi metin girmesin). */
@@ -105,7 +118,7 @@ class SiteAyarlariTest {
     void gecersizTemelUrlBosSayilir(CapturedOutput cikti) {
         for (String kotu : new String[]{"ornek.example", "https://ornek.example/yol", "https://ornek.example?x=1",
                 "https://ornek\".example", "javascript:alert(1)", "ftp://ornek.example"}) {
-            assertThat(SiteAyarlari.temelUrlNormallestir(kotu)).as(kotu).isEmpty();
+            assertThat(SiteAyarlari.temelUrlNormallestir(kotu, true)).as(kotu).isEmpty();
         }
         assertThat(cikti.getOut()).contains("APP_SITE_TEMEL_URL");
     }

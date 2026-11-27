@@ -15,8 +15,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * Faz 12 (ADR-0019) ön yüz sözleşmesi — SEO etiketleri ve GA4 betiği (statik dosya içerik iddiaları; tarayıcı
  * davranışı elle doğrulanır). Bekçiler: CSP yalnız listelenen Google Analytics alanlarıyla genişler, satır içi betik
- * yok, {@code analitik.js} anahtar deposuna / ziyaretçi kimliğine / çerezlere dokunmaz ve Google'a kullanıcı
- * kimliği ya da metin göndermez.
+ * yok, app.js'teki analitik bölümü anahtar deposuna / ziyaretçi kimliğine / çerezlere dokunmaz ve Google'a kullanıcı
+ * kimliği ya da metin göndermez. Analitik AYRI dosya değildir: takip engelleyiciler dosya adına göre betiği
+ * engelleyince çağrılar ReferenceError atıp siteyi düşürmesin (inceleme I1) — yalnız Google'ın gtag.js'i
+ * engellenebilir, o zaman işlevler sessizce no-op kalır.
  */
 class SiteAnalitikOnYuzTest {
 
@@ -24,6 +26,19 @@ class SiteAnalitikOnYuzTest {
 
     private static String oku(String ad) throws IOException {
         return Files.readString(STATIK.resolve(ad));
+    }
+
+    private static final String BOLUM_BAS = "// ---------- analitik (ADR-0019) ----------";
+    private static final String BOLUM_SON = "// ---------- analitik sonu ----------";
+
+    /** app.js'teki analitik bölümü (başlangıç/bitiş işaretleri arası). */
+    private static String analitikBolumu() throws IOException {
+        String app = oku("app.js");
+        int bas = app.indexOf(BOLUM_BAS);
+        int son = app.indexOf(BOLUM_SON);
+        assertThat(bas).as("analitik bölümü app.js'te").isPositive();
+        assertThat(son).isGreaterThan(bas);
+        return app.substring(bas, son);
     }
 
     private static String csp(String index) {
@@ -51,10 +66,34 @@ class SiteAnalitikOnYuzTest {
             String oz = m.group(1);
             assertThat(oz.contains(" src=\"") || oz.equals(" type=\"application/ld+json\"")).as(oz).isTrue();
         }
-        assertThat(n).isEqualTo(4); // analitik.js, app.js, mulakat.js + JSON-LD
+        assertThat(n).isEqualTo(3); // app.js, mulakat.js + JSON-LD
+    }
+
+    /**
+     * I1: analitik ayrı (engellenebilir) dosyada DEĞİL; işlevler app.js'te bildirilir (hoisting → çağrı hiçbir zaman
+     * ReferenceError atmaz) ve gövdeleri try/catch içinde — gtag.js engellense de gezinti/görev kaydı bozulmaz.
+     */
+    @Test
+    void analitikEngellenemezDosyadaVeHataYutulur() throws IOException {
+        assertThat(Files.exists(STATIK.resolve("analitik.js"))).isFalse();
+        try (var dosyalar = Files.list(STATIK)) {
+            assertThat(dosyalar.map(f -> f.getFileName().toString().toLowerCase()))
+                    .noneMatch(a -> a.contains("analitik") || a.contains("analytics") || a.contains("gtag")
+                            || a.contains("olcum") || a.contains("track"));
+        }
         String index = oku("index.html");
-        assertThat(index.indexOf("<script src=\"analitik.js\">")).isPositive()
-                .isLessThan(index.indexOf("<script src=\"app.js\">"));
+        assertThat(index).doesNotContain("analitik.js");
+        String bolum = analitikBolumu();
+        for (String islev : new String[]{"analitikBaslat", "analitikSayfa", "analitikOlay"}) {
+            int bas = bolum.indexOf("function " + islev + "(");
+            assertThat(bas).as(islev + " app.js'te bildirilmiş").isPositive();
+            String govde = bolum.substring(bas, bolum.indexOf("\n}", bas));
+            assertThat(govde).as(islev + " hatayı yutar").contains("try {").contains("} catch (e) {");
+        }
+        // gtag yoksa (betik engellendi/henüz yok) sessiz no-op
+        assertThat(bolum).contains("typeof window.gtag !== \"function\"");
+        // app.js dışında hiçbir dosya analitik işlevlerini çağırmaz (mulakat.js app.js'ten bağımsız yüklenir)
+        assertThat(oku("mulakat.js")).doesNotContain("analitik");
     }
 
     @Test
@@ -90,10 +129,10 @@ class SiteAnalitikOnYuzTest {
         assertThat(kurs.path("description").asText()).isNotBlank();
     }
 
-    /** analitik.js ziyaretçi anahtarını, kimliğini, ilerleme kodunu ve çerezleri hiç bilmez. */
+    /** Analitik bölümü ziyaretçi anahtarını, kimliğini, ilerleme kodunu ve çerezleri hiç bilmez. */
     @Test
     void analitikKisiselVeriyeDokunmaz() throws IOException {
-        String js = oku("analitik.js");
+        String js = analitikBolumu();
         for (String yasak : new String[]{"aio.openrouter", "anahtarOku", "ANAHTAR", "localStorage", "sessionStorage",
                 "document.cookie", "aio_ziyaretci", "XSRF", "user_id", "userId", "X-OpenRouter", "ilerleme",
                 "/api/", "location.search", "location.href", "eval(", "innerHTML"}) {

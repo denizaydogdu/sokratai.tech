@@ -22,7 +22,9 @@ import java.time.Duration;
  *   <li>{@code GET /} ve {@code /index.html}: statik {@code index.html} açılışta BİR KEZ okunur; içindeki
  *       {@value #ISARET} yorumu, {@code APP_SITE_TEMEL_URL} ayarlıysa canonical + {@code og:url} etiketleriyle,
  *       değilse boşlukla değiştirilir (alan adı koda gömülmez). Sayfanın geri kalanı statik dosyanın aynısıdır.</li>
- *   <li>{@code GET /robots.txt}: herkese izin, {@code /api/} kapalı; temel URL ayarlıysa {@code Sitemap:} satırı.</li>
+ *   <li>{@code GET /robots.txt}: her şeye izin — {@code /api/} KAPATILMAZ (Googlebot SPA'yı çizerken {@code /api/**}
+ *       GET'lerine ihtiyaç duyar; dizine girmemesini {@link ApiNoindexInterceptor} sağlar); temel URL ayarlıysa
+ *       {@code Sitemap:} satırı.</li>
  *   <li>{@code GET /sitemap.xml}: temel URL ayarlıysa yalnız ana sayfa; değilse 404. Ön yüz tek sayfalık uygulamadır
  *       (hafta/gün/kaynak görünümleri sunucuda ayrı URL DEĞİL, JS ile çizilir) → sunucuda çözülen tek içerik URL'si
  *       köktür. Ders sayfalarının dizine girmesi sunucu tarafında üretilen sayfalar gerektirir (sonraki adım).</li>
@@ -69,7 +71,7 @@ public class SeoController {
 
     @GetMapping(TaramaYolu.ROBOTS)
     public ResponseEntity<String> robots() {
-        StringBuilder metin = new StringBuilder("User-agent: *\nAllow: /\nDisallow: /api/\n");
+        StringBuilder metin = new StringBuilder("User-agent: *\nAllow: /\n");
         if (!temelUrl.isEmpty()) {
             metin.append("\nSitemap: ").append(temelUrl).append(TaramaYolu.SITEMAP).append('\n');
         }

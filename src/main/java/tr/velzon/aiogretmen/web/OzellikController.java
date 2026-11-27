@@ -16,7 +16,7 @@ import java.util.Map;
  *  - GET /api/ozellikler → {@code {"mulakat": false, "site": false, "sunucuAi": true}}
  *  - Ziyaretçi kimliği (HttpOnly çerez) ASLA dönmez (Faz 10); {@code sunucuAi} = !site && sunucu anahtarı var.
  *  - {@code gaOlcumKimligi} (Faz 12, ADR-0019): YALNIZ {@code site} profilinde ve geçerli kimlik ayarlıysa
- *    ({@code APP_SITE_GA_OLCUM_KIMLIGI}); yoksa alan hiç yoktur → {@code analitik.js} hiçbir şey yüklemez/göndermez.
+ *    ({@code APP_SITE_GA_OLCUM_KIMLIGI}); yoksa alan hiç yoktur → app.js analitik bölümü hiçbir şey yüklemez/göndermez.
  *    Yerel mod asla izlenmez.
  * index.html'e sunucu yalnız alan adına bağlı SEO etiketlerini koyar ({@link SeoController}, sitede); hangi bölümün gösterileceğini
  * frontend bu uçtan öğrenir. Mülakat kapalıyken mulakat.js hiçbir /api/mulakat isteği atmaz.

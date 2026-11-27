@@ -51,7 +51,7 @@ class SiteSeoAyarsizTest {
     void temelUrlYoksaRobotsSitemapSatirsiz() throws Exception {
         String govde = mvc.perform(get("/robots.txt")).andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
-        assertThat(govde).contains("Disallow: /api/").doesNotContain("Sitemap:");
+        assertThat(govde).contains("Allow: /").doesNotContain("Disallow").doesNotContain("Sitemap:");
     }
 
     @Test
