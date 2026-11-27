@@ -1704,9 +1704,6 @@ function anahtarKartiCiz(hataMetni) {
       sohbetPaneliCiz(h.message);
     }
   });
-  kart.append(baglan, hatirlaEtiket);
-
-  kart.appendChild(el("p", "anahtar-ya-da", "ya da anahtarını elle yapıştır:"));
   const form = el("form", "anahtar-form");
   form.noValidate = true;
   const etiket = el("label", "anahtar-etiket", "OpenRouter anahtarın");
@@ -1736,7 +1733,10 @@ function anahtarKartiCiz(hataMetni) {
     analitikOlay("anahtar_eklendi"); // yalnız olay adı — anahtar GİTMEZ (ADR-0019)
     anahtarDegisti();
   });
-  kart.appendChild(form);
+  // Sıra (kullanıcı isteği): önce elle yapıştırma kutusu, sonra "hatırla", ayıraç, en altta tek tıkla bağlan
+  kart.append(form, hatirlaEtiket);
+  kart.appendChild(el("p", "anahtar-ya-da", "ya da OpenRouter hesabınla tek tıkla bağlan:"));
+  kart.appendChild(baglan);
 
   const yardim = el("details", "anahtar-yardim");
   yardim.appendChild(el("summary", null, "Nasıl çalışır?"));
@@ -1760,8 +1760,19 @@ function anahtarKartiCiz(hataMetni) {
   yardim.appendChild(adimlar);
   kart.appendChild(yardim);
 
-  kart.appendChild(el("p", "anahtar-not",
-      "Ücret OpenRouter hesabına yazılır; anahtarın yalnız bu tarayıcıda durur, sunucumuz kaydetmez."));
+  const guven = el("div", "anahtar-not");
+  guven.appendChild(el("strong", null, "🔒 Anahtarın güvende"));
+  const guvenListe = el("ul");
+  guvenListe.append(
+      el("li", null, "Anahtarın yalnız senin tarayıcında saklanır; sistemimiz onu hiçbir yere kaydetmez "
+          + "(veritabanına, dosyaya ya da kayıtlara yazılmaz)."),
+      el("li", null, "Yalnız AI öğretmene mesaj gönderdiğinde, o mesajı OpenRouter'a iletmek için bir kez kullanılır "
+          + "ve hemen unutulur."),
+      el("li", null, "“Bu cihazda hatırla” işaretli değilse sekmeyi kapatınca silinir; istediğin an "
+          + "“Anahtarı kaldır” ile silebilirsin."),
+      el("li", null, "Ücret senin OpenRouter hesabına yazılır; harcama limitini OpenRouter'daki Keys sayfasından koyabilirsin."));
+  guven.appendChild(guvenListe);
+  kart.appendChild(guven);
   return kart;
 }
 
