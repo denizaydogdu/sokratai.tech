@@ -57,5 +57,7 @@ Uygulayıcı kararları:
   kullanıcı kararı. Geri alma: robots.txt'te ilgili gruba `Disallow: /`.
 - Ders sayfalarında `lastmod` yok; arama motorları değişikliği taramayla bulur.
 - GA4 açıkken JS'siz sayfaları okuyan insanlar da sayılır; JS çalıştırmayan botlar sayılmaz (istenen davranış).
+  Bizim gönderdiğimiz yalnız başlık + yol; gtag.js kendi standart verisini (`_ga` çerezi/istemci kimliği, referrer,
+  tarayıcı/cihaz bilgisi) ayrıca ekler — ADR-0019.
 - SVG izin listesi mülakat diyagramlarına da uygulanır (MulakatService aynı `semalariAc`'ı kullanır); `<!-- -->`
   yorumları doğrulamadan ve çıktıdan önce silinir. Tüm kaynak + mülakat diyagramları testte taranır.

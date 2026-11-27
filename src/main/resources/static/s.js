@@ -1,7 +1,8 @@
 // JS'siz herkese açık ders sayfalarının sayfa görüntüleme betiği (ADR-0019/0020).
 // Sunucu bu dosyayı YALNIZ geçerli bir GA4 kimliği ayarlıysa data-k ile ekler; yoksa etiket hiç yoktur.
-// Gönderilen: sayfa başlığı + yol (sorgu dizesi yok). Kişisel veri, çerez değeri, kimlik gönderilmez;
-// Google sinyalleri ve reklam kişiselleştirmesi kapalı. Hata sayfayı asla etkilemez.
+// Bizim gönderdiğimiz: sayfa başlığı + yol (sorgu dizesi yok); ziyaretçi kimliği/ilerleme kodu/sohbet/anahtar YOK.
+// gtag.js ayrıca kendi standart verisini ekler: `_ga` çerezi ve istemci kimliği, yönlendiren (referrer), tarayıcı/
+// cihaz/ekran bilgisi (ADR-0019). Google sinyalleri ve reklam kişiselleştirmesi kapalı. Hata sayfayı asla etkilemez.
 (function () {
   try {
     var el = document.currentScript || document.querySelector("script[data-k]");
