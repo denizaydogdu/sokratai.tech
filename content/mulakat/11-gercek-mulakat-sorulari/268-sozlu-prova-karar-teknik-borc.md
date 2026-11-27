@@ -264,7 +264,7 @@ Bu, dosyanın en ayrıştırıcı sorusudur. Teknik borcun ne olduğunu herkes s
   <text x="548" y="124" text-anchor="middle" font-size="9.5" fill="#B07D20" font-family="system-ui">sık dokunulan + sakin: izle</text>
   <text x="548" y="146" text-anchor="middle" font-size="9.5" fill="#5D7789" font-family="system-ui">ölü kod + çirkin: bekleyebilir</text>
   <text x="548" y="174" text-anchor="middle" font-size="9" fill="#5D7789" font-family="system-ui">faizi nerede ödüyorsan</text>
-  <text x="548" y="192" text-anchor="middle" font-size="9" fill="#5D7789" font-família="system-ui">anaparayı orada kapat</text>
+  <text x="548" y="192" text-anchor="middle" font-size="9" fill="#5D7789" font-family="system-ui">anaparayı orada kapat</text>
   <rect x="14" y="240" width="632" height="66" rx="10" fill="#FDF3E0" stroke="#B07D20" stroke-width="1.5"/>
   <text x="330" y="261" text-anchor="middle" font-size="11.5" font-weight="700" fill="#B07D20" font-family="system-ui">Tuzak: "durup her şeyi baştan yazalım"</text>
   <text x="330" y="281" text-anchor="middle" font-size="10" fill="#1C3247" font-family="system-ui">Yeniden yazım süreyi ve riski birlikte büyütür; eski sistem bu sırada değişmeye devam eder.</text>
