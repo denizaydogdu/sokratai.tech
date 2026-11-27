@@ -17,8 +17,20 @@ final class AcikSayfa {
 
     static final String SITE_ADI = "SokratAI";
 
-    /** Sayfanın sabit CSP'si: betik yok (JSON-LD veri bloğu CSP'ye takılmaz), yalnız aynı kökten stil/görsel. */
+    /** Ölçüm kimliği yokken CSP: betik yok (JSON-LD veri bloğu CSP'ye takılmaz), yalnız aynı kökten stil/görsel. */
     static final String CSP = "default-src 'self'; script-src 'none'; img-src 'self' data:; form-action 'self'";
+
+    /**
+     * Ölçüm kimliği varken CSP — {@code index.html} ile aynı GA alan listesi (ADR-0019): betik yalnız kendi kökten
+     * ({@code /s.js}) ve googletagmanager.com; satır içi betik yine yok.
+     */
+    static final String CSP_GA = "default-src 'self'; script-src 'self' https://www.googletagmanager.com; "
+            + "connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com "
+            + "https://*.googletagmanager.com; "
+            + "img-src 'self' data: https://*.google-analytics.com https://*.googletagmanager.com; form-action 'self'";
+
+    /** Sayfa görüntülemesini gönderen harici betik (adı engelleyici listelerine takılmayacak kadar nötr). */
+    static final String BETIK = tr.velzon.aiogretmen.config.TaramaYolu.BETIK;
 
     private static final ObjectMapper JSON = new ObjectMapper();
 
@@ -39,13 +51,18 @@ final class AcikSayfa {
     private AcikSayfa() {
     }
 
-    static String ciz(Bilgi b, String temelUrl) {
+    /**
+     * @param gaKimligi {@code SiteAyarlari}'nda doğrulanmış GA4 kimliği ya da boş — boşsa betik etiketi hiç yazılmaz
+     *                  ve CSP {@code script-src 'none'} kalır
+     */
+    static String ciz(Bilgi b, String temelUrl, String gaKimligi) {
+        boolean olcum = gaKimligi != null && !gaKimligi.isEmpty();
         StringBuilder h = new StringBuilder(8192 + b.govdeHtml().length());
         h.append("<!DOCTYPE html>\n<html lang=\"tr\">\n<head>\n<meta charset=\"UTF-8\">\n")
                 .append("<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n")
                 .append("<title>").append(kac(b.baslik())).append("</title>\n")
                 .append("<meta name=\"description\" content=\"").append(kac(b.aciklama())).append("\">\n")
-                .append("<meta http-equiv=\"Content-Security-Policy\" content=\"").append(CSP).append("\">\n")
+                .append("<meta http-equiv=\"Content-Security-Policy\" content=\"").append(olcum ? CSP_GA : CSP).append("\">\n")
                 .append("<meta name=\"theme-color\" content=\"#4F46E5\">\n")
                 .append("<meta name=\"robots\" content=\"index, follow\">\n");
         if (!temelUrl.isEmpty()) {
@@ -62,7 +79,12 @@ final class AcikSayfa {
                 .append("<meta name=\"twitter:description\" content=\"").append(kac(b.aciklama())).append("\">\n")
                 .append("<link rel=\"icon\" href=\"/favicon.svg\" type=\"image/svg+xml\">\n")
                 .append("<link rel=\"stylesheet\" href=\"/style.css\">\n")
-                .append("<script type=\"application/ld+json\">").append(jsonLd(b.jsonLd())).append("</script>\n")
+                .append("<script type=\"application/ld+json\">").append(jsonLd(b.jsonLd())).append("</script>\n");
+        if (olcum) {
+            h.append("<script src=\"").append(BETIK).append("\" data-k=\"").append(kac(gaKimligi))
+                    .append("\" defer></script>\n");
+        }
+        h
                 .append("</head>\n<body data-sayfa=\"acik\">\n")
                 .append("<header>\n  <div class=\"hwrap\">\n    <div class=\"brand\">\n")
                 .append("      <span class=\"eyebrow\">AI Öğretmen · 12 Haftalık Program</span>\n")

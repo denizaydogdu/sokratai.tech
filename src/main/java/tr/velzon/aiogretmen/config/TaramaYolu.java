@@ -14,7 +14,7 @@ import java.util.Set;
  *
  * <p>Herkese açık, JS'siz ders sayfaları (ADR-0020) da aynı muafiyeti alır: {@value #DERSLER},
  * {@code /hafta/**}, {@code /kaynak/**}, {@value #LLMS}, {@value #LLMS_FULL} ve sayfaların kullandığı
- * {@value #STIL} — salt okunur içerik, kişiye özel durum taşımaz.
+ * {@value #STIL}, {@value #BETIK} — salt okunur içerik, kişiye özel durum taşımaz.
  */
 public final class TaramaYolu {
 
@@ -22,6 +22,8 @@ public final class TaramaYolu {
     public static final String SITEMAP = "/sitemap.xml";
     public static final String FAVICON = "/favicon.svg";
     public static final String STIL = "/style.css";
+    /** Açık sayfaların sayfa görüntüleme betiği (yalnız GA kimliği ayarlıysa sayfaya eklenir). */
+    public static final String BETIK = "/s.js";
     public static final String DERSLER = "/dersler";
     public static final String LLMS = "/llms.txt";
     public static final String LLMS_FULL = "/llms-full.txt";
@@ -29,7 +31,7 @@ public final class TaramaYolu {
     public static final String HAFTA_ONEKI = "/hafta/";
     public static final String KAYNAK_ONEKI = "/kaynak/";
 
-    private static final Set<String> YOLLAR = Set.of(ROBOTS, SITEMAP, FAVICON, STIL, DERSLER, LLMS, LLMS_FULL);
+    private static final Set<String> YOLLAR = Set.of(ROBOTS, SITEMAP, FAVICON, STIL, BETIK, DERSLER, LLMS, LLMS_FULL);
 
     private TaramaYolu() {
     }

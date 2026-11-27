@@ -211,7 +211,10 @@ class SiteAcikDersSayfalariTest {
         assertThat(xml).contains("<loc>" + KOK + "/</loc>").contains("<loc>" + KOK + "/dersler</loc>")
                 .contains("<loc>" + KOK + "/hafta/12/gun/5</loc>")
                 .contains("<loc>" + KOK + "/kaynak/00-baslangic-kilavuzu</loc><lastmod>2026-07-15</lastmod>")
-                .containsPattern("<loc>" + KOK + "/hafta/1/gun/1</loc><lastmod>\\d{4}-\\d{2}-\\d{2}</lastmod>");
+                // ders dosyası zamanı dağıtımda ilerler → ders sayfalarında lastmod YOK
+                .contains("<loc>" + KOK + "/hafta/1/gun/1</loc></url>")
+                .contains("<loc>" + KOK + "/hafta/1</loc></url>")
+                .contains("<loc>" + KOK + "/dersler</loc></url>");
     }
 
     @Test
@@ -273,5 +276,26 @@ class SiteAcikDersSayfalariTest {
         assertThat(islev).contains("/^[0-9]{1,2}$/.test(h)").contains("/^[0-9]{1,2}$/.test(g)")
                 .contains("durum.ozetler.some((o) => o.no === hafta)").doesNotContain("innerHTML");
         assertThat(app).contains("const bag = derinBag();");
+    }
+
+    /** Repo-göreli bağlantılar sitede kırık kalmaz: kaynak→kaynak {@code /kaynak/x}, diğerleri GitHub; ölçüm yoksa betik yok. */
+    @Test
+    void sayfalardaGoreliBaglantiVeBetikYok() throws Exception {
+        List<String> yollar = new java.util.ArrayList<>(List.of("/dersler"));
+        for (Hafta h : icerik.haftalar()) {
+            yollar.add("/hafta/" + h.no());
+            h.gunler().forEach(g -> yollar.add("/hafta/" + h.no() + "/gun/" + g.gun()));
+        }
+        icerik.kaynaklar().forEach(k -> yollar.add("/kaynak/" + k.slug()));
+        Pattern goreli = Pattern.compile("href=\"(?!https?://|/|#)[^\"]*\"");
+        for (String yol : yollar) {
+            String html = sayfa(yol).getResponse().getContentAsString();
+            Matcher m = goreli.matcher(html);
+            boolean var = m.find();
+            assertThat(var).as(yol + (var ? " → " + m.group() : "")).isFalse();
+            assertThat(html).as(yol).doesNotContain("/s.js").contains("script-src 'none'");
+        }
+        String html = sayfa("/kaynak/model-ve-caba").getResponse().getContentAsString();
+        assertThat(html).containsPattern("href=\"/kaynak/[a-z0-9-]+(#[^\"]*)?\"");
     }
 }

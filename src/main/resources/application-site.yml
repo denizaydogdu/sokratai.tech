@@ -8,6 +8,12 @@
 # Varsayılan (profilsiz) yerel mod BU dosyadan etkilenmez: kimliksiz, tek kullanıcı ('yerel').
 
 server:
+  # Yanıt sıkıştırma (ADR-0020): llms-full.txt ~1 MB, ders sayfaları 10-30 KB. Traefik/nginx önünde de çalışır;
+  # yeni bağımlılık yok (Tomcat'in kendi gzip'i). 1 KB altı sıkıştırılmaz.
+  compression:
+    enabled: true
+    mime-types: text/html,text/plain,application/xml,application/json,text/css,application/javascript
+    min-response-size: 1KB
   # nginx/Traefik arkasında X-Forwarded-Proto/For yalnız güvenilen vekilden (Tomcat RemoteIpValve) kabul edilir
   # → https algılanır (Secure çerez, doğru yönlendirmeler), istemci IP'si (hız sınırı) çözülür. 'framework'
   # herkese güvenirdi.

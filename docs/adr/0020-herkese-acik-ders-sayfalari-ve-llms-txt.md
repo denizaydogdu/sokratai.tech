@@ -35,16 +35,27 @@ Uygulayıcı kararları:
 5. **`/llms.txt`** (llmstxt.org biçimi: `# SokratAI`, `> özet`, açıklama, `## Program`, `## Kaynaklar`,
    `## Hakkında`) ve **`/llms-full.txt`** (tüm ders + kaynak metinleri, SVG'siz markdown, kaynak URL'leriyle;
    `text/plain; charset=utf-8`). İçerik açılışta yüklendiğinden metinler bir kez üretilir.
-6. **`sitemap.xml`** ana sayfa + yukarıdaki tüm sayfalar; `lastmod` kaynakta frontmatter `tarih`, derste dosya
-   zamanı. **`robots.txt`** `User-agent: *` + GPTBot, OAI-SearchBot, ClaudeBot, Claude-SearchBot, PerplexityBot,
+6. **`sitemap.xml`** ana sayfa + yukarıdaki tüm sayfalar; `lastmod` YALNIZ kaynak metinlerinde (frontmatter
+   `tarih`). Ders dosyalarının zamanı dağıtımda (git checkout / Docker COPY) ilerlediğinden ders sayfalarında yok. **`robots.txt`** `User-agent: *` + GPTBot, OAI-SearchBot, ClaudeBot, Claude-SearchBot, PerplexityBot,
    Google-Extended, Bingbot, Applebot için açık `Allow: /` grupları.
 7. Ana sayfaya görünür "Ders içeriği" bağlantısı ve `<noscript>` açıklaması (botlar bağlantıyı izler).
+8. **Önceden üretim:** içerik çalışırken değişmez → tüm sayfalar açılışta bir kez üretilir, istekte sözlükten
+   sunulur; bozuk içerik açılışı düşürür. Site profilinde Tomcat sıkıştırması (`server.compression`, ≥1 KB;
+   html/plain/xml/json/css/js) — yeni bağımlılık yok; nginx örneğinde de `gzip on`.
+9. **Ölçüm (kullanıcı ziyaretçi sayısını istiyor):** `APP_SITE_GA_OLCUM_KIMLIGI` ayarlıysa sayfalar harici
+   `/s.js`'i (`data-k` = doğrulanmış kimlik, `defer`) yükler; betik yalnız başlık + yol ile `page_view` gönderir
+   (sorgu dizesi, kimlik, çerez değeri yok; Google sinyalleri/reklam kişiselleştirmesi kapalı). O zaman CSP
+   `index.html` ile aynı GA listesi; kimlik yoksa etiket hiç yok ve CSP `script-src 'none'`. Dosya adı nötr
+   (takipçi listeleri dosya adına göre engeller; engellenirse sayfa etkilenmez).
+10. **Repo-göreli bağlantılar:** içerikteki `x.md` gibi bağlantılar dosyanın dizinine göre çözülür; başka bir
+    kaynak metnine gidiyorsa `/kaynak/x`, repodaki başka dosyaysa
+    `https://github.com/denizaydogdu/sokratai.tech/blob/main/<yol>`. `http(s)`, `#…`, `/…` ve diğer şemalar
+    dokunulmaz; kökün dışına çıkan yol değişmez. (llms-full.txt ham markdown'dır, çevrilmez.)
 
 ## Sonuçlar
 - Ders ve kaynak metinleri AI modellerinin eğitim/arama dizinlerine girebilir (Google-Extended/GPTBot izinli) —
   kullanıcı kararı. Geri alma: robots.txt'te ilgili gruba `Disallow: /`.
-- Ders dosyası `lastmod`'u dağıtımda dosya zamanından gelir (Docker COPY / git checkout zamanı); içerik değişmeden
-  tarih ilerleyebilir. Kaynak metinlerinde frontmatter tarihi kullanıldığından bu sorun yok.
-- JS'siz sayfalarda GA4 yok (CSP `script-src 'none'`) — bot trafiği ve bu sayfaları okuyan insanlar analitiğe
-  girmez; etkileşimli uygulamaya geçiş sayılır.
-- İçerikteki repo içi göreli bağlantılar (ör. `docs/...`) sitede kırık bağlantı olabilir (içerik kararı, ayrı iş).
+- Ders sayfalarında `lastmod` yok; arama motorları değişikliği taramayla bulur.
+- GA4 açıkken JS'siz sayfaları okuyan insanlar da sayılır; JS çalıştırmayan botlar sayılmaz (istenen davranış).
+- SVG izin listesi mülakat diyagramlarına da uygulanır (MulakatService aynı `semalariAc`'ı kullanır); `<!-- -->`
+  yorumları doğrulamadan ve çıktıdan önce silinir. Tüm kaynak + mülakat diyagramları testte taranır.

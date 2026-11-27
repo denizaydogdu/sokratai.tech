@@ -39,4 +39,5 @@ Uygulayıcı kararları:
   penceresi yok.
 - `og:image` yok: ikili PNG sızıntı taramasının ikili izin listesine girmeden işlenemez (ayrı iş).
 - SPA sınırı: site haritasında yalnız ana sayfa; ders sayfalarının dizine girmesi sunucuda üretilen sayfalar ister.
+  → Çözüldü: ADR-0020 (herkese açık JS'siz ders sayfaları, llms.txt, genişletilmiş site haritası).
 - Googlebot sayfayı JS ile çizerken `/api/**` GET'leri ziyaretçi satırı açmaz (ADR-0017 kuralı), çerez alır.

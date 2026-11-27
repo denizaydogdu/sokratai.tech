@@ -462,11 +462,15 @@ kullanır. Ayrıca https ile girince `aio_ziyaretci` çerezi `Secure` olmalı (d
   (kilit/ilerleme yok, quiz cevabı yok), çerez yazmaz, ziyaretçi kaydı açmaz, `Cache-Control: public, max-age=3600`.
   Mülakat içeriği hiç yayımlanmaz. `sitemap.xml` ana sayfa + bu sayfaların hepsini listeler. "Bu dersi etkileşimli
   çalış" bağlantısı `/?hafta=N&gun=G` ile uygulamada o haftayı/günü açar.
+  Sayfalar açılışta bir kez üretilir; yanıtlar gzip'lenir (`server.compression`; systemd/nginx yolunda
+  `deploy/nginx-site.conf.ornek` `gzip on`). `APP_SITE_GA_OLCUM_KIMLIGI` ayarlıysa bu sayfalar da harici `/s.js` ile
+  sayfa görüntülemesi gönderir (GA4 *Gerçek zamanlı*'da `/hafta/N/gun/G` yolları); ayarlı değilse betik yok.
 - **Bing Webmaster Tools** (Bing + ChatGPT arama/Copilot Bing dizinini kullanır): <https://www.bing.com/webmasters>
   → *Google Search Console'dan içe aktar* (Import from GSC) → Google hesabıyla izin ver → mülk ve site haritası
   kendiliğinden gelir (ayrı DNS doğrulaması gerekmez). Gelmezse *Site haritaları* → `https://<alan-adi>/sitemap.xml`.
 - **Canlı denetim (dağıtımdan sonra):** `curl -s https://<alan-adi>/llms.txt | head` → `# SokratAI` ile başlamalı;
   `curl -sI https://<alan-adi>/hafta/1/gun/1` → `200`, `Cache-Control: max-age=3600, public`, `Set-Cookie` YOK;
+  `curl -s -H 'Accept-Encoding: gzip' -D - -o /dev/null https://<alan-adi>/llms-full.txt | grep -i content-encoding` → `gzip`;
   `curl -s https://<alan-adi>/sitemap.xml | grep -c '<loc>'` → ana sayfa + `/dersler` + hafta + gün + kaynak sayısı.
   `curl -s https://<alan-adi>/robots.txt` → `GPTBot`, `ClaudeBot`… grupları `Allow: /`.
 - **Google Search Console:** <https://search.google.com/search-console> → *Mülk ekle* → **Alan adı** →

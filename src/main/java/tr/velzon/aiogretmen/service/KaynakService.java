@@ -73,6 +73,7 @@ public class KaynakService {
                     .replace("&quot;", "\"").replace("&#39;", "'")
                     .replace("&amp;", "&"); // &amp; en SON (çift-çözmeyi önler)
             // izin listesi (SvgSuzgeci, ADR-0020): uymayan blok açılmaz, kaçışlı kod bloğu olarak kalır
+            svg = SvgSuzgeci.yorumsuz(svg); // yorumlar doğrulamadan ve çıktıdan önce silinir
             String yerine = SvgSuzgeci.guvenliMi(svg) ? "<figure class=\"oku-sema\">" + svg + "</figure>" : m.group();
             m.appendReplacement(sb, Matcher.quoteReplacement(yerine));
         }

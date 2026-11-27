@@ -73,36 +73,6 @@ public class ContentRepo {
         return Files.isRegularFile(dosya) ? hamOku(dosya) : "";
     }
 
-    /**
-     * Haftanın dosyalarının (hafta.md + gun-N.md) en son değişiklik zamanı — site haritası {@code lastmod}'u için
-     * (Faz 12, ADR-0020). {@code gun == 0} → haftanın tüm dosyalarının en yenisi; aksi hâlde yalnız o gün dosyası.
-     *
-     * @return okunamazsa ya da hafta/gün yoksa boş
-     */
-    public Optional<java.time.Instant> degisiklikZamani(int hafta, int gun) {
-        if (hafta(hafta).isEmpty()) {
-            return Optional.empty();
-        }
-        Path dizin = haftaDizini(hafta);
-        List<Path> dosyalar = gun == 0
-                ? hafta(hafta).get().gunler().stream().map(g -> dizin.resolve("gun-" + g.gun() + ".md"))
-                        .collect(java.util.stream.Collectors.toCollection(ArrayList::new))
-                : new ArrayList<>(List.of(dizin.resolve("gun-" + gun + ".md")));
-        if (gun == 0) {
-            dosyalar.add(dizin.resolve("hafta.md"));
-        }
-        java.time.Instant enYeni = null;
-        for (Path dosya : dosyalar) {
-            try {
-                java.time.Instant t = Files.getLastModifiedTime(dosya).toInstant();
-                enYeni = enYeni == null || t.isAfter(enYeni) ? t : enYeni;
-            } catch (IOException e) {
-                // yok/okunamıyor → lastmod yazılmaz (isteğe bağlı alan)
-            }
-        }
-        return Optional.ofNullable(enYeni);
-    }
-
     private Path haftaDizini(int no) {
         return contentDir.resolve(String.format("hafta-%02d", no));
     }

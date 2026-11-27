@@ -22,7 +22,6 @@ import java.util.stream.Stream;
 public class KaynakRepo {
 
     private final List<Kaynak> kaynaklar;
-    private final Path kaynakDir;
 
     @org.springframework.beans.factory.annotation.Autowired
     public KaynakRepo(tr.velzon.aiogretmen.config.AppProperties props) {
@@ -30,25 +29,7 @@ public class KaynakRepo {
     }
 
     public KaynakRepo(Path kaynakDir) {
-        this.kaynakDir = kaynakDir;
         this.kaynaklar = yukle(kaynakDir);
-    }
-
-    /**
-     * Kaynak dosyasının son değişiklik zamanı — site haritası {@code lastmod}'u için (Faz 12, ADR-0020). Yalnız
-     * yüklü slug'lar için dosyaya bakılır (slug dosya adından gelir; dışarıdan gelen metin yol olmaz).
-     *
-     * @return slug yoksa ya da dosya okunamazsa boş
-     */
-    public Optional<java.time.Instant> degisiklikZamani(String slug) {
-        if (bul(slug).isEmpty()) {
-            return Optional.empty();
-        }
-        try {
-            return Optional.of(Files.getLastModifiedTime(kaynakDir.resolve(slug + ".md")).toInstant());
-        } catch (IOException e) {
-            return Optional.empty();
-        }
     }
 
     public List<Kaynak> hepsi() {

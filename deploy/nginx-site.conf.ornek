@@ -49,6 +49,14 @@ server {
     add_header Referrer-Policy "strict-origin-when-cross-origin" always;
     add_header Permissions-Policy "camera=(), microphone=(), geolocation=(), payment=()" always;
 
+    # Sıkıştırma (ADR-0020: llms-full.txt ~1 MB, ders sayfaları). Uygulama da sıkıştırır (server.compression);
+    # nginx proxy yanıtını zaten sıkıştırılmışsa yeniden sıkıştırmaz. text/html gzip_types'ta her zaman vardır.
+    gzip on;
+    gzip_proxied any;
+    gzip_vary on;
+    gzip_min_length 1024;
+    gzip_types text/plain text/css application/xml application/javascript application/json;
+
     access_log /var/log/nginx/ai-ogretmen-site.access.log;
     error_log  /var/log/nginx/ai-ogretmen-site.error.log warn;
 

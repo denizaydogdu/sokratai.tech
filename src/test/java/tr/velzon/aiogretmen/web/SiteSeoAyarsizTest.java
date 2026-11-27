@@ -68,6 +68,9 @@ class SiteSeoAyarsizTest {
                 .getContentAsString();
         assertThat(html).contains("<title>").doesNotContain("rel=\"canonical\"").doesNotContain("og:url")
                 .doesNotContain("\"url\":");
+        // geçersiz/boş ölçüm kimliği → betik etiketi yok, CSP betiksiz
+        assertThat(html).doesNotContain("/s.js").doesNotContain("data-k=").contains("script-src 'none'")
+                .doesNotContain("googletagmanager");
         String llms = mvc.perform(get("/llms.txt")).andExpect(status().isOk()).andReturn().getResponse()
                 .getContentAsString();
         assertThat(llms).contains("](/hafta/1)").contains("](/llms-full.txt)");

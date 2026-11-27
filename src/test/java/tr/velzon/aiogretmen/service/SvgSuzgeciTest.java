@@ -59,21 +59,50 @@ class SvgSuzgeciTest {
         assertThat(KaynakService.semalariAc(html)).isEqualTo(html);
     }
 
-    /** Gerçek içerikteki HER diyagram izin listesine uyar (aksi hâlde sayfada diyagram yerine kod görünür). */
     @Test
-    void gercekKaynakDiyagramlarininHepsiGecer() throws IOException {
+    void clipPathMarkerUnitsVeTirnakIcindeBuyuktirGecer() {
+        assertThat(SvgSuzgeci.guvenliMi("<svg><defs><clipPath id=\"k\"><rect width=\"1\" height=\"1\"/></clipPath>"
+                + "<marker id=\"m\" markerUnits=\"strokeWidth\"><path d=\"M0 0\"/></marker></defs>"
+                + "<g clip-path=\"url(#k)\"><text aria-label=\"a > b\">x</text></g></svg>")).isTrue();
+    }
+
+    @Test
+    void yorumlarDogrulamadanVeCiktidanOnceSilinir() {
+        assertThat(SvgSuzgeci.yorumsuz("<svg><!-- not --><rect/><!--\nçok satır\n--></svg>"))
+                .isEqualTo("<svg><rect/></svg>");
+        assertThat(SvgSuzgeci.guvenliMi(SvgSuzgeci.yorumsuz("<svg><!-- x --><rect/></svg>"))).isTrue();
+        String html = "<pre><code class=\"language-svg\">&lt;svg&gt;&lt;!-- not --&gt;&lt;rect/&gt;&lt;/svg&gt;</code></pre>";
+        assertThat(KaynakService.semalariAc(html)).isEqualTo("<figure class=\"oku-sema\"><svg><rect/></svg></figure>");
+        // yorum içinde gizlenmiş betik de silinir; yorum dışı betik yine reddedilir
+        assertThat(SvgSuzgeci.guvenliMi(SvgSuzgeci.yorumsuz("<svg><!-- <script>x</script> --></svg>"))).isTrue();
+        assertThat(SvgSuzgeci.guvenliMi(SvgSuzgeci.yorumsuz("<svg><!-- a --><script>x</script></svg>"))).isFalse();
+    }
+
+    /** I2: uzun öznitelik değeri yığın taşırmamalı (doğrusal tarama). */
+    @Test
+    void cokUzunDegerYiginTasirmaz() {
+        String d = "M0 0 " + "L1 1 ".repeat(10_000);
+        assertThat(d.length()).isGreaterThan(50_000);
+        assertThat(SvgSuzgeci.guvenliMi("<svg><path d=\"" + d + "\"/></svg>")).isTrue();
+        assertThat(SvgSuzgeci.guvenliMi("<svg><path d=\"" + d + "&#106;\"/></svg>")).isFalse();
+    }
+
+    /** Gerçek içerikteki HER diyagram (kaynaklar + mülakat) izin listesine uyar (aksi hâlde kod bloğu görünür). */
+    @Test
+    void gercekDiyagramlarinHepsiGecer() throws IOException {
         int sayac = 0;
-        try (Stream<Path> dosyalar = Files.list(Path.of("content/kaynaklar"))) {
+        try (Stream<Path> dosyalar = Stream.concat(Files.list(Path.of("content/kaynaklar")),
+                Files.walk(Path.of("content/mulakat")))) {
             for (Path dosya : dosyalar.filter(f -> f.toString().endsWith(".md")).toList()) {
                 Matcher m = KaynakService.SVG_MD_FENCE.matcher(Files.readString(dosya));
                 while (m.find()) {
                     String blok = m.group();
-                    String svg = blok.substring("```svg".length(), blok.length() - 3);
+                    String svg = SvgSuzgeci.yorumsuz(blok.substring("```svg".length(), blok.length() - 3));
                     assertThat(SvgSuzgeci.guvenliMi(svg)).as(dosya + " #" + sayac).isTrue();
                     sayac++;
                 }
             }
         }
-        assertThat(sayac).isGreaterThan(50);
+        assertThat(sayac).isGreaterThan(900);
     }
 }

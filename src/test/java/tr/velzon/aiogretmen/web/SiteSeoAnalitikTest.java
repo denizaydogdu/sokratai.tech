@@ -131,4 +131,40 @@ class SiteSeoAnalitikTest {
                     .anyMatch(c -> c.startsWith(ZiyaretciCerezi.AD + "="));
         }
     }
+
+    /** ADR-0020: ölçüm kimliği ayarlıyken JS'siz ders sayfaları harici /s.js ile sayfa görüntülemesi gönderir. */
+    @Test
+    void acikSayfalarKimlikliyseHariciBetikVeGaCspTasir() throws Exception {
+        for (String yol : List.of("/dersler", "/hafta/1", "/hafta/1/gun/1", "/kaynak/00-baslangic-kilavuzu")) {
+            String html = mvc.perform(get(yol)).andExpect(status().isOk()).andReturn().getResponse()
+                    .getContentAsString();
+            assertThat(html).as(yol).contains("<script src=\"/s.js\" data-k=\"G-TEST12345\" defer></script>")
+                    .contains("script-src 'self' https://www.googletagmanager.com")
+                    .contains("connect-src 'self' https://*.google-analytics.com")
+                    .doesNotContain("script-src 'none'");
+            java.util.regex.Matcher m = java.util.regex.Pattern.compile("<script([^>]*)>").matcher(html);
+            while (m.find()) { // satır içi çalıştırılabilir betik yok
+                assertThat(m.group(1).contains(" src=\"/s.js\"") || m.group(1).equals(" type=\"application/ld+json\""))
+                        .as(m.group(1)).isTrue();
+            }
+        }
+        MvcResult r = mvc.perform(get("/s.js").cookie(new Cookie(ZiyaretciCerezi.AD, CEREZ)))
+                .andExpect(status().isOk()).andReturn();
+        assertThat(r.getResponse().getHeaders("Set-Cookie")).isEmpty();
+    }
+
+    /** /s.js: adında ve içinde takipçi listelerine takılan sözcük yok, kişisel veriye dokunmaz, kimliği doğrular. */
+    @Test
+    void sayfaBetigiTemizVeKimligiDogrular() throws Exception {
+        String js = new org.springframework.core.io.ClassPathResource("static/s.js")
+                .getContentAsString(java.nio.charset.StandardCharsets.UTF_8);
+        String kucuk = js.toLowerCase(java.util.Locale.ROOT);
+        for (String yasak : List.of("analitik", "analytics", "olcum", "ölçüm", "track", "document.cookie",
+                "localstorage", "sessionstorage", "innerhtml", "location.search", "location.href", "eval(", "user_id")) {
+            assertThat(kucuk).as(yasak).doesNotContain(yasak);
+        }
+        assertThat(js).contains("/^G-[A-Z0-9]{4,20}$/").contains("send_page_view: false")
+                .contains("allow_google_signals: false").contains("allow_ad_personalization_signals: false")
+                .contains("window.location.origin + window.location.pathname");
+    }
 }

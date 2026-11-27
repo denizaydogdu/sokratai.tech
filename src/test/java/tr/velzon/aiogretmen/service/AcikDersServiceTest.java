@@ -36,7 +36,7 @@ class AcikDersServiceTest {
     void hamHtmlVeOlayOznitelikleriCiktiyaUlasmaz() throws IOException {
         String html = servis().html("Metin <script>alert(1)</script> ve <img src=x onerror=alert(1)>\n\n"
                 + "[tıkla](javascript:alert(1))\n\n<svg onload=\"alert(1)\"></svg>\n\n"
-                + "```svg\n<svg><rect onclick=\"x()\"/></svg>\n```\n");
+                + "```svg\n<svg><rect onclick=\"x()\"/></svg>\n```\n", "content/kaynaklar");
         assertThat(html).doesNotContain("<script").doesNotContain("<img").doesNotContain("<svg")
                 .doesNotContain("javascript:").contains("&lt;script&gt;");
         assertThat(html.replace("&lt;", "")).doesNotContainPattern("<[^>]*onerror=").doesNotContainPattern("<[^>]*onclick=");
@@ -44,7 +44,8 @@ class AcikDersServiceTest {
 
     @Test
     void izinliSvgCanliAcilir() throws IOException {
-        String html = servis().html("```svg\n<svg viewBox=\"0 0 10 10\"><rect width=\"1\" height=\"1\"/></svg>\n```\n");
+        String html = servis().html("```svg\n<svg viewBox=\"0 0 10 10\"><rect width=\"1\" height=\"1\"/></svg>\n```\n",
+                "content/kaynaklar");
         assertThat(html).contains("<figure class=\"oku-sema\"><svg viewBox=\"0 0 10 10\">");
     }
 
@@ -62,8 +63,9 @@ class AcikDersServiceTest {
         List<AcikDersService.SayfaYolu> yollar = servis().sayfaYollari();
         assertThat(yollar).extracting(AcikDersService.SayfaYolu::yol)
                 .containsExactly("/dersler", "/hafta/1", "/hafta/1/gun/1", "/kaynak/iyi-kaynak", "/kaynak/tarihsiz");
-        assertThat(yollar).allSatisfy(y -> assertThat(y.sonDegisiklik()).isNotNull());
-        assertThat(yollar.get(3).sonDegisiklik()).isEqualTo(LocalDate.of(2026, 7, 10)); // frontmatter tarihi
+        // lastmod yalnız frontmatter tarihli kaynakta (ders dosya zamanı dağıtımda ilerler → yazılmaz)
+        assertThat(yollar).extracting(AcikDersService.SayfaYolu::sonDegisiklik)
+                .containsExactly(null, null, null, LocalDate.of(2026, 7, 10), null);
     }
 
     @Test
@@ -76,5 +78,27 @@ class AcikDersServiceTest {
         assertThat(s.gun(1, 1)).isPresent();
         assertThat(s.gun(1, 9)).isEmpty();
         assertThat(s.gun(7, 1)).isEmpty();
+    }
+
+    @Test
+    void goreliBaglantilarSitedeCalisanAdreseCevrilir() throws IOException {
+        AcikDersService s = servis();
+        String k = "content/kaynaklar";
+        assertThat(s.baglantiCoz("iyi-kaynak.md", k)).isEqualTo("/kaynak/iyi-kaynak");
+        assertThat(s.baglantiCoz("./iyi-kaynak.md#bolum-2", k)).isEqualTo("/kaynak/iyi-kaynak#bolum-2");
+        assertThat(s.baglantiCoz("yok-boyle.md", k)).isEqualTo(AcikDersService.DEPO_URL + "content/kaynaklar/yok-boyle.md");
+        assertThat(s.baglantiCoz("../../docs/adr/0001-x.md", k)).isEqualTo(AcikDersService.DEPO_URL + "docs/adr/0001-x.md");
+        assertThat(s.baglantiCoz("../hafta-01/gun-1.md?a=1", k))
+                .isEqualTo(AcikDersService.DEPO_URL + "content/hafta-01/gun-1.md?a=1");
+        assertThat(s.baglantiCoz("../../../etc/passwd", k)).isEqualTo("../../../etc/passwd");
+        for (String dokunma : List.of("https://ornek.example/a", "http://x.y", "#bolum", "/dersler",
+                "mailto:a@b.c", "")) {
+            assertThat(s.baglantiCoz(dokunma, k)).as(dokunma).isEqualTo(dokunma);
+        }
+        assertThat(s.html("[a](iyi-kaynak.md) [b](../../src/A.java) [c](https://x.example) [d](javascript:alert(1))", k))
+                .contains("href=\"/kaynak/iyi-kaynak\"")
+                .contains("href=\"" + AcikDersService.DEPO_URL + "src/A.java\"")
+                .contains("href=\"https://x.example\"")
+                .doesNotContain("javascript:");
     }
 }

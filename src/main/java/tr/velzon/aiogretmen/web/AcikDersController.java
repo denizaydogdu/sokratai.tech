@@ -35,6 +35,9 @@ import java.util.regex.Pattern;
  *   <li>{@code /dersler} (program dizini), {@code /hafta/{n}}, {@code /hafta/{n}/gun/{g}}, {@code /kaynak/{slug}}</li>
  *   <li>{@code /llms.txt} (llmstxt.org biçimi) ve {@code /llms-full.txt} (tüm ders + kaynak metinleri, markdown)</li>
  * </ul>
+ * İçerik çalışırken değişmediğinden TÜM sayfalar açılışta bir kez üretilir (istekte yalnız sözlükten sunulur; bozuk
+ * içerik açılışı düşürür). {@code APP_SITE_GA_OLCUM_KIMLIGI} ayarlıysa sayfalar harici {@code /s.js} ile sayfa
+ * görüntülemesi gönderir (satır içi betik yok); yoksa betik etiketi hiç yok, CSP {@code script-src 'none'}.
  * Haftalık kilit/ilerleme YOK (ziyaretçiye bakılmaz); çerez yazılmaz, ziyaretçi satırı açılmaz, hız kovasına girilmez
  * ({@link TaramaYolu}). Bilinmeyen hafta/gün/slug → Türkçe HTML 404 (JSON değil). Mülakat içeriği hiç bağlanmaz.
  */
@@ -54,13 +57,16 @@ public class AcikDersController {
 
     private final AcikDersService icerik;
     private final String temelUrl;
+    private final String gaKimligi;
     private final String sayfaYok;
+    private final Map<String, String> sayfalar;
     private final String llms;
     private final String llmsFull;
 
     public AcikDersController(AcikDersService icerik, SiteAyarlari ayarlar) {
         this.icerik = icerik;
         this.temelUrl = ayarlar.temelUrl();
+        this.gaKimligi = ayarlar.gaOlcumKimligi(); // SiteAyarlari'nda doğrulanmış ya da boş
         try {
             this.sayfaYok = new ClassPathResource("static/error/404.html").getContentAsString(StandardCharsets.UTF_8);
         } catch (IOException e) {
@@ -69,12 +75,60 @@ public class AcikDersController {
         // İçerik açılışta yüklenir ve çalışırken değişmez → metin dosyaları bir kez üretilir.
         this.llms = llmsUret();
         this.llmsFull = llmsFullUret();
+        this.sayfalar = sayfalariUret();
     }
 
     // ---------- HTML sayfaları ----------
 
     @GetMapping(TaramaYolu.DERSLER)
     public ResponseEntity<String> dersler() {
+        return sun(TaramaYolu.DERSLER);
+    }
+
+    @GetMapping("/hafta/{n}")
+    public ResponseEntity<String> hafta(@PathVariable String n) {
+        return sayi(n).map(no -> sun(AcikDersService.haftaYolu(no))).orElseGet(this::yok);
+    }
+
+    @GetMapping("/hafta/{n}/gun/{g}")
+    public ResponseEntity<String> gun(@PathVariable String n, @PathVariable("g") String gunNo) {
+        Optional<Integer> hNo = sayi(n);
+        Optional<Integer> gNo = sayi(gunNo);
+        if (hNo.isEmpty() || gNo.isEmpty()) {
+            return yok();
+        }
+        return sun(AcikDersService.gunYolu(hNo.get(), gNo.get()));
+    }
+
+    @GetMapping("/kaynak/{slug}")
+    public ResponseEntity<String> kaynak(@PathVariable String slug) {
+        return sun(AcikDersService.kaynakYolu(slug));
+    }
+
+    /** Açılışta üretilmiş sayfayı sunar; yoksa HTML 404. Yol yalnız sözlük anahtarıdır (dosya/şablon yolu değil). */
+    private ResponseEntity<String> sun(String yol) {
+        String html = sayfalar.get(yol);
+        return html == null ? yok()
+                : ResponseEntity.ok().contentType(HTML).cacheControl(ONBELLEK).body(html);
+    }
+
+    /** Tüm açık sayfalar (yol → HTML), açılışta bir kez; içerik hatası açılışı düşürür. */
+    private Map<String, String> sayfalariUret() {
+        Map<String, String> m = new LinkedHashMap<>();
+        m.put(TaramaYolu.DERSLER, dersleriCiz());
+        for (Hafta h : icerik.haftalar()) {
+            m.put(AcikDersService.haftaYolu(h.no()), haftaCiz(h));
+            for (Gun g : h.gunler()) {
+                m.put(AcikDersService.gunYolu(h.no(), g.gun()), gunCiz(h, g));
+            }
+        }
+        for (Kaynak k : icerik.kaynaklar()) {
+            m.put(AcikDersService.kaynakYolu(k.slug()), kaynakCiz(k));
+        }
+        return Map.copyOf(m);
+    }
+
+    private String dersleriCiz() {
         StringBuilder g = new StringBuilder();
         g.append("<article class=\"acik-icerik\">\n<h1>").append(AcikSayfa.kac(PROGRAM_ADI)).append("</h1>\n")
                 .append("<p class=\"acik-ozet\">").append(AcikSayfa.kac(PROGRAM_OZETI)).append("</p>\n");
@@ -113,13 +167,7 @@ public class AcikDersController {
                 g.toString()));
     }
 
-    @GetMapping("/hafta/{n}")
-    public ResponseEntity<String> hafta(@PathVariable String n) {
-        Optional<Hafta> bulunan = sayi(n).flatMap(icerik::hafta);
-        if (bulunan.isEmpty()) {
-            return yok();
-        }
-        Hafta h = bulunan.get();
+    private String haftaCiz(Hafta h) {
         String ad = "Hafta " + h.no() + ": " + h.baslik();
         StringBuilder g = new StringBuilder();
         g.append("<article class=\"acik-icerik\">\n<h1>").append(AcikSayfa.kac(ad)).append("</h1>\n")
@@ -151,20 +199,7 @@ public class AcikDersController {
                 g.toString()));
     }
 
-    @GetMapping("/hafta/{n}/gun/{g}")
-    public ResponseEntity<String> gun(@PathVariable String n, @PathVariable("g") String gunNo) {
-        Optional<Integer> hNo = sayi(n);
-        Optional<Integer> gNo = sayi(gunNo);
-        if (hNo.isEmpty() || gNo.isEmpty()) {
-            return yok();
-        }
-        Optional<Hafta> hafta = icerik.hafta(hNo.get());
-        Optional<Gun> bulunan = icerik.gun(hNo.get(), gNo.get());
-        if (hafta.isEmpty() || bulunan.isEmpty()) {
-            return yok();
-        }
-        Hafta h = hafta.get();
-        Gun gun = bulunan.get();
+    private String gunCiz(Hafta h, Gun gun) {
         String yol = AcikDersService.gunYolu(h.no(), gun.gun());
         String aciklama = icerik.ozet(gun.ders(), ACIKLAMA_SINIRI);
         StringBuilder g = new StringBuilder();
@@ -172,7 +207,7 @@ public class AcikDersController {
                 .append(gun.gun()).append(" — ").append(AcikSayfa.kac(h.baslik())).append("</p>\n<h1>")
                 .append(AcikSayfa.kac(gun.baslik())).append("</h1>\n");
         etkilesimliBag(g, "/?hafta=" + h.no() + "&amp;gun=" + gun.gun(), "Bu dersi etkileşimli çalış →");
-        g.append("<div class=\"ders oku-metin\">\n").append(icerik.html(gun.ders())).append("</div>\n");
+        g.append("<div class=\"ders oku-metin\">\n").append(icerik.html(gun.ders(), String.format("content/hafta-%02d", h.no()))).append("</div>\n");
         if (!gun.gorevler().isEmpty()) {
             g.append("<h2>Görevler</h2>\n<ol class=\"acik-gorevler\">\n");
             for (String gorev : gun.gorevler()) {
@@ -194,13 +229,7 @@ public class AcikDersController {
                 g.toString()));
     }
 
-    @GetMapping("/kaynak/{slug}")
-    public ResponseEntity<String> kaynak(@PathVariable String slug) {
-        Optional<Kaynak> bulunan = icerik.kaynak(slug);
-        if (bulunan.isEmpty()) {
-            return yok();
-        }
-        Kaynak k = bulunan.get();
+    private String kaynakCiz(Kaynak k) {
         String yol = AcikDersService.kaynakYolu(k.slug());
         String aciklama = icerik.ozet(k.govde(), ACIKLAMA_SINIRI);
         StringBuilder g = new StringBuilder();
@@ -231,7 +260,7 @@ public class AcikDersController {
             g.append("</p>\n");
         }
         etkilesimliBag(g, "/", "Programı etkileşimli çalış →");
-        g.append("<div class=\"oku-metin\">\n").append(icerik.html(k.govde())).append("</div>\n</article>\n");
+        g.append("<div class=\"oku-metin\">\n").append(icerik.html(k.govde(), "content/kaynaklar")).append("</div>\n</article>\n");
 
         Map<String, Object> ld = kaynakNesnesi(k.baslik(), aciklama, yol);
         ozgunUrl(k).ifPresent(u -> ld.put("isBasedOn", u));
@@ -322,8 +351,8 @@ public class AcikDersController {
 
     // ---------- yardımcılar ----------
 
-    private ResponseEntity<String> sayfa(AcikSayfa.Bilgi bilgi) {
-        return ResponseEntity.ok().contentType(HTML).cacheControl(ONBELLEK).body(AcikSayfa.ciz(bilgi, temelUrl));
+    private String sayfa(AcikSayfa.Bilgi bilgi) {
+        return AcikSayfa.ciz(bilgi, temelUrl, gaKimligi);
     }
 
     /** Bilinmeyen hafta/gün/slug: Türkçe HTML 404 (JSON hata sözleşmesi yalnız {@code /api/**} içindir). */
