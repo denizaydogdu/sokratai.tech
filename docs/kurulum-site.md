@@ -447,7 +447,7 @@ kullanır. Ayrıca https ile girince `aio_ziyaretci` çerezi `Secure` olmalı (d
   §Güvenlik notu).
 
 ### 10.7 SEO ve analitik
-> ADR-0019. İki değişken de isteğe bağlıdır; verilmezse site eskisi gibi çalışır.
+> ADR-0019 (+ ADR-0020: JS'siz ders sayfaları, llms.txt). İki değişken de isteğe bağlıdır; verilmezse site eskisi gibi çalışır.
 
 - **Ne var:** Türkçe `<title>` + `description`, Open Graph / Twitter kartı, schema.org `Course` (JSON-LD),
   `favicon.svg`, `GET /robots.txt` (her şeye izin — `/api/` kapatılmaz, Googlebot SPA'yı çizerken ona ihtiyaç duyar; `/api/**`
@@ -456,8 +456,19 @@ kullanır. Ayrıca https ile girince `aio_ziyaretci` çerezi `Secure` olmalı (d
 - **`APP_SITE_TEMEL_URL=https://<alan-adi>`** (yalnız `https://`; `http://` yalnız `APP_SITE_GUVENLI_CEREZ=false`
   ile yerel denemede kabul edilir, yoksa boş + WARN): ana sayfaya canonical + `og:url`, `robots.txt`'ye `Sitemap:` satırı
   eklenir, `sitemap.xml` açılır (yoksa 404). `www` kullanıyorsan tercih ettiğin TEK adresi yaz.
-- **Sınır (SPA):** hafta/gün/kaynak görünümleri tarayıcıda JS ile çizilir, sunucuda ayrı adresleri yok → site
-  haritasında yalnız ana sayfa var. Derslerin aramada tek tek çıkması sunucuda üretilen ders sayfaları ister.
+- **JS'siz ders sayfaları (ADR-0020):** GPTBot, ClaudeBot, PerplexityBot gibi AI tarayıcılarının çoğu JavaScript
+  çalıştırmaz; SPA'yı göremezler. Aynı içerik sunucuda HTML olarak da sunulur: `/dersler` (program dizini),
+  `/hafta/N`, `/hafta/N/gun/G`, `/kaynak/<slug>` (+ `/llms.txt`, `/llms-full.txt`). Bu sayfalar salt okunurdur
+  (kilit/ilerleme yok, quiz cevabı yok), çerez yazmaz, ziyaretçi kaydı açmaz, `Cache-Control: public, max-age=3600`.
+  Mülakat içeriği hiç yayımlanmaz. `sitemap.xml` ana sayfa + bu sayfaların hepsini listeler. "Bu dersi etkileşimli
+  çalış" bağlantısı `/?hafta=N&gun=G` ile uygulamada o haftayı/günü açar.
+- **Bing Webmaster Tools** (Bing + ChatGPT arama/Copilot Bing dizinini kullanır): <https://www.bing.com/webmasters>
+  → *Google Search Console'dan içe aktar* (Import from GSC) → Google hesabıyla izin ver → mülk ve site haritası
+  kendiliğinden gelir (ayrı DNS doğrulaması gerekmez). Gelmezse *Site haritaları* → `https://<alan-adi>/sitemap.xml`.
+- **Canlı denetim (dağıtımdan sonra):** `curl -s https://<alan-adi>/llms.txt | head` → `# SokratAI` ile başlamalı;
+  `curl -sI https://<alan-adi>/hafta/1/gun/1` → `200`, `Cache-Control: max-age=3600, public`, `Set-Cookie` YOK;
+  `curl -s https://<alan-adi>/sitemap.xml | grep -c '<loc>'` → ana sayfa + `/dersler` + hafta + gün + kaynak sayısı.
+  `curl -s https://<alan-adi>/robots.txt` → `GPTBot`, `ClaudeBot`… grupları `Allow: /`.
 - **Google Search Console:** <https://search.google.com/search-console> → *Mülk ekle* → **Alan adı** →
   verilen `google-site-verification=…` TXT kaydını alan adının DNS'ine (Hostinger → DNS) ekle → *Doğrula*. Sonra
   *Site haritaları* → `https://<alan-adi>/sitemap.xml` gönder.

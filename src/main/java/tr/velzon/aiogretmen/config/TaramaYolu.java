@@ -11,14 +11,25 @@ import java.util.Set;
  * {@link SiteGuvenlikYapilandirma} CSRF çerez filtresi bu istekleri ATLAR → çerez yazılmaz, ziyaretçi kimliği
  * üretilmez. ({@code web/} katmanındaki ziyaretçi dokunma / hız sınırı interceptor'ları yalnız {@code /api/**}'ye
  * bağlı; bu yollar oraya hiç girmez.) Yalnız okuyan yöntemler ({@code GET}, {@code HEAD}).
+ *
+ * <p>Herkese açık, JS'siz ders sayfaları (ADR-0020) da aynı muafiyeti alır: {@value #DERSLER},
+ * {@code /hafta/**}, {@code /kaynak/**}, {@value #LLMS}, {@value #LLMS_FULL} ve sayfaların kullandığı
+ * {@value #STIL} — salt okunur içerik, kişiye özel durum taşımaz.
  */
 public final class TaramaYolu {
 
     public static final String ROBOTS = "/robots.txt";
     public static final String SITEMAP = "/sitemap.xml";
     public static final String FAVICON = "/favicon.svg";
+    public static final String STIL = "/style.css";
+    public static final String DERSLER = "/dersler";
+    public static final String LLMS = "/llms.txt";
+    public static final String LLMS_FULL = "/llms-full.txt";
+    /** Önek yollar: {@code /hafta/{n}}, {@code /hafta/{n}/gun/{g}}, {@code /kaynak/{slug}}. */
+    public static final String HAFTA_ONEKI = "/hafta/";
+    public static final String KAYNAK_ONEKI = "/kaynak/";
 
-    private static final Set<String> YOLLAR = Set.of(ROBOTS, SITEMAP, FAVICON);
+    private static final Set<String> YOLLAR = Set.of(ROBOTS, SITEMAP, FAVICON, STIL, DERSLER, LLMS, LLMS_FULL);
 
     private TaramaYolu() {
     }
@@ -29,6 +40,7 @@ public final class TaramaYolu {
         if (!"GET".equals(yontem) && !"HEAD".equals(yontem)) {
             return false;
         }
-        return YOLLAR.contains(UrlPathHelper.defaultInstance.getLookupPathForRequest(istek));
+        String yol = UrlPathHelper.defaultInstance.getLookupPathForRequest(istek);
+        return YOLLAR.contains(yol) || yol.startsWith(HAFTA_ONEKI) || yol.startsWith(KAYNAK_ONEKI);
     }
 }

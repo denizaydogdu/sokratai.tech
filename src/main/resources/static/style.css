@@ -609,3 +609,32 @@ details.mulakat-soru > .q { padding: 14px 16px 8px; margin-bottom: 0; }
 .kod-icerik .kod-not { font-size: 12px; }
 .kod-kapat { margin-left: 0; align-self: flex-end; }
 @media (max-width: 520px) { .kod-satir { flex-direction: column; } }
+
+/* ---------- Herkese açık, JS'siz ders sayfaları (/dersler, /hafta/…, /kaynak/…; ADR-0020) ---------- */
+.ders-icerik-bag { margin-left: 0; text-decoration: none; }
+.noscript-not { max-width: 860px; margin: 16px auto; }
+.acik-marka { font-size: 20px; font-weight: 700; letter-spacing: -.01em; color: var(--paper); text-decoration: none; }
+.acik-ust-bag { text-decoration: none; }
+.acik-sayfa { max-width: 860px; margin: 0 auto; padding: 24px 16px 40px; }
+.acik-yol ol { list-style: none; display: flex; flex-wrap: wrap; gap: 6px; font-size: 13px; color: var(--muted); margin-bottom: 18px; }
+.acik-yol li + li::before { content: "›"; margin-right: 6px; }
+.acik-yol a { color: var(--cyan); }
+.acik-icerik { font-size: 17px; line-height: 1.7; overflow-wrap: anywhere; }
+.acik-icerik h1 { font-size: 28px; line-height: 1.25; margin: 6px 0 12px; }
+.acik-icerik h2 { font-size: 21px; margin: 26px 0 8px; }
+.acik-icerik h3 { font-size: 17px; margin: 18px 0 6px; }
+.acik-icerik p { margin: 10px 0; }
+.acik-icerik ul, .acik-icerik ol { margin: 10px 0 10px 22px; }
+.acik-icerik li { margin: 4px 0; }
+.acik-icerik blockquote { border-left: 3px solid var(--line); padding-left: 12px; color: var(--muted); margin: 10px 0; }
+.acik-icerik code { font-family: var(--mono); background: var(--line-soft); padding: 1px 5px; border-radius: 4px; font-size: .9em; }
+.acik-icerik pre { overflow-x: auto; background: var(--line-soft); padding: 10px 12px; border-radius: 6px; margin: 10px 0; }
+.acik-icerik pre code { padding: 0; background: none; }
+.acik-icerik .eyebrow { font-size: 12px; font-weight: 600; letter-spacing: .05em; color: var(--cyan); text-transform: uppercase; margin: 0; }
+.acik-ozet { font-size: 18px; }
+.acik-soluk { color: var(--muted); font-size: 15px; }
+.acik-cta { margin: 16px 0 20px; }
+.acik-cta .btn { text-decoration: none; display: inline-block; }
+.acik-gezinme { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; margin-top: 28px; padding-top: 14px; border-top: 1px solid var(--line); }
+.acik-alt { max-width: 860px; margin: 0 auto; padding: 18px 16px 32px; border-top: 1px solid var(--line); font-size: 13px; color: var(--muted); }
+.acik-alt p { margin: 4px 0; }

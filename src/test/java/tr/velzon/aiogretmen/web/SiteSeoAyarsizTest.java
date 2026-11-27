@@ -60,4 +60,16 @@ class SiteSeoAyarsizTest {
         assertThat(html).doesNotContain("rel=\"canonical\"").doesNotContain("og:url").doesNotContain("seo:alan")
                 .contains("<meta name=\"description\"");
     }
+
+    /** ADR-0020: temel URL yoksa açık ders sayfaları yine çizilir; canonical/og:url ve JSON-LD url'leri yok. */
+    @Test
+    void temelUrlYoksaAcikSayfalarCanonicalsiz() throws Exception {
+        String html = mvc.perform(get("/hafta/1/gun/1")).andExpect(status().isOk()).andReturn().getResponse()
+                .getContentAsString();
+        assertThat(html).contains("<title>").doesNotContain("rel=\"canonical\"").doesNotContain("og:url")
+                .doesNotContain("\"url\":");
+        String llms = mvc.perform(get("/llms.txt")).andExpect(status().isOk()).andReturn().getResponse()
+                .getContentAsString();
+        assertThat(llms).contains("](/hafta/1)").contains("](/llms-full.txt)");
+    }
 }

@@ -1925,6 +1925,24 @@ function karsilamaCiz(ilkAcik) {
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
+/** Herkese açık JS'siz ders sayfalarından derin bağlantı (ADR-0020): {@code ?hafta=N[&gun=G]}. Yalnız 1-2 haneli
+ *  tam sayı ve programda VAR olan hafta kabul edilir; değer DOM'a/metne yazılmaz, yalnız sayı olarak kullanılır.
+ *  Geçersiz/eksik → null (karşılama sayfası). */
+function derinBag() {
+  try {
+    const p = new URLSearchParams(window.location.search);
+    const h = p.get("hafta");
+    const g = p.get("gun");
+    if (!h || !/^[0-9]{1,2}$/.test(h)) return null;
+    const hafta = Number(h);
+    if (!Array.isArray(durum.ozetler) || !durum.ozetler.some((o) => o.no === hafta)) return null;
+    const gun = g && /^[0-9]{1,2}$/.test(g) ? Number(g) : null;
+    return { hafta, gun };
+  } catch (e) {
+    return null;
+  }
+}
+
 /** Özellik bayrakları (ADR-0011) — tek istek, app.js ve mulakat.js aynı Promise'i bekler.
  *  Hata durumunda güvenli varsayılan: mülakat KAPALI. */
 const ozellikler = api("/api/ozellikler").catch(() => ({ mulakat: false }));
@@ -1944,7 +1962,17 @@ const ozellikler = api("/api/ozellikler").catch(() => ({ mulakat: false }));
     aiPaneliKur();
     sifirlaButonuEkle();
     if (durum.site) ilerlemeKoduKur();
-    karsilamaCiz(ilkAcik); // Hafta 1 otomatik açılmaz — genel karşılama sayfası
+    const bag = derinBag(); // herkese açık ders sayfasından gelindiyse (?hafta=N&gun=G) o hafta/gün açılır
+    if (bag) {
+      await haftaSec(bag.hafta); // kilit mantığı aynen: kilitli hafta = yalnız önizleme
+      if (bag.gun != null) {
+        const gunEl = document.querySelector(`.day[data-gun="${bag.gun}"]`);
+        const bas = gunEl ? gunEl.querySelector(".day-head") : null;
+        if (bas && !gunEl.classList.contains("open")) bas.click(); // tıklama: kilitli gün açılmaz
+      }
+    } else {
+      karsilamaCiz(ilkAcik); // Hafta 1 otomatik açılmaz — genel karşılama sayfası
+    }
   } catch (h) {
     document.getElementById("hafta-paneli").textContent = "Yüklenemedi: " + h.message;
   }

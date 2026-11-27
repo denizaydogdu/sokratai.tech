@@ -58,7 +58,8 @@ public class KaynakService {
     /**
      * ```svg fence'lerini CANLI inline SVG'ye açar. escapeHtml(true) KALIR — yalnız açıkça
      * "svg" olarak işaretlenmiş diyagram blokları açılır (least-privilege). Diyagramlar içerik
-     * yazarının (AI) ürettiği güvenilir artefaktlardır; ayrıca CSP (default-src 'self') script'i bloke eder.
+     * yazarının (AI) ürettiği artefaktlardır; yine de yalnız {@link SvgSuzgeci} izin listesine uyan blok açılır
+     * (olay özniteliği/script/href geçemez) ve CSP (default-src 'self') script'i ayrıca bloke eder.
      */
     static final Pattern SVG_FENCE =
             Pattern.compile("<pre><code class=\"language-svg\">(.*?)</code></pre>", Pattern.DOTALL);
@@ -71,7 +72,9 @@ public class KaynakService {
                     .replace("&lt;", "<").replace("&gt;", ">")
                     .replace("&quot;", "\"").replace("&#39;", "'")
                     .replace("&amp;", "&"); // &amp; en SON (çift-çözmeyi önler)
-            m.appendReplacement(sb, Matcher.quoteReplacement("<figure class=\"oku-sema\">" + svg + "</figure>"));
+            // izin listesi (SvgSuzgeci, ADR-0020): uymayan blok açılmaz, kaçışlı kod bloğu olarak kalır
+            String yerine = SvgSuzgeci.guvenliMi(svg) ? "<figure class=\"oku-sema\">" + svg + "</figure>" : m.group();
+            m.appendReplacement(sb, Matcher.quoteReplacement(yerine));
         }
         m.appendTail(sb);
         return sb.toString();

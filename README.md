@@ -230,6 +230,11 @@ Site modunda (`site` profili, ADR-0017) uygulama herkese açık bir eğitim site
   `Course` (JSON-LD), `robots.txt` ve `sitemap.xml`; canonical ve site haritası `APP_SITE_TEMEL_URL` ile.
   Google Analytics 4 yalnız `APP_SITE_GA_OLCUM_KIMLIGI` verilirse yüklenir (çerez onay bandı yok — kullanıcı
   kararı); Google'a ziyaretçi kimliği, ilerleme kodu, sohbet metni ya da anahtar gitmez. Yerel mod izlenmez.
+- **Herkese açık JS'siz ders sayfaları (Faz 12, ADR-0020):** arama motorları ve JavaScript çalıştırmayan AI
+  tarayıcıları (GPTBot, ClaudeBot, PerplexityBot…) için 12 haftanın tüm dersleri ve Türkçe kaynak metinleri
+  sunucuda HTML olarak: `/dersler`, `/hafta/N`, `/hafta/N/gun/G`, `/kaynak/<slug>`; ayrıca `/llms.txt` ve
+  `/llms-full.txt`. Salt okunur (kilit/ilerleme/quiz cevabı yok), çerezsiz; `sitemap.xml` hepsini listeler.
+  Mülakat içeriği yayımlanmaz.
 - Ziyaretçi verisini kendisi "🔄 Sıfırla" ile silebilir; tamamen silinmesi için işletmen ilerleme
   koduyla siler ([docs/kurulum-site.md](docs/kurulum-site.md) §7.3).
 

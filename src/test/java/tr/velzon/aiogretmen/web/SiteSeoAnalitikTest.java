@@ -92,15 +92,15 @@ class SiteSeoAnalitikTest {
     }
 
     @Test
-    void sitemapYalnizSunucudaCozulenAnaSayfayiListeler() throws Exception {
+    void sitemapAnaSayfaVeAcikDersSayfalariniListeler() throws Exception {
         MvcResult r = mvc.perform(get("/sitemap.xml")).andExpect(status().isOk()).andReturn();
         String govde = r.getResponse().getContentAsString();
         assertThat(r.getResponse().getContentType()).startsWith("application/xml");
         assertThat(govde).startsWith("<?xml version=\"1.0\" encoding=\"UTF-8\"?>")
                 .contains("<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">")
                 .contains("<loc>https://ornek.example/</loc>");
-        // SPA: hafta/gün görünümleri sunucuda ayrı URL değil → listelenmez
-        assertThat(govde.split("<loc>", -1)).hasSize(2);
+        // ADR-0020: JS'siz ders sayfaları da listelenir (sayım: SiteAcikDersSayfalariTest)
+        assertThat(govde).contains("<loc>https://ornek.example/dersler</loc>");
     }
 
     @Test
