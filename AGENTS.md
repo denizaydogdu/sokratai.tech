@@ -73,8 +73,12 @@
   eski geçmişten türeyen commit'i de engeller; ağaç + commit mesajı/yazarı/commit edeni + etiket metni; commit
   dışı nesneye işaret eden etiket, izin listesi (`tools/sizinti-ikili-izinli.txt`) dışındaki ikili dosya ve
   içeriği ikili saydıran `.gitattributes` satırı ENGEL; tarama yapılamazsa da engeller).
-  Ref adları da (yerel + uzak dal/etiket adı) aynı desenlerle taranır. İkili izin listesi yayınlanmış sürümden
-  (uzak ref / `<uzak>/main`) okunur; listeye yeni girdi ekleyen push yalnız `SIZINTI_IKILI_ONAY=1 git push ...` ile geçer.
+  Ref adları, dosya/klasör adları ve sembolik bağ hedefleri de aynı desenlerle taranır. İkili izin listesi
+  (`tools/sizinti-ikili-izinli.txt`) girdisi `<yol> <blob-sha>` biçimindedir (`git hash-object <yol>`); ikili
+  dosyanın içeriği değişirse girdi güncellenir ve yeniden onay gerekir. Liste yayınlanmış sürümden okunur
+  (uzak ref → `<uzak>/main` → `origin/main` → yoksa boş); yeni/değişen girdi içeren push yalnız push edilen ucun
+  sha'sıyla geçer: `SIZINTI_IKILI_ONAY=$(git rev-parse --short=12 <uç>) git push ...` (kanca tam değeri yazar;
+  `=1` ya da eski değer geçmez; onay gereken ref'leri tek tek push et).
   Elle: `bash tools/sizinti-tara.sh [<commit>]`; kancanın senaryo testi `bash tools/sizinti-tara-test.sh`
   (`./mvnw verify` içinde `ToolsSizintiTaramaTest` koşar).
 - Kilit: `git config core.hooksPath tools/git-kancalari`
