@@ -12,7 +12,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Faz 10 (ADR-0017) ön yüz sözleşmesi — statik dosyaların içerik iddiaları.
- * Tarayıcı davranışı elle doğrulanır; burada yalnız kırılması kolay ve pahalı kurallar tutulur:
+ * Tarayıcı davranışı {@link OnYuzDavranisTest}'te gerçek tarayıcıyla sınanır (ADR-0021; anahtar kartı, "Okudum ✓",
+ * ilerleme kodu, OpenRouter ile bağlan, XSS); burada yalnız davranış testinin göremeyeceği kurallar tutulur:
  * ziyaretçi anahtarı TEK çağrı noktasından (sohbet) gider, açılış sunucu kullanım ucuna bağlı değildir,
  * site metinleri nötrdür ve kaldırılan kimlik sistemine ait ölü kalıntı yoktur.
  */
@@ -131,9 +132,20 @@ class SiteOnYuzIcerikTest {
     void eskiSiteMetinleriYok() throws IOException {
         String app = oku("app.js");
         assertThat(app).doesNotContain("henüz açılmadı").doesNotContain("giris.html").doesNotContain("/giris");
-        assertThat(app).contains("AI öğretmenle sohbet (isteğe bağlı)")
-                .contains("Okudum ✓").contains("Yaptım ✓").contains("Tartıştım ✓")
-                .contains("İlerleme kodum").contains("Geri yükle");
+        // Olumlu metinler ("Okudum ✓", anahtar kartı, "İlerleme kodum") artık OnYuzDavranisTest'te tıklanarak sınanır.
+    }
+
+    /**
+     * "OpenRouter ile bağlan": anahtar YALNIZ OpenRouter'ın anahtar ucundan tarayıcıya gelir; o uç tek yerde çağrılır
+     * ve anahtarı taşıyan başka bir fetch yoktur (anahtarın sunucumuza gitmediği OnYuzDavranisTest'te de sınanır).
+     */
+    @Test
+    void openRouterAnahtarUcuTekYerde() throws IOException {
+        String app = oku("app.js");
+        assertThat(say(app, "https://openrouter.ai/api/v1/auth/keys")).isEqualTo(1);
+        assertThat(say(app, "fetch(OPENROUTER_ANAHTAR_UCU")).isEqualTo(1);
+        assertThat(app).contains("code_challenge_method=S256").contains("crypto.subtle.digest(\"SHA-256\"");
+        assertThat(oku("mulakat.js")).doesNotContain("openrouter.ai");
     }
 
     /** Ana sayfa nötr; kılavuzda sitede gizlenen yerel-mod paragrafları işaretli. */

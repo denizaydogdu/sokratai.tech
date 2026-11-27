@@ -47,11 +47,12 @@ class SiteAnalitikOnYuzTest {
         return m.group(1);
     }
 
+    /** CSP yalnız GA alanlarıyla ve (yalnız connect-src'de) "OpenRouter ile bağlan" anahtar ucuyla genişler. */
     @Test
     void cspYalnizGaAlanlariylaGenisler() throws IOException {
         assertThat(csp(oku("index.html"))).isEqualTo("default-src 'self'; "
                 + "script-src 'self' https://www.googletagmanager.com; "
-                + "connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com "
+                + "connect-src 'self' https://openrouter.ai https://*.google-analytics.com https://*.analytics.google.com "
                 + "https://*.googletagmanager.com; "
                 + "img-src 'self' data: https://*.google-analytics.com https://*.googletagmanager.com");
     }

@@ -492,7 +492,13 @@ kullanır. Ayrıca https ile girince `aio_ziyaretci` çerezi `Secure` olmalı (d
 - **Çerez onay bandı yok** (kullanıcı kararı, ADR-0019). GA4 `_ga` çerezlerini Google yazar.
 - **CSP:** `index.html` yalnız `www.googletagmanager.com` (betik) ve `*.google-analytics.com`,
   `*.analytics.google.com`, `*.googletagmanager.com` (bağlantı/görsel) için genişletildi; satır içi betik yok. Analitik kodu ayrı dosyada değil, `app.js` içinde (engelleyici
-  gtag.js'i engellerse site çalışmaya devam eder).
+  gtag.js'i engellerse site çalışmaya devam eder). Ayrıca `connect-src`'de **`https://openrouter.ai`** var (Faz 13):
+  sohbet kartındaki **"OpenRouter ile bağlan"** düğmesi OAuth PKCE ile ziyaretçiyi `openrouter.ai/auth`'a
+  yönlendirir, dönüşte (`/?code=…&state=…`) anahtarı tarayıcı doğrudan `https://openrouter.ai/api/v1/auth/keys`'ten
+  alır ve yalnız tarayıcıda saklar — sunucumuz anahtarı görmez (yalnız sohbet isteğinin `X-OpenRouter-Anahtar`
+  başlığında gider). Yönlendirme CSP gerektirmez; `connect-src`'den bu host çıkarılırsa düğme "OpenRouter'a
+  ulaşılamadı" der, elle yapıştırma çalışmaya devam eder. Geri dönüş adresi sitenin kökü (`https://<alan-adi>/`)
+  olduğundan OpenRouter tarafında ayar gerekmez (OpenRouter barındırılan sitede `https://` geri dönüş ister; yerel denemede siteyi `http://localhost:8090` ile aç — belgede `localhost` her portta destekli, `127.0.0.1` belirtilmemiş).
 - **Kapatmak:** `APP_SITE_GA_OLCUM_KIMLIGI`'yi sil → Redeploy (betik yüklenmez, hiçbir istek gitmez).
 - **Paylaşım görseli yok:** `og:image` (1200×630 PNG) eklenmedi — ikili dosya sızıntı taramasının izin listesine
   (`tools/sizinti-ikili-izinli.txt`) girmeden işlenemez; eklenince `twitter:card` `summary_large_image` yapılır.

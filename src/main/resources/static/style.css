@@ -575,6 +575,11 @@ details.mulakat-soru > .q { padding: 14px 16px 8px; margin-bottom: 0; }
 .anahtar-hatirla { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--paper); cursor: pointer; }
 .anahtar-hatirla input { accent-color: var(--primary); width: 16px; height: 16px; }
 .anahtar-kaydet { width: 100%; }
+/* Faz 13: "OpenRouter ile bağlan" (birincil yol) + elle yapıştırma ayıracı */
+.anahtar-baglan { width: 100%; min-height: 40px; font-weight: 700; }
+.anahtar-ya-da { font-size: 12px; color: var(--muted); text-align: center; border-top: 1px solid var(--line-soft);
+  padding-top: 10px; }
+.anahtar-yardim p { margin: 8px 0 0; line-height: 1.5; }
 .anahtar-yardim { font-size: 13px; border-top: 1px solid var(--line-soft); padding-top: 8px; }
 .anahtar-yardim summary { cursor: pointer; color: var(--cyan); font-weight: 600; }
 .anahtar-yardim ol { margin: 8px 0 0 20px; display: flex; flex-direction: column; gap: 4px; line-height: 1.5; }

@@ -84,6 +84,29 @@ function analitikOlay(ad, sayilar) {
 }
 // ---------- analitik sonu ----------
 
+// ---------- sol menü (Faz 13) ----------
+// "Eğitim — Program Haritası" bölümü geniş ekranda (≥ 900 px) varsayılan AÇIK, dar ekranda kapalı. Kullanıcı
+// başlığa tıklayarak açıp kapatırsa seçimi hatırlanır (localStorage; erişilemezse yalnız varsayılan).
+const MENU_YERI = "aio.menuAcik";
+const MENU_GENIS_EKRAN = "(min-width: 900px)";
+function menuKur() {
+  const menu = document.getElementById("egitim-menu");
+  if (!menu) return;
+  let tercih = null;
+  try { tercih = localStorage.getItem(MENU_YERI); } catch (e) { /* erişilemez */ }
+  let genis = false;
+  try { genis = window.matchMedia(MENU_GENIS_EKRAN).matches; } catch (e) { /* eski tarayıcı */ }
+  menu.open = tercih === "1" ? true : tercih === "0" ? false : genis;
+  const baslik = menu.querySelector("summary");
+  if (!baslik) return;
+  // click, <details> açılıp kapanmadan ÖNCE gelir (klavye Enter/Boşluk da click üretir): yeni durum = !menu.open.
+  // Yalnız kullanıcı tıklaması kaydedilir — yukarıdaki varsayılan atama tercih sayılmaz.
+  baslik.addEventListener("click", () => {
+    try { localStorage.setItem(MENU_YERI, menu.open ? "0" : "1"); } catch (e) { /* erişilemez */ }
+  });
+}
+menuKur();
+
 // ---------- ziyaretçinin OpenRouter anahtarı (yalnız site; ADR-0017) ----------
 // Anahtar YALNIZ bu tarayıcıda durur ("Bu cihazda hatırla" → localStorage, değilse sekme ömürlü sessionStorage)
 // ve YALNIZ sohbet isteğine başlıkla eklenir (gonder). Hiçbir yere loglanmaz.
@@ -114,6 +137,115 @@ function anahtarKaydet(anahtar, hatirla) {
     return true;
   } catch (e) { return false; }
 }
+// ---------- "OpenRouter ile bağlan" (OAuth PKCE; yalnız site, Faz 13) ----------
+// Akış tamamen tarayıcıda: doğrulayıcı (code_verifier) + state sessionStorage'da, yönlendirme openrouter.ai/auth'a,
+// dönüşte ?code= ile anahtar ucuna (openrouter.ai/api/v1/auth/keys) TARAYICIDAN POST — anahtar sunucumuza hiç
+// uğramaz, yalnız sohbet isteğinin anahtar başlığında gider (gonder; tek çağrı noktası). Belge:
+// https://openrouter.ai/docs/guides/overview/auth/oauth (2026-11-27'de doğrulandı).
+const OPENROUTER_YETKI = "https://openrouter.ai/auth";
+const OPENROUTER_ANAHTAR_UCU = "https://openrouter.ai/api/v1/auth/keys";
+const OAUTH_DOGRULAYICI = "aio.oauth.dogrulayici";
+const OAUTH_DURUM = "aio.oauth.durum";
+const OAUTH_HATIRLA = "aio.oauth.hatirla";
+
+function base64url(baytlar) {
+  let s = "";
+  baytlar.forEach((b) => { s += String.fromCharCode(b); });
+  return btoa(s).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+}
+function rastgeleDize(baytSayisi) {
+  const a = new Uint8Array(baytSayisi);
+  crypto.getRandomValues(a);
+  return base64url(a);
+}
+function oauthDurumuTemizle() {
+  try {
+    const d = depo("sessionStorage");
+    if (d) [OAUTH_DOGRULAYICI, OAUTH_DURUM, OAUTH_HATIRLA].forEach((k) => d.removeItem(k));
+  } catch (e) { /* erişilemez */ }
+}
+
+/** Doğrulayıcı + meydan okuma (S256) üretir, state ile birlikte saklar ve OpenRouter'a yönlendirir. */
+async function openRouterIleBaglan(hatirla) {
+  if (!window.crypto || !crypto.subtle || !crypto.getRandomValues) {
+    throw new Error("Tarayıcın bu bağlantı yöntemini desteklemiyor (güvenli bağlantı gerekir). Anahtarını aşağıya elle yapıştırabilirsin.");
+  }
+  const dogrulayici = rastgeleDize(48); // 64 karakter base64url (PKCE: 43–128)
+  const ozet = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(dogrulayici));
+  const meydan = base64url(new Uint8Array(ozet));
+  const durumDegeri = rastgeleDize(24);
+  try {
+    const d = depo("sessionStorage");
+    d.setItem(OAUTH_DOGRULAYICI, dogrulayici);
+    d.setItem(OAUTH_DURUM, durumDegeri);
+    d.setItem(OAUTH_HATIRLA, hatirla ? "1" : "0");
+  } catch (e) {
+    throw new Error("Tarayıcın bağlantı bilgisini saklamaya izin vermedi (gizli pencere ya da site verisi engelli olabilir).");
+  }
+  const geriDonus = window.location.origin + "/";
+  window.location.assign(OPENROUTER_YETKI + "?callback_url=" + encodeURIComponent(geriDonus)
+      + "&code_challenge=" + meydan + "&code_challenge_method=S256&state=" + encodeURIComponent(durumDegeri));
+}
+
+/**
+ * Sayfa açılışında (zaman uyumlu, analitik ve diğer isteklerden ÖNCE): bekleyen bir bağlanma varsa ?code/state'i
+ * URL'den alır ve siler, saklanan doğrulayıcı/state'i okuyup temizler. Bekleyen bağlanma yoksa URL'ye dokunmaz.
+ * @return {kod, durum, beklenenDurum, dogrulayici, hatirla} ya da null
+ */
+function oauthDonusunuYakala() {
+  try {
+    const d = depo("sessionStorage");
+    const dogrulayici = d && d.getItem(OAUTH_DOGRULAYICI);
+    if (!dogrulayici) return null;
+    const beklenenDurum = d.getItem(OAUTH_DURUM);
+    const hatirla = d.getItem(OAUTH_HATIRLA) === "1";
+    oauthDurumuTemizle(); // tek kullanımlık — dönüş başarısız/iptal olsa da kalmasın
+    const url = new URL(window.location.href);
+    const kod = url.searchParams.get("code");
+    const durumDegeri = url.searchParams.get("state");
+    if (!kod) return null; // kullanıcı vazgeçti (OpenRouter kodsuz döndü) ya da başka bir açılış
+    url.searchParams.delete("code");
+    url.searchParams.delete("state");
+    history.replaceState(history.state, "", url.pathname + url.search + url.hash);
+    return { kod, durum: durumDegeri, beklenenDurum, dogrulayici, hatirla };
+  } catch (e) {
+    return null;
+  }
+}
+const oauthDonusu = oauthDonusunuYakala();
+
+/** Kodu anahtarla değiştirir ve kaydeder. @return kartta gösterilecek Türkçe hata metni ya da null (başarılı). */
+async function oauthAnahtarAl(donus) {
+  if (!donus.beklenenDurum || donus.durum !== donus.beklenenDurum) {
+    return "OpenRouter bağlantısı doğrulanamadı (güvenlik denetimi tutmadı). “OpenRouter ile bağlan”a yeniden bas.";
+  }
+  let yanit;
+  try {
+    yanit = await fetch(OPENROUTER_ANAHTAR_UCU, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "omit",
+      body: JSON.stringify({ code: donus.kod, code_verifier: donus.dogrulayici, code_challenge_method: "S256" }),
+    });
+  } catch (e) {
+    return "OpenRouter'a ulaşılamadı — internet bağlantını kontrol edip yeniden dene ya da anahtarını elle yapıştır.";
+  }
+  if (!yanit.ok) {
+    return "OpenRouter bağlantıyı onaylamadı (HTTP " + yanit.status + "). Yeniden dene ya da anahtarını elle yapıştır.";
+  }
+  const veri = await yanit.json().catch(() => null);
+  const anahtar = veri && typeof veri.key === "string" ? veri.key.trim() : "";
+  if (!ANAHTAR_BICIMI.test(anahtar)) {
+    return "OpenRouter'dan beklenmeyen bir cevap geldi. Yeniden dene ya da anahtarını elle yapıştır.";
+  }
+  if (!anahtarKaydet(anahtar, donus.hatirla)) {
+    return "Tarayıcın anahtarı saklamaya izin vermedi (gizli pencere ya da site verisi engelli olabilir).";
+  }
+  analitikOlay("anahtar_eklendi"); // yalnız olay adı — anahtar GİTMEZ (ADR-0019)
+  return null;
+}
+// ---------- OpenRouter ile bağlan sonu ----------
+
 function sohbetAcikHesapla() {
   return durum.site ? !!anahtarOku() : durum.sunucuAi;
 }
@@ -1497,13 +1629,13 @@ function panelOdakGuncelle() {
 }
 
 /** Paneli bir kez kurar (dinleyiciler) ve ilk durumu çizer. */
-function aiPaneliKur() {
+function aiPaneliKur(hataMetni) {
   if (durum.site) anahtarKaldirDugmesiEkle();
   chatGonderBtn().addEventListener("click", gonder);
   chatGirdi().addEventListener("keydown", (e) => {
     if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); gonder(); }
   });
-  sohbetPaneliCiz();
+  sohbetPaneliCiz(hataMetni);
 }
 
 /** Panelin sohbet durumunu (açık/kapalı/anahtar kartı) çizer. hataMetni: anahtar kartında gösterilecek uyarı. */
@@ -1548,6 +1680,29 @@ function anahtarKartiCiz(hataMetni) {
     kart.appendChild(hata);
   }
 
+  // "Bu cihazda hatırla" iki yol için ortak: bağlan düğmesinde seçim yönlendirmeden önce saklanır
+  const hatirlaEtiket = el("label", "anahtar-hatirla");
+  const hatirla = el("input");
+  hatirla.type = "checkbox";
+  hatirla.id = "anahtar-hatirla-kutu";
+  hatirlaEtiket.append(hatirla, el("span", null, "Bu cihazda hatırla"));
+  hatirlaEtiket.title = "İşaretlemezsen anahtar bu sekme kapanınca silinir";
+
+  const baglan = el("button", "btn anahtar-baglan", "OpenRouter ile bağlan");
+  baglan.id = "openrouter-baglan";
+  baglan.type = "button";
+  baglan.title = "OpenRouter'da giriş yapıp onayla; anahtar oluşturulur ve yalnız bu tarayıcıya kaydedilir";
+  baglan.addEventListener("click", async () => {
+    baglan.disabled = true;
+    try {
+      await openRouterIleBaglan(hatirla.checked);
+    } catch (h) {
+      sohbetPaneliCiz(h.message);
+    }
+  });
+  kart.append(baglan, hatirlaEtiket);
+
+  kart.appendChild(el("p", "anahtar-ya-da", "ya da anahtarını elle yapıştır:"));
   const form = el("form", "anahtar-form");
   form.noValidate = true;
   const etiket = el("label", "anahtar-etiket", "OpenRouter anahtarın");
@@ -1559,14 +1714,9 @@ function anahtarKartiCiz(hataMetni) {
   girdi.spellcheck = false;
   girdi.placeholder = "sk-or-…";
   etiket.htmlFor = "anahtar-girdi";
-  const hatirlaEtiket = el("label", "anahtar-hatirla");
-  const hatirla = el("input");
-  hatirla.type = "checkbox";
-  hatirlaEtiket.append(hatirla, el("span", null, "Bu cihazda hatırla"));
-  hatirlaEtiket.title = "İşaretlemezsen anahtar bu sekme kapanınca silinir";
-  const kaydet = el("button", "btn anahtar-kaydet", "Kaydet");
+  const kaydet = el("button", "btn btn-ikincil anahtar-kaydet", "Kaydet");
   kaydet.type = "submit";
-  form.append(etiket, girdi, hatirlaEtiket, kaydet);
+  form.append(etiket, girdi, kaydet);
   form.addEventListener("submit", (e) => {
     e.preventDefault();
     const anahtar = girdi.value.trim();
@@ -1585,7 +1735,13 @@ function anahtarKartiCiz(hataMetni) {
   kart.appendChild(form);
 
   const yardim = el("details", "anahtar-yardim");
-  yardim.appendChild(el("summary", null, "Anahtarı nasıl alırım?"));
+  yardim.appendChild(el("summary", null, "Nasıl çalışır?"));
+  const kolay = el("p");
+  kolay.append(el("strong", null, "En kolayı: “OpenRouter ile bağlan”."), el("span", null,
+      " OpenRouter'da giriş yap (hesabın yoksa aç) ve onayla; sayfaya dönünce anahtarın kendiliğinden oluşturulur "
+      + "ve yalnız bu tarayıcıya kaydedilir. Harcama limitini OpenRouter'daki Keys sayfasından koyabilirsin."));
+  yardim.appendChild(kolay);
+  yardim.appendChild(el("p", null, "Elle eklemek istersen:"));
   const adimlar = el("ol");
   const adim1 = el("li");
   adim1.append(el("strong", null, "openrouter.ai"), el("span", null, "'de hesap aç."));
@@ -1594,7 +1750,8 @@ function anahtarKartiCiz(hataMetni) {
   const adim3 = el("li");
   adim3.append(el("strong", null, "Credit limit koy"), el("span", null, " (harcama limiti, ör. 5 $) — anahtar bu tutarı aşamaz."));
   const adim4 = el("li");
-  adim4.append(el("span", null, "“sk-or-…” ile başlayan anahtarı buraya yapıştır ve "), el("strong", null, "Kaydet"), el("span", null, "e bas."));
+  adim4.append(el("span", null, "“sk-or-…” ile başlayan anahtarı yukarıdaki alana yapıştır ve "),
+      el("strong", null, "Kaydet"), el("span", null, "e bas."));
   adimlar.append(adim1, adim2, adim3, adim4);
   yardim.appendChild(adimlar);
   kart.appendChild(yardim);
@@ -1954,12 +2111,14 @@ const ozellikler = api("/api/ozellikler").catch(() => ({ mulakat: false }));
     durum.mulakatEtkin = !!oz.mulakat;
     durum.site = !!oz.site;
     durum.sunucuAi = !!oz.sunucuAi; // sitede hep false
+    // "OpenRouter ile bağlan" dönüşü: anahtar kaydedilir (sohbet açılır) ya da kartta hata gösterilir
+    const oauthHata = durum.site && oauthDonusu ? await oauthAnahtarAl(oauthDonusu) : null;
     durum.sohbetAcik = sohbetAcikHesapla();
     durum.kaynaklar = await api("/api/kaynaklar").catch(() => []);
     await ozetYenile();
     // kaldığın yerden devam: %100 olmayan ilk hafta (karşılamadaki butona yansır)
     const ilkAcik = durum.ozetler.find((h) => h.ilerlemeYuzde < 100);
-    aiPaneliKur();
+    aiPaneliKur(oauthHata);
     sifirlaButonuEkle();
     if (durum.site) ilerlemeKoduKur();
     const bag = derinBag(); // herkese açık ders sayfasından gelindiyse (?hafta=N&gun=G) o hafta/gün açılır
