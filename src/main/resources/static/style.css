@@ -489,12 +489,12 @@ body.oku-acik { overflow: hidden; }
 .menu-bolum { margin-bottom: 20px; }
 .menu-bolum > summary.map-title {
   cursor: pointer; list-style: none; user-select: none;
-  display: flex; align-items: center; gap: 7px;
+  display: flex; align-items: flex-start; gap: 8px;
 }
 .menu-bolum > summary.map-title::-webkit-details-marker { display: none; }
 .menu-bolum > summary.map-title::before {
-  content: "\25BE"; font-size: 9px; color: var(--muted);
-  transition: transform .15s ease; flex-shrink: 0;
+  content: "\25BE"; font-size: 12px; line-height: 1.5; color: var(--muted);
+  transition: transform .15s ease; flex-shrink: 0; width: 12px; text-align: center;
 }
 .menu-bolum:not([open]) > summary.map-title::before { transform: rotate(-90deg); }
 .menu-bolum > summary.map-title:hover { color: var(--primary); }
