@@ -61,10 +61,17 @@
 ## Repo ve yayın
 - Repo: `denizaydogdu/sokratai.tech` (PUBLIC, dal `main`). Pera (pera-soft) ile ilişik yok (2026-11-27).
   Deploy: Hostinger VPS üzerinde Dokploy (ADR-0018, `docs/kurulum-site.md` §10).
+- Geçmiş: `main` geçmişsiz (orphan) tek commit'le başladı ve `origin`'e (yukarıdaki PUBLIC repo) push edildi.
+  Eski geçmiş YALNIZ yerel `eski-gecmis` dalında; hiçbir uzak depoda yok.
 - NEVER: `eski-gecmis` dalını ya da ondan türeyen bir commit'i push etmek — geçmişinde mülakat dökümü/sunucu
-  ayrıntısı var; yalnız bu bilgisayarda kalır.
+  ayrıntısı var; yalnız bu bilgisayarda kalır. Kanca eski kök commit'i SABİT SHA ile de tanır (dal silinse bile).
+- Yeni bir uzak depo (ayna/yedek) eklenecekse YENİ bir remote adıyla ekle (`git remote add <yeni-ad> ...`);
+  var olan bir remote'un URL'sini başka depoya ÇEVİRME — eski izleme ref'leri (`refs/remotes/<ad>/*`) yerinde
+  kalır, kanca o commit'leri "zaten uzakta" sayıp taramadan geçer.
 - Push öncesi sızıntı taraması kancada otomatik (`tools/git-kancalari/pre-push` → `tools/sizinti-tara.sh`;
-  eski geçmişten türeyen commit'i de engeller; ağaç + commit mesajı/yazarı; tarama yapılamazsa da engeller).
+  eski geçmişten türeyen commit'i de engeller; ağaç + commit mesajı/yazarı/commit edeni + etiket metni; commit
+  dışı nesneye işaret eden etiket, izin listesi (`tools/sizinti-ikili-izinli.txt`) dışındaki ikili dosya ve
+  içeriği ikili saydıran `.gitattributes` satırı ENGEL; tarama yapılamazsa da engeller).
   Elle: `bash tools/sizinti-tara.sh [<commit>]`; kancanın senaryo testi `bash tools/sizinti-tara-test.sh`
   (`./mvnw verify` içinde `ToolsSizintiTaramaTest` koşar).
 - Kilit: `git config core.hooksPath tools/git-kancalari`
@@ -76,3 +83,6 @@
   migration değişikliğinde ikinci insan gözden geçirici adı" kuralı yerine bu değişikliklerde `qa-code-reviewer`
   + Codex incelemesi ZORUNLU ve bulguları push'tan önce kapatılır. Gerekçe: repoda tek geliştirici var, ikinci
   insan gözden geçirici yok.
+- OVERRIDE (tek kişilik repo, kullanıcı kararı 2026-11-27): genel standart tek kişilik repoda proje `CLAUDE.md`'yi
+  git dışı tutar; bu `AGENTS.md` (ve ona bağlı `CLAUDE.md`) ise BİLEREK commit'lenir ve herkese açıktır. Gerekçe:
+  repo bir öğretim/örnek reposu, ajan talimatları da öğretilen içeriğin parçası.

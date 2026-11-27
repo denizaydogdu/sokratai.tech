@@ -1156,6 +1156,7 @@ dropdb ai_ogretmen_test_x
 ├── tools/
 │   ├── html-to-content.mjs    # HTML → content/ dönüştürücü
 │   ├── sizinti-tara.sh        # Bir commit'in ağacını sızıntıya karşı tarar
+│   ├── sizinti-ikili-izinli.txt  # Yayınlanabilir ikili dosyalar (tarayıcı izin listesi)
 │   └── git-kancalari/         # Git kancaları (pre-push: sızıntı taraması + eski geçmiş kilidi)
 ├── src/main/java/tr/velzon/aiogretmen/
 │   ├── types/  config/  repo/  service/  ai/  web/  mcp/
@@ -1218,8 +1219,9 @@ Proje kuralları `AGENTS.md`'de özetlenmiştir. Başlıcaları:
 - Yeni kaynak metinleri yukarıdaki konvansiyona (3 SVG + öz-sınav + şerh) uyar.
 - **Asla:** API anahtarını koda/git'e koymak; uygulamayı `127.0.0.1` dışına bağlamak.
 - Push öncesi kanca (`tools/git-kancalari/pre-push`, kilit: `git config core.hooksPath tools/git-kancalari`)
-  push edilen commit'i `tools/sizinti-tara.sh` ile genel IP adresi, `root@` SSH hedefi, kişisel e-posta, özel
-  anahtar ve API anahtarı kalıplarına karşı tarar; bulgu varsa push'u durdurur.
+  push edilen her commit'i ve etiketi `tools/sizinti-tara.sh` ile genel IP adresi, `root@` SSH hedefi, kişisel
+  e-posta, özel anahtar, API anahtarı ve şifre ataması kalıplarına karşı tarar; izin listesi
+  (`tools/sizinti-ikili-izinli.txt`) dışındaki ikili dosyaları da engeller; bulgu varsa push'u durdurur.
 
 ---
 

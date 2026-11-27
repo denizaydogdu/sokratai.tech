@@ -3,14 +3,18 @@
 # Kurulum (repo başına bir kez): git config core.hooksPath tools/git-kancalari
 #
 # Push edilen her ref için:
-#  (a) Kök commit'lerinden biri yerel `eski-gecmis` dalının kök commit'iyle aynıysa ENGEL — eski geçmiş gerçek
-#      mülakat dökümleri ve eski sunucu ayrıntıları taşır, hiçbir yere push edilmez. `eski-gecmis` yoksa atlanır.
+#  (a) Kök commit'lerinden biri eski geçmişin kök commit'iyse ENGEL — eski geçmiş gerçek mülakat dökümleri ve eski
+#      sunucu ayrıntıları taşır, hiçbir yere push edilmez. Eski kökler AŞAĞIDA SABİT yazılı (ESKI_KOKLER; bir kök
+#      SHA'sı hiçbir şey ifşa etmez) — `eski-gecmis` dalı silinse/yeniden adlandırılsa da koruma sürer; dal varsa
+#      onun kökleri de ayrıca eklenir.
 #  (b) Push edilen HER yeni commit'in ağacı VE üstverisi (yazar adı/e-postası + mesaj) tools/sizinti-tara.sh ile
 #      taranır (yalnız uç değil: arada eklenip sonra silinen sızıntı da geçmişte kalıp yayılırdı); bulgu (çıkış 1)
 #      ya da tarama yapılamaması (çıkış 2 — kapalı-güvenli) ENGEL'dir; commit'in kısa hash'i yazılır.
 #      Yeni commit'ler = rev-list <yerel_sha> ^<uzak_sha>; uzak sha sıfırsa (yeni dal) ya da yerelde yoksa
 #      rev-list <yerel_sha> --not --remotes=<uzak_adı>.
 #  (c) Silme push'u (sha sıfır) denetlenmez.
+#  (d) Etiketler: açıklamalı etiketin metni (ad, tagger, mesaj) taranır (tarayıcıya etiket verilir); ref'in
+#      soyulmuş (^{}) nesnesi commit değilse (blob/ağaç etiketi vb.) ENGEL — içeriği taranamaz.
 # Senaryo testi: tools/sizinti-tara-test.sh (JUnit: ToolsSizintiTaramaTest).
 set -u
 
@@ -19,9 +23,12 @@ uzak_adi="${1:-}"
 kok=$(git rev-parse --show-toplevel) || exit 1
 tarayici="$kok/tools/sizinti-tara.sh"
 
-eski_kokler=""
+# Eski (yayınlanmayacak) geçmişin kök commit'leri — tam SHA, boşlukla ayrılmış. Testte değiştirilir; tek satır kalsın.
+ESKI_KOKLER="153b4c98ade65e07d61103f3d4fed8f32b964633"
+
+eski_kokler="$ESKI_KOKLER"
 if git rev-parse -q --verify refs/heads/eski-gecmis >/dev/null; then
-  eski_kokler=$(git rev-list --max-parents=0 refs/heads/eski-gecmis)
+  eski_kokler="$eski_kokler $(git rev-list --max-parents=0 refs/heads/eski-gecmis)"
 fi
 
 engel=0
@@ -32,11 +39,19 @@ while read -r yerel_ref yerel_sha _uzak_ref uzak_sha; do
     *) continue ;;      # (c) silme push'u
   esac
 
-  if [ -n "$eski_kokler" ]; then
-    for k in $(git rev-list --max-parents=0 "$yerel_sha" </dev/null); do
+  # (d) soyulmuş nesne commit olmalı
+  if [ "$(git cat-file -t "$yerel_sha^{}" 2>/dev/null </dev/null)" != commit ]; then
+    echo "ENGEL: $yerel_ref commit olmayan bir nesneye işaret ediyor (içeriği taranamaz)." >&2
+    engel=1
+    continue
+  fi
+  hedef=$(git rev-parse "$yerel_sha^{commit}" </dev/null) || { echo "ENGEL: $yerel_ref çözülemedi." >&2; engel=1; continue; }
+
+  if [ -n "${eski_kokler// /}" ]; then
+    for k in $(git rev-list --max-parents=0 "$hedef" </dev/null); do
       for e in $eski_kokler; do
         if [ "$k" = "$e" ]; then
-          echo "ENGEL: eski geçmiş push edilemez ($yerel_ref, kök $k = eski-gecmis kökü)." >&2
+          echo "ENGEL: eski geçmiş push edilemez ($yerel_ref, kök $k = eski geçmişin kökü)." >&2
           echo "  Eski geçmiş yalnız bu bilgisayarda kalır; yeni repoya yalnız temiz geçmişten türeyen commit'ler gider." >&2
           engel=1
         fi
@@ -49,15 +64,22 @@ while read -r yerel_ref yerel_sha _uzak_ref uzak_sha; do
     engel=1
     continue
   fi
+  # (d) açıklamalı etiket: etiket metni (+ işaret ettiği commit) taranır
+  if [ "$(git cat-file -t "$yerel_sha" </dev/null)" = tag ]; then
+    if ! bash "$tarayici" "$yerel_sha" >/dev/null </dev/null; then
+      echo "ENGEL: sızıntı taraması başarısız — etiket $(git rev-parse --short "$yerel_sha" </dev/null) ($yerel_ref)." >&2
+      engel=1
+    fi
+  fi
   # Yeni commit'ler (stdin = kanca girdisi; döngü içi komutlar onu yutmasın → </dev/null)
   case "${uzak_sha:-0}" in
     *[!0]*) uzak_var=1 ;;
     *) uzak_var=0 ;;
   esac
   if [ "$uzak_var" -eq 1 ] && git cat-file -e "$uzak_sha^{commit}" 2>/dev/null </dev/null; then
-    yeniler=$(git rev-list "$yerel_sha" "^$uzak_sha" </dev/null) || { echo "ENGEL: rev-list başarısız ($yerel_ref)." >&2; engel=1; continue; }
+    yeniler=$(git rev-list "$hedef" "^$uzak_sha" </dev/null) || { echo "ENGEL: rev-list başarısız ($yerel_ref)." >&2; engel=1; continue; }
   else
-    yeniler=$(git rev-list "$yerel_sha" --not --remotes="$uzak_adi" </dev/null) || { echo "ENGEL: rev-list başarısız ($yerel_ref)." >&2; engel=1; continue; }
+    yeniler=$(git rev-list "$hedef" --not --remotes="$uzak_adi" </dev/null) || { echo "ENGEL: rev-list başarısız ($yerel_ref)." >&2; engel=1; continue; }
   fi
 
   sayi=0

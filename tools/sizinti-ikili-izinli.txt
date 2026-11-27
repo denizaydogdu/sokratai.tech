@@ -1,0 +1,5 @@
+# İçerik taramasına giremeyen (ikili) ama yayınlanmasına izin verilen dosyalar — satır başına tam yol.
+# tools/sizinti-tara.sh bu liste dışındaki her ikili dosyayı ENGELLER. Ekleme: dosyayı elle doğrula, gerekçeyi yaz.
+
+# Maven Wrapper (resmî Apache ikilisi; ./mvnw indirir/çalıştırır)
+.mvn/wrapper/maven-wrapper.jar

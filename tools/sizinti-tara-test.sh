@@ -26,6 +26,7 @@ git init -q -b main "$DEPO"
 mkdir -p "$DEPO/tools/git-kancalari"
 cp "$KOK/tools/sizinti-tara.sh" "$DEPO/tools/sizinti-tara.sh"
 cp "$KOK/tools/git-kancalari/pre-push" "$DEPO/tools/git-kancalari/pre-push"
+cp "$KOK/tools/sizinti-ikili-izinli.txt" "$DEPO/tools/sizinti-ikili-izinli.txt" 2>/dev/null || true
 chmod +x "$DEPO/tools/git-kancalari/pre-push"
 cd "$DEPO" || exit 1
 git config core.hooksPath tools/git-kancalari
@@ -164,16 +165,90 @@ commitle "büyük"
 tara HEAD; sonuc "büyük bulgu (SIGPIPE yok)" 1 $? "$CIKTI"
 git checkout -q -f main
 
-# 11) İkili dosya engellemez ama "elle kontrol et" diye listelenir
+# 11) İzin listesi dışındaki ikili dosya ENGEL (içerik taramasına girmediği için her şeyi saklayabilirdi)
 git checkout -q -b ikili
 printf '\x00\x01\x02ikili' > veri.bin; commitle "ikili dosya"
-tara HEAD; kod=$?
-if [ "$kod" -eq 0 ] && printf '%s' "$CIKTI" | grep -q "veri.bin"; then
-  echo "GEÇTİ  ikili dosya listelenir (çıkış 0)"
-else
-  echo "HATA   ikili dosya — çıkış $kod, listede veri.bin yok"; printf '%s\n' "$CIKTI" | sed 's/^/       | /'; basarisiz=1
-fi
+tara HEAD; sonuc "izin listesi dışı ikili dosya" engel $? "$CIKTI"
 git checkout -q -f main
+#     NUL baytlı .txt içinde IP → ikili sayılır → ENGEL
+git checkout -q -b ikili-txt
+printf 'sunucu %s\000\n' "$IP4" > not.txt; commitle "nul baytlı not"
+tara HEAD; sonuc "NUL baytlı .txt (içinde IP)" engel $? "$CIKTI"
+git checkout -q -f main
+#     İzin listesindeki ikili (.mvn/wrapper/maven-wrapper.jar) geçer
+git checkout -q -b ikili-izinli
+mkdir -p .mvn/wrapper; printf '\x00\x01jar' > .mvn/wrapper/maven-wrapper.jar; commitle "wrapper jar"
+tara HEAD; sonuc "izin listesindeki ikili dosya" gecer $? "$CIKTI"
+#     .gitattributes: izinli yol için binary geçer; başka kalıba binary / -diff ENGEL
+echo ".mvn/wrapper/maven-wrapper.jar binary" > .gitattributes; commitle "izinli gitattributes"
+tara HEAD; sonuc ".gitattributes izinli yol binary" gecer $? "$CIKTI"
+git checkout -q -f main
+git checkout -q -b gitattr-binary
+echo "*.md binary" > .gitattributes; commitle "md ikili"
+tara HEAD; sonuc ".gitattributes *.md binary" engel $? "$CIKTI"
+git checkout -q -f main
+git checkout -q -b gitattr-diff
+mkdir -p alt; echo "*.txt -diff" > alt/.gitattributes; echo "metin" > alt/a.txt; commitle "txt diff kapalı"
+tara HEAD; sonuc "alt/.gitattributes *.txt -diff" engel $? "$CIKTI"
+git checkout -q -f main
+
+# 12) Commit EDEN (committer) adında IP ENGEL (yazar temiz)
+git checkout -q -b committer-ip
+echo "c" > c.md; git add -A .
+GIT_COMMITTER_NAME="sunucu $IP4" git commit -q -m "temiz mesaj"
+tara HEAD; sonuc "committer adında IP" engel $? "$CIKTI"
+git checkout -q -f main
+
+# 13) Türkçe (ASCII dışı) yol adı: git'in yol tırnaklaması (core.quotePath) yasak yol denetimini atlatmasın
+git checkout -q -b turkce-yol
+mkdir -p thoughts; echo "not" > "thoughts/oturum-ı.md"; git add -f "thoughts/oturum-ı.md"; git commit -q -m "oturum"
+tara HEAD; sonuc "thoughts/oturum-ı.md" engel $? "$CIKTI"
+git checkout -q -f main
+git checkout -q -b turkce-env
+mkdir -p deploy; echo "X=1" > "deploy/canlı.env"; git add -f "deploy/canlı.env"; git commit -q -m "canlı env"
+tara HEAD; sonuc "deploy/canlı.env" engel $? "$CIKTI"
+git checkout -q -f main
+
+# 14) Spring/kabuk şifre biçimleri ENGEL; ${...} ve <yer-tutucu> geçer
+P="pass""word"
+sifre_dene() {  # $1 ad, $2 beklenen, $3 dosya içeriği
+  git checkout -q -b sifre-deneme
+  printf '%s\n' "$3" > ayar.txt; commitle "ayar"
+  tara HEAD; sonuc "$1" "$2" $? "$CIKTI"
+  git checkout -q -f main; git branch -q -D sifre-deneme
+}
+sifre_dene "spring.datasource.$P=…"   engel "spring.datasource.$P=Hunter2real"
+sifre_dene "YAML '  $P: …'"           engel "  $P: Hunter2real"
+sifre_dene "PGPASSWORD=…"             engel "PGPASS""WORD=Hunter2real"
+sifre_dene "export DB_PASS=…"         engel "export DB_PA""SS=Hunter2real"
+sifre_dene "YAML $P: \${X}"           gecer "$P: \${X}"
+sifre_dene "YAML $P: <yer-tutucu>"    gecer "$P: <yer-tutucu>"
+
+# 15) Etiketler: açıklamalı etiket mesajında IP ENGEL; blob'a hafif etiket ENGEL; temiz etiket geçer
+git tag -a temiz-etiket -m "sürüm notu" main
+pushla origin temiz-etiket; sonuc "temiz açıklamalı etiket" gecer $? "$CIKTI"
+git tag -a ip-etiket -m "sunucu $IP4" main
+tara ip-etiket; sonuc "etiket mesajında IP (tarayıcı)" engel $? "$CIKTI"
+pushla origin ip-etiket; sonuc "etiket mesajında IP (push)" engel $? "$CIKTI"
+blob=$(echo "blob içerik" | git hash-object -w --stdin)
+git tag blob-etiket "$blob"
+pushla origin blob-etiket; sonuc "blob'a hafif etiket (push)" engel $? "$CIKTI"
+
+# 16) Eski kök commit kancaya SABİT yazılı: `eski-gecmis` dalı yoksa da eski köklü push ENGEL
+git checkout -q --orphan eski-kok-2
+git rm -rq --cached . >/dev/null 2>&1; rm -f oku.md
+echo "eski2" > eski2.md; commitle "eski kök 2"
+eski_kok2=$(git rev-parse HEAD)
+git checkout -q -b eski2-turev-a
+echo "a" > a2.md; commitle "eski2 türev a"
+pushla origin eski2-turev-a; sonuc "kök sabit listede değilken (kontrol)" gecer $? "$CIKTI"
+git checkout -q -b eski2-turev-b
+echo "b" > b2.md; commitle "eski2 türev b"
+git checkout -q -f main
+git branch -q -D eski-kok-2
+kanca=tools/git-kancalari/pre-push
+sed "s/^ESKI_KOKLER=.*/ESKI_KOKLER=\"$eski_kok2\"/" "$kanca" > "$GECICI/kanca"; cat "$GECICI/kanca" > "$kanca"
+pushla origin eski2-turev-b; sonuc "sabit eski kökten türeyen push (dal yok)" engel $? "$CIKTI"
 
 if [ "$basarisiz" -ne 0 ]; then
   echo "SONUÇ: sızıntı tarayıcı testleri BAŞARISIZ" >&2

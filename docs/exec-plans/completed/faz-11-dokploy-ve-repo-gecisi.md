@@ -15,13 +15,18 @@ Halka açık site adı **SokratAI (sokratai.tech)**; proje ve kod adları (AI Ö
 2. Bind kuralına **tek istisna** (kullanıcı onayladı): konteyner içinde `SERVER_ADDRESS=0.0.0.0`, host portu
    YAYINLANMAZ, dış erişim yalnız Traefik + TLS. Yerel varsayılan `127.0.0.1` kalır.
 3. Repo: Pera bağı tamamen kalktı. Yeni herkese açık depo `github.com/denizaydogdu/sokratai.tech` (`main`),
-   **tek commit'lik temiz geçmişle** başladı. Eski 259 commit'lik geçmiş (gerçek mülakat dökümleri + eski sunucu
-   adresleri) yalnız yerelde `eski-gecmis` dalında kalır, ASLA push edilmez.
+   **tek commit'lik temiz geçmişle** başladı: yerel `main` geçmişsiz (orphan) tek commit olarak yeniden kuruldu
+   (`cf383ac`, kaynak ağaç `dd96b78`) ve `origin`'e push edildi. Eski 269 commit'lik geçmiş (gerçek mülakat
+   dökümleri + eski sunucu adresleri) yalnız yerelde `eski-gecmis` dalında kalır, ASLA push edilmez; pre-push
+   kancası eski kök commit'i sabit SHA ile de tanır.
 4. Yayın aracı `tools/yayin-hazirla.sh` kalktı; yerine `tools/sizinti-tara.sh` + her push edilen commit'i tarayan
    `pre-push` kancası geldi.
 5. Belgelere ve `deploy/` şablonlarına gerçek alan adı/IP/şifre yazılmaz (yer tutucular kalır).
 
 ## Yapılanlar (commit'ler)
+> Aşağıdaki hash'ler eski geçmişe aittir — yalnız yerel `eski-gecmis` dalında bulunur, herkese açık repoda yoktur.
+> Herkese açık `main` bunların son hâlinden (`dd96b78`) tek commit (`cf383ac`) olarak başladı.
+
 - `c170000` `/api/saglik` sağlık ucu, `APP_SITE_GUVENILIR_VEKIL`, çoklu ziyaretçi çerezinde yeni kimlik
   (kimlik sabitleme açığı kapandı).
 - `54a640e` Dockerfile + `.dockerignore`, ADR-0018, `docs/kurulum-site.md` §10.
@@ -33,6 +38,10 @@ Halka açık site adı **SokratAI (sokratai.tech)**; proje ve kod adları (AI Ö
 ## Doğrulama
 - `./mvnw verify` YEŞİL: 440 test, 5 atlanan (PostgreSQL opt-in), 0 hata.
 - `bash tools/sizinti-tara.sh HEAD` çıkış kodu 0 (belge commit'inden sonra çalıştırıldı).
+- Bağımsız inceleme sonrası tarayıcı/kanca sertleştirmesi (yeni `main` üzerinde): sabit eski kök SHA'sı, Türkçe
+  (ASCII dışı) yol adları, etiket metni + commit dışı nesne etiketi, Spring/YAML/kabuk şifre biçimleri, commit
+  eden (committer) üstverisi, ikili dosya izin listesi + `.gitattributes` binary/-diff engeli; senaryo testi
+  `tools/sizinti-tara-test.sh`.
 
 ## Bilinen açıklar (tech-debt'e yazıldı)
 - #19: `aio_ziyaretci` çerezi `__Host-` önekli değil — karar bekliyor (alt alan adı açılırsa yeniden değerlendir).
