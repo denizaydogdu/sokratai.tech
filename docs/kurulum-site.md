@@ -4,8 +4,9 @@
 > işletecek kişi içindir. Gerçek sunucu adresi, şifre, anahtar BU BELGEYE YAZILMAZ — yer tutucular `<...>`
 > biçimindedir. `egitim.ornek.com` örnek alan adıdır; kendi alan adınla değiştir.
 >
-> **Güncel canlı ortam (2026-11-27):** herkese açık site **sokratai.tech** ("SokratAI"), bir Hostinger VPS
-> üzerinde **Dokploy** (Docker + Traefik) ile çalışır (§10, ADR-0018). Sunucu adresi ve erişim bilgisi bu
+> **Güncel canlı ortam (2026-11-27):** herkese açık site **sokratai.tech** ("SokratAI") **YAYINDA** — bir Hostinger
+> VPS üzerinde **Dokploy** (Docker + Traefik, Let's Encrypt TLS) ile çalışır (§10, ADR-0018). İlk kurulumda duman testi
+> geçti (sayfa, `/api/saglik`, görev işaretleme, sahte anahtarla sohbet → 401); Swarm `dnsrr` ayarı §10.5'te. Sunucu adresi ve erişim bilgisi bu
 > repoda tutulmaz. Aşağıdaki adımlar yer tutucularla (`<alan-adi>`, `egitim.ornek.com`) yazılmıştır; kendi
 > sunucunda gerçek değerleri koy.
 >
@@ -404,6 +405,21 @@ ver (ör. `10\.0\.1\.\d{1,3}`) — bu durumda aynı alt ağdaki komşular yine g
 **Belirti:** sitenin tamamında `429` (çok fazla istek) = vekil güveni yanlış ayarlı — Traefik güvenilmediği için
 tüm ziyaretçiler Traefik'in IP'siyle görünür ve tek bir IP kovasını paylaşır.
 
+**Swarm VIP tuzağı (Dokploy varsayılanı — ilk canlı kurulumda yaşandı, 2026-11-27):** Dokploy uygulamaları Swarm
+servisi olarak çalışır; varsayılan uç noktası modu **VIP**'dir. Bu modda Traefik → uygulama trafiği IPVS yük
+dengeleyicisinden geçer ve uygulama **tüm istemcileri o dengeleyicinin iç adresi** (ör. `10.0.1.4`) olarak görür.
+O adrese güvenmek YANLIŞ olur — ağdaki her konteyner aynı adresten geçer. Doğrusu:
+1. Uygulama servisinin uç noktası modunu **`dnsrr`** yap (Dokploy → uygulama → Advanced/Swarm ayarları →
+   Endpoint Spec `{"Mode":"dnsrr"}`; API: `application.update` → `endpointSpecSwarm`).
+2. VIP'ten `dnsrr`'ye geçiş var olan serviste eski DNS kaydını bırakır → servisi **silip yeniden oluştur**
+   (volume ve Postgres ayrı olduğu için veri kaybolmaz; yine de önce §10.6 yedeği al).
+3. `APP_SITE_GUVENILIR_VEKIL`'i yalnız `dokploy-traefik` konteynerinin IP'sine daralt (yukarıdaki `docker network
+   inspect` komutu) ve aşağıdaki doğrulamayı yap.
+
+**Traefik IP'si değişirse:** `dokploy-traefik` konteyneri yeniden oluşturulduğunda (Dokploy güncellemesi, sunucu
+yeniden başlatma) IP'si değişebilir → belirti yine sitenin tamamında `429`. Çözüm: yeni IP'yi bul,
+`APP_SITE_GUVENILIR_VEKIL`'i güncelle, Redeploy, doğrula. Dokploy/Traefik güncellemesinden sonra bunu kontrol et.
+
 **Doğrulama** (kurulumdan sonra ve `APP_SITE_GUVENILIR_VEKIL`'i her değiştirdiğinde):
 1. Dokploy → Environment'a **geçici olarak** `LOGGING_LEVEL_TR_VELZON_AIOGRETMEN_VEKIL=DEBUG` ekle, Redeploy.
 2. Siteyi kendi bilgisayarından aç (sayfa açılışı `/api/...` isteği yapar).
@@ -421,6 +437,7 @@ kullanır. Ayrıca https ile girince `aio_ziyaretci` çerezi `Secure` olmalı (d
 - İlk dağıtım: Deploy → loglarda `Started AiOgretmenApplication`; şema kendiliğinden kurulur. Sonra §4'teki
   tarayıcı kontrolleri (`https://<alan-adi>/`, çerezler `Secure`, `/api/ozellikler`).
 - Güncelleme: yerelde `./mvnw verify` yeşil → depoya gönder → Dokploy'da Redeploy (volume ve Postgres korunur).
+  Otomatik dağıtım (autoDeploy) **kapalı**: push siteyi kendiliğinden güncellemez; yeni sürümü panelden yayına al.
 - **Yedekleme:** (1) Postgres: Dokploy'un Postgres yedekleme özelliği ya da `pg_dump -Fc` (§6); (2) `/app/data`
   volume'ü (ör. `docker run --rm -v <volume-adi>:/v -v "$PWD":/yedek alpine tar czf /yedek/data.tgz -C /v .`).
   İkisi birlikte geri yüklenir; yalnız biri yetmez (hafıza dosyaları `z-<kimlik>` ile veritabanına bağlı).
