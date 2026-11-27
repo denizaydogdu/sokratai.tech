@@ -130,20 +130,35 @@
                  (auth testi TDD — token'sız 401, geçerli JWT 200). -->
         </dependency>
         <dependency>
-            <!-- Ön yüz davranış testleri gerçek tarayıcıda (ADR-0021). Yalnız test; imaja girmez. Tarayıcı ikilisi
-                 repoda/jar'da DEĞİL — bir kez kurulur (~/.cache/ms-playwright); kurulu değilse testler atlanır. -->
-            <groupId>com.microsoft.playwright</groupId>
-            <artifactId>playwright</artifactId>
-            <version>${playwright.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>com.tngtech.archunit</groupId>
             <artifactId>archunit-junit5</artifactId>
             <version>${archunit.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
+
+    <profiles>
+        <!-- Ön yüz davranış testleri gerçek tarayıcıda (ADR-0021). Yalnız test kapsamı; imaja girmez. Tarayıcı ikilisi
+             repoda/jar'da DEĞİL — bir kez kurulur (~/.cache/ms-playwright); kurulu değilse testler atlanır (CI'da
+             hata). Varsayılan AÇIK; Docker derlemesi -Donyuz.atla ile kapatır (driver-bundle ~225 MB inmesin) — bu
+             bayrak yalnız -Dmaven.test.skip=true ile birlikte kullanılır (yoksa OnYuzDavranisTest derlenemez). -->
+        <profile>
+            <id>onyuz-testleri</id>
+            <activation>
+                <property>
+                    <name>!onyuz.atla</name>
+                </property>
+            </activation>
+            <dependencies>
+                <dependency>
+                    <groupId>com.microsoft.playwright</groupId>
+                    <artifactId>playwright</artifactId>
+                    <version>${playwright.version}</version>
+                    <scope>test</scope>
+                </dependency>
+            </dependencies>
+        </profile>
+    </profiles>
 
     <build>
         <plugins>

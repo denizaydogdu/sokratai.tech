@@ -147,6 +147,8 @@ const OPENROUTER_ANAHTAR_UCU = "https://openrouter.ai/api/v1/auth/keys";
 const OAUTH_DOGRULAYICI = "aio.oauth.dogrulayici";
 const OAUTH_DURUM = "aio.oauth.durum";
 const OAUTH_HATIRLA = "aio.oauth.hatirla";
+const OAUTH_YARIM = "OpenRouter bağlantısı tamamlanamadı. Bağlantı başka sekmede başlatılmış olabilir — "
+    + "“OpenRouter ile bağlan”a yeniden bas.";
 
 function base64url(baytlar) {
   let s = "";
@@ -188,25 +190,27 @@ async function openRouterIleBaglan(hatirla) {
 }
 
 /**
- * Sayfa açılışında (zaman uyumlu, analitik ve diğer isteklerden ÖNCE): bekleyen bir bağlanma varsa ?code/state'i
- * URL'den alır ve siler, saklanan doğrulayıcı/state'i okuyup temizler. Bekleyen bağlanma yoksa URL'ye dokunmaz.
- * @return {kod, durum, beklenenDurum, dogrulayici, hatirla} ya da null
+ * Sayfa açılışında (zaman uyumlu, analitik ve diğer isteklerden ÖNCE): URL'de ?code varsa code/state'i URL'den
+ * siler (doğrulayıcı olsun olmasın — kod adres çubuğunda/geçmişte kalmasın); saklanan doğrulayıcı/state'i okuyup
+ * temizler. Kod yoksa URL'ye dokunmaz.
+ * @return null (dönüş yok) | {yarim: true} (kod var ama bu sekmede bekleyen bağlanma yok) |
+ *         {kod, durum, beklenenDurum, dogrulayici, hatirla}
  */
 function oauthDonusunuYakala() {
   try {
     const d = depo("sessionStorage");
     const dogrulayici = d && d.getItem(OAUTH_DOGRULAYICI);
-    if (!dogrulayici) return null;
-    const beklenenDurum = d.getItem(OAUTH_DURUM);
-    const hatirla = d.getItem(OAUTH_HATIRLA) === "1";
-    oauthDurumuTemizle(); // tek kullanımlık — dönüş başarısız/iptal olsa da kalmasın
+    const beklenenDurum = dogrulayici ? d.getItem(OAUTH_DURUM) : null;
+    const hatirla = dogrulayici ? d.getItem(OAUTH_HATIRLA) === "1" : false;
+    if (dogrulayici) oauthDurumuTemizle(); // tek kullanımlık — dönüş başarısız/iptal olsa da kalmasın
     const url = new URL(window.location.href);
     const kod = url.searchParams.get("code");
     const durumDegeri = url.searchParams.get("state");
-    if (!kod) return null; // kullanıcı vazgeçti (OpenRouter kodsuz döndü) ya da başka bir açılış
+    if (!kod) return null; // kullanıcı vazgeçti (OpenRouter kodsuz döndü) ya da sıradan açılış
     url.searchParams.delete("code");
     url.searchParams.delete("state");
     history.replaceState(history.state, "", url.pathname + url.search + url.hash);
+    if (!dogrulayici) return { yarim: true }; // başka sekmede/oturumda başlatılmış ya da depo silinmiş
     return { kod, durum: durumDegeri, beklenenDurum, dogrulayici, hatirla };
   } catch (e) {
     return null;
@@ -1773,6 +1777,14 @@ function anahtarKaldirDugmesiEkle() {
   document.querySelector(".chat-head").appendChild(btn);
 }
 
+/** bfcache: OpenRouter'dan "Geri" ile dönülünce sayfa donmuş hâliyle gelir — tıklanmış "bağlan" düğmesi pasif
+ *  kalmasın; anahtar başka sekmede değiştiyse de panel güncellensin. */
+window.addEventListener("pageshow", (e) => {
+  if (!e.persisted || !durum.site) return;
+  if (sohbetAcikHesapla() !== durum.sohbetAcik) anahtarDegisti();
+  else if (!durum.sohbetAcik) sohbetPaneliCiz();
+});
+
 /** Anahtar nesli: her anahtar değişiminde artar; istek sürerken değiştiyse geç gelen cevap/hata panele basılmaz
  *  (panel yeniden çizildi, "düşünüyor…" düğümü ayrıldı — tech-debt #10). */
 let anahtarNesli = 0;
@@ -2111,14 +2123,19 @@ const ozellikler = api("/api/ozellikler").catch(() => ({ mulakat: false }));
     durum.mulakatEtkin = !!oz.mulakat;
     durum.site = !!oz.site;
     durum.sunucuAi = !!oz.sunucuAi; // sitede hep false
-    // "OpenRouter ile bağlan" dönüşü: anahtar kaydedilir (sohbet açılır) ya da kartta hata gösterilir
-    const oauthHata = durum.site && oauthDonusu ? await oauthAnahtarAl(oauthDonusu) : null;
+    // "OpenRouter ile bağlan" dönüşü: anahtar kaydedilir (sohbet açılır) ya da hata gösterilir. Yarım dönüş ya da
+    // özellikler alınamadığı için site bilinmiyorsa anahtar istenmez, kullanıcı yeniden denemeye çağrılır (sessiz değil).
+    let oauthHata = null;
+    if (oauthDonusu) {
+      oauthHata = oauthDonusu.yarim || !durum.site ? OAUTH_YARIM : await oauthAnahtarAl(oauthDonusu);
+    }
     durum.sohbetAcik = sohbetAcikHesapla();
     durum.kaynaklar = await api("/api/kaynaklar").catch(() => []);
     await ozetYenile();
     // kaldığın yerden devam: %100 olmayan ilk hafta (karşılamadaki butona yansır)
     const ilkAcik = durum.ozetler.find((h) => h.ilerlemeYuzde < 100);
-    aiPaneliKur(oauthHata);
+    aiPaneliKur(durum.site ? oauthHata : null);
+    if (oauthHata && !durum.site) mesajEkle("sistem", oauthHata); // anahtar kartı yok → panelde tek satır
     sifirlaButonuEkle();
     if (durum.site) ilerlemeKoduKur();
     const bag = derinBag(); // herkese açık ders sayfasından gelindiyse (?hafta=N&gun=G) o hafta/gün açılır

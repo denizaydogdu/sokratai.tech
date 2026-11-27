@@ -10,10 +10,12 @@ FROM maven:3.9.16-eclipse-temurin-17 AS derleme
 WORKDIR /derleme
 # Bağımlılık katmanı önce: pom.xml değişmedikçe çoğu yeniden indirilmez (go-offline her eklentiyi çekmez →
 # paketlemede -o KULLANILMAZ, eksikler o adımda iner).
+# -Donyuz.atla: Playwright (yalnız ön yüz testleri, ADR-0021; driver-bundle ~225 MB) profili kapalı — testler
+# imajda koşmadığından (-Dmaven.test.skip=true: test derlemesi de yok) indirilmez.
 COPY pom.xml ./
-RUN mvn -B -q dependency:go-offline
+RUN mvn -B -q -Donyuz.atla dependency:go-offline
 COPY src ./src
-RUN mvn -B -q -DskipTests package \
+RUN mvn -B -q -Donyuz.atla -Dmaven.test.skip=true package \
     && cp target/ai-ogretmen-*.jar /derleme/uygulama.jar
 
 # --- 2) Çalışma imajı ---

@@ -132,7 +132,11 @@ class SiteOnYuzIcerikTest {
     void eskiSiteMetinleriYok() throws IOException {
         String app = oku("app.js");
         assertThat(app).doesNotContain("henüz açılmadı").doesNotContain("giris.html").doesNotContain("/giris");
-        // Olumlu metinler ("Okudum ✓", anahtar kartı, "İlerleme kodum") artık OnYuzDavranisTest'te tıklanarak sınanır.
+        // Olumlu metinler OnYuzDavranisTest'te tıklanarak da sınanır; bu ucuz kopya tarayıcı yokken (testler atlanınca)
+        // yedek ağdır (inceleme M4).
+        assertThat(app).contains("AI öğretmenle sohbet (isteğe bağlı)")
+                .contains("Okudum ✓").contains("Yaptım ✓").contains("Tartıştım ✓")
+                .contains("İlerleme kodum").contains("Geri yükle").contains("OpenRouter ile bağlan");
     }
 
     /**

@@ -31,6 +31,7 @@ import java.util.regex.Pattern;
 
 import static com.microsoft.playwright.options.WaitForSelectorState.ATTACHED;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 /**
@@ -39,8 +40,8 @@ import static org.junit.jupiter.api.Assumptions.assumeTrue;
  * kodu, anahtar kartı, GA yokluğu, "OpenRouter ile bağlan" (PKCE; openrouter.ai {@code page.route} ile taklit —
  * gerçek ağ YOK) ve XSS dumanı.
  *
- * <p>Tarayıcı kurulu değilse / başlatılamazsa (ör. çevrimdışı CI) testler JUnit varsayımıyla ATLANIR, derleme
- * kırılmaz. Bir kez kur: {@code ./mvnw exec:java -e -Dexec.mainClass=com.microsoft.playwright.CLI
+ * <p>Tarayıcı kurulu değilse / başlatılamazsa testler JUnit varsayımıyla ATLANIR, derleme kırılmaz — ortamda
+ * {@code CI} değişkeni varsa ATLAMA yerine HATA verir. Bir kez kur: {@code ./mvnw exec:java -e -Dexec.mainClass=com.microsoft.playwright.CLI
  * -Dexec.args="install chromium" -Dexec.classpathScope=test}.
  */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, properties = {
@@ -106,6 +107,12 @@ class OnYuzDavranisTest {
     @BeforeEach
     void baglamHazirla() {
         // Varsayım @BeforeAll'da değil burada: surefire raporunda her test tek tek "skipped" (mesajıyla) görünsün.
+        // CI'da tarayıcı yokluğu sessiz atlama değil HATA (inceleme M4): orada davranış testleri koşmak zorunda.
+        String ci = System.getenv("CI");
+        if (tarayici == null && ci != null && !ci.isBlank() && !"false".equalsIgnoreCase(ci) && !"0".equals(ci)) {
+            fail("CI ortamında Playwright Chromium zorunlu (ön yüz davranış testleri atlanamaz). Kur: " + KURULUM
+                    + " | Neden: " + atlamaNedeni);
+        }
         assumeTrue(tarayici != null, () -> "Playwright Chromium kurulu değil ya da başlatılamadı — ön yüz davranış "
                 + "testleri ATLANDI (derleme kırılmaz). Bir kez kur: " + KURULUM + " | Neden: " + atlamaNedeni);
         sayfaAc(MASAUSTU_GENISLIK);
@@ -396,6 +403,49 @@ class OnYuzDavranisTest {
         assertThat(anahtarIstegi.get()).as("state uyuşmazken anahtar ucu çağrılmaz").isNull();
         assertThat(depo("sessionStorage", "aio.openrouter")).isNull();
         assertThat(sayfa.url()).isEqualTo(taban() + "/");
+    }
+
+    /** İnceleme M1: doğrulayıcı yokken (başka sekmede başlatılmış) gelen kod URL'de kalmaz, kart uyarır. */
+    @Test
+    void dogrulayiciYokkenGelenKodUrldenSilinirVeUyarilir() {
+        AtomicReference<String> anahtarIstegi = new AtomicReference<>();
+        openRouterTaklidi(200, "{\"key\":\"" + TEST_ANAHTARI + "\"}", anahtarIstegi);
+        anaSayfa("/?code=BASKA-SEKME-KODU&state=bir-durum&hafta=1");
+        assertThat(sayfa.locator(".anahtar-hata").textContent()).contains("başka sekmede");
+        assertThat(sayfa.url()).as("code/state silinir, diğer parametreler kalır").isEqualTo(taban() + "/?hafta=1");
+        assertThat(anahtarIstegi.get()).isNull();
+        assertThat(depo("sessionStorage", "aio.openrouter")).isNull();
+    }
+
+    /** İnceleme M3: /api/ozellikler alınamazsa (site bilinemez) OAuth dönüşü sessiz kalmaz, kod da URL'de kalmaz. */
+    @Test
+    void ozelliklerAlinamazsaOauthDonusuUyarir() {
+        AtomicReference<String> anahtarIstegi = new AtomicReference<>();
+        openRouterTaklidi(200, "{\"key\":\"" + TEST_ANAHTARI + "\"}", anahtarIstegi);
+        anaSayfa("/");
+        sayfa.evaluate("() => { sessionStorage.setItem('aio.oauth.dogrulayici', 'x'.repeat(64));"
+                + " sessionStorage.setItem('aio.oauth.durum', 'durum-1'); }");
+        sayfa.route(Pattern.compile(".*/api/ozellikler$"), r -> r.fulfill(new Route.FulfillOptions().setStatus(500)
+                .setContentType("application/json").setBody("{}")));
+        anaSayfa("/?code=GECERLI-KOD&state=durum-1");
+        sayfa.locator("#chat-mesajlar .msg.sistem", new Page.LocatorOptions().setHasText("başka sekmede")).waitFor();
+        assertThat(sayfa.url()).isEqualTo(taban() + "/");
+        assertThat(anahtarIstegi.get()).isNull();
+        assertThat(sayfa.evaluate("() => Object.keys(sessionStorage).filter(k => k.startsWith('aio.oauth')).length"))
+                .isEqualTo(0);
+    }
+
+    /**
+     * İnceleme M2: OpenRouter'dan "Geri" ile dönülünce sayfa bfcache'ten gelir, tıklanmış bağlan düğmesi pasif kalırdı.
+     * Playwright bfcache'i kapattığından olay doğrudan tetiklenir ({@code pageshow}, {@code persisted: true}).
+     */
+    @Test
+    void geriIleDonulunceBaglanDugmesiYenidenAcilir() {
+        anaSayfa("/");
+        sayfa.evaluate("() => { document.getElementById('openrouter-baglan').disabled = true; }");
+        sayfa.evaluate("() => window.dispatchEvent(new PageTransitionEvent('pageshow', { persisted: true }))");
+        assertThat(sayfa.locator("#openrouter-baglan").isEnabled()).isTrue();
+        assertThat(konsolHatalari).isEmpty();
     }
 
     // ---------- yardımcılar ----------

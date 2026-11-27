@@ -15,7 +15,8 @@ anlamlı biçimde sınanamaz.
 
 ## Karar
 **Kullanıcı onayı (2026-11-27):** `com.microsoft.playwright:playwright` (sürüm `pom.xml` `playwright.version`'da
-sabit, **yalnız `test` kapsamı**).
+sabit, **yalnız `test` kapsamı**). Bağımlılık varsayılan açık `onyuz-testleri` Maven profilindedir (etkinleşme:
+`!onyuz.atla`); yerelde `./mvnw verify` onu her zaman içerir, Docker derlemesi `-Donyuz.atla` ile dışarıda bırakır.
 
 Uygulayıcı kararları:
 1. Testler `./mvnw verify` içinde koşar: `@SpringBootTest(webEnvironment = RANDOM_PORT)` + `site` profili + bellek
@@ -24,7 +25,11 @@ Uygulayıcı kararları:
    `/api/v1/auth/keys`) `page.route`/`context.route` ile taklit edilir. Test "dışarı istek gitmedi" diye de doğrular.
 3. **Tarayıcı yoksa ATLA, kırma:** tarayıcı kendiliğinden indirilmez (`PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1` — aksi
    hâlde üç tarayıcı birden iner). Chromium kurulu değilse ya da başlatılamazsa (çevrimdışı CI, desteklenmeyen
-   işletim sistemi) `@BeforeAll` içindeki JUnit varsayımı (assumption) sınıfı atlatır; mesaj kurulum komutunu söyler.
+   işletim sistemi) `@BeforeAll` yalnız nedeni saklar; her testin `@BeforeEach`'indeki JUnit varsayımı (assumption)
+   testi atlatır — surefire raporunda 11+ test tek tek "skipped" ve kurulum komutunu söyleyen mesajla görünür.
+   **İstisna:** ortamda `CI` değişkeni varsa (boş, `false`, `0` değilse) tarayıcı yokluğu atlama değil **hata**dır —
+   CI'da davranış testleri sessizce kaybolmasın. Tarayıcı yokken atlanan davranışın ucuz yedeği olarak olumlu
+   metin iddiaları (`SiteOnYuzIcerikTest.eskiSiteMetinleriYok`) kaynak-metin bekçisinde de kalır.
    Bir kez kurulum:
    ```
    ./mvnw exec:java -e -Dexec.mainClass=com.microsoft.playwright.CLI \
@@ -35,7 +40,7 @@ Uygulayıcı kararları:
    ile işaretlenen görevin yeniden yüklemede kalması, ilerleme kodu diyaloğu, anahtar kartı kaydet/kaldır, GA
    kimliği yokken analitiğin hiç yüklenmemesi, OpenRouter PKCE akışı (S256 doğrulaması, state, anahtarın sunucumuza
    gitmemesi, hata/uyuşmazlık yolları), sohbet hata metninde XSS dumanı.
-5. Kaynak-metin bekçilerinden davranış testinin artık kapsadığı olumlu dize iddiaları kaldırıldı; davranış testinin
+5. Kaynak-metin bekçileri KALIR (tarayıcı yokken yedek ağ); davranış testinin
    göremeyeceği kurallar (ör. anahtar başlığının TEK çağrı noktası, analitik bölümünün kişisel veriye dokunmaması,
    CSP dizesinin tam hâli) dize bekçisi olarak kalır.
 
@@ -50,10 +55,14 @@ Uygulayıcı kararları:
 ## Sonuçlar / maliyet
 - **Bir kerelik indirme:** Chromium + headless shell ≈ 150–250 MB, `~/.cache/ms-playwright` (macOS:
   `~/Library/Caches/ms-playwright`). Repoya ikili dosya GİRMEZ (sızıntı taraması ikili izin listesi değişmez).
-- **Maven yerel deposu:** `driver-bundle` jar'ı (~225 MB, tüm platformların Node sürücüsü) `~/.m2`'ye iner. Docker
-  derleme aşamasındaki `dependency:go-offline` da onu indirir (derleme önbelleği büyür, ilk derleme yavaşlar);
-  **çalışma imajına girmez** — imaj `-DskipTests package` ile kurulur, jar'a yalnız `compile`/`runtime` kapsamı
-  paketlenir. Üretim etkilenmez.
+- **Maven yerel deposu:** `driver-bundle` jar'ı (~225 MB, tüm platformların Node sürücüsü) geliştirici makinesinde
+  `~/.m2`'ye bir kez iner.
+- **Docker derlemesi indirmez:** `-DskipTests` ya da `-Dmaven.test.skip=true` tek başına yetmez — Maven test
+  kapsamındaki bağımlılıkları yine çözer (go-offline da). Bu yüzden Dockerfile iki adımda da `-Donyuz.atla` verir
+  (profil kapalı → Playwright hiç çözülmez) ve paketlemeyi `-Dmaven.test.skip=true` ile yapar (test kaynakları
+  derlenmez; `-Donyuz.atla` bu bayrak OLMADAN kullanılmaz, yoksa `OnYuzDavranisTest` derlenemez). Doğrulandı:
+  derleme aşaması imajında `~/.m2/repository/com/microsoft` yok. Çalışma imajı zaten yalnız jar'ı alır; üretim
+  etkilenmez.
 - Test süresi: Spring bağlamı + tarayıcı açılışı birkaç saniye, test başına ~1–3 sn.
 - Atlanan testler surefire raporunda "skipped" görünür; yeşil derleme davranışın sınandığı anlamına gelmez —
   rapor ya da `Tests run/Skipped` satırı kontrol edilir.
