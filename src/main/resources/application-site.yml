@@ -25,6 +25,9 @@ app:
   site:
     guvenli-cerez: ${APP_SITE_GUVENLI_CEREZ:true}         # ziyaretçi + XSRF-TOKEN çerezleri için
     izinli-originler: ${APP_SITE_IZINLI_ORIGINLER:}       # ör. https://egitim.ornek.com (virgülle çoklu)
+    # SEO + analitik (Faz 12, ADR-0019). Boş = kapalı: GA hiç yüklenmez/veri gitmez; canonical/og:url/sitemap yok.
+    ga-olcum-kimligi: ${APP_SITE_GA_OLCUM_KIMLIGI:}       # GA4 ölçüm kimliği, ör. G-XXXXXXXXXX (biçim dışı = boş + WARN)
+    temel-url: ${APP_SITE_TEMEL_URL:}                     # sitenin kök adresi, ör. https://egitim.ornek.com (yol yok)
     # Hız sınırları (bellek içi, IP/ziyaretçi başına; pencereler sabit). Tek NAT arkasındaki sınıf/ofis için
     # yükseltilebilir — docs/kurulum-site.md §7.6. Ortam değişkeni adları aşağıdaki placeholder'lardır;
     # değişken yoksa boş kalır ve config/SiteAyarlari.Hiz'daki @DefaultValue (TEK kaynak: 60/20/10/20) geçerli olur.

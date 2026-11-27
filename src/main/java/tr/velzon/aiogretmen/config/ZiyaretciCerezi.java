@@ -30,7 +30,8 @@ import java.util.regex.Pattern;
  * çereziyle aynı: {@code guvenliCerez=true} → her zaman, değilse isteğe göre (nginx {@code X-Forwarded-Proto=https}).
  *
  * <p>{@code GET /api/saglik} ve {@code /api/saglik/canli} ({@link SaglikYolu}, Faz 11 / ADR-0018) atlanır: dakikada bir gelen sağlık kontrolü
- * kimlik üretmez, çerez yazmaz.
+ * kimlik üretmez, çerez yazmaz. Bot yolları ({@code robots.txt}, {@code sitemap.xml}, {@code favicon.svg};
+ * {@link TaramaYolu}, Faz 12 / ADR-0019) da atlanır: tarayıcı botu çerez almaz.
  */
 public final class ZiyaretciCerezi extends OncePerRequestFilter {
 
@@ -102,7 +103,7 @@ public final class ZiyaretciCerezi extends OncePerRequestFilter {
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest istek) {
-        return SaglikYolu.mi(istek);
+        return SaglikYolu.mi(istek) || TaramaYolu.mi(istek);
     }
 
     @Override

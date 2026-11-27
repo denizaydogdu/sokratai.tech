@@ -331,6 +331,7 @@ async function kaynakDrawerYukle(kaynak) {
   alt.innerHTML = "";
   govde.appendChild(el("p", "qmeta mono", "yükleniyor…"));
   okumaDraweriGoster();
+  analitikSayfa(kaynak.baslik || "Kaynak", "/kaynak/" + encodeURIComponent(kaynak.slug));
   try {
     const k = await api("/api/kaynak/" + kaynak.slug);
     if (nesil !== drawerNesli) return; // daha yeni bir kaynak açıldı — bayat cevabı basma (#7)
@@ -491,6 +492,8 @@ function gunCiz(g, kilitli = false, haftaKilitli = false) {
     gun.classList.toggle("open", aciliyor);
     durum.acikGun = aciliyor ? g.gun : null;
     if (aciliyor) {
+      const hNo = durum.detay ? durum.detay.no : durum.aktifHafta;
+      analitikSayfa("Hafta " + hNo + " · Gün " + g.gun + " — " + g.baslik, "/hafta/" + hNo + "/gun/" + g.gun);
       durum.aktifGun = g.gun; // görüntü günü
       if (!haftaKilitli) {    // AI günü/bağlamı yalnız AÇIK (çalışma) haftada değişir
         if (durum.aktifGorev && durum.aktifGorev.gun !== g.gun) aktifGorevTemizle();
@@ -589,7 +592,9 @@ async function gorevDurumuGonder(gun, gorevIndex, hedef, satir, kutu, stat, g) {
     });
     kutu.checked = yanit.tamamlandi;
     satir.classList.toggle("checked", yanit.tamamlandi);
+    const oncedenBitmis = g.gorevler.find((t) => t.index === gorevIndex).tamamlandi;
     g.gorevler.find((t) => t.index === gorevIndex).tamamlandi = yanit.tamamlandi;
+    if (yanit.tamamlandi === true && !oncedenBitmis) analitikOlay("gorev_tamamlandi", { hafta: sohbetHaftasi(), gun });
     const biten = g.gorevler.filter((t) => t.tamamlandi).length;
     stat.textContent = `${biten}/${g.gorevler.length}`;
     stat.classList.toggle("done", biten === g.gorevler.length);
@@ -628,6 +633,7 @@ async function gorevTamamla(gun, gorevIndex) {
       body: JSON.stringify({ hafta, gun, gorevIndex, tamamlandi: true }),
     });
     if (kayit) kayit.tamamlandi = yanit.tamamlandi;
+    if (yanit.tamamlandi === true) analitikOlay("gorev_tamamlandi", { hafta, gun });
     await ozetYenile();
     return yanit.tamamlandi === true;
   } catch (h) {
@@ -1208,6 +1214,7 @@ async function haftaSec(no) {
   durum.detay = detay;
   haritaCiz();
   haftaCiz(); // haftaCiz açık haftada sohbet* bağlamını senkronlar
+  analitikSayfa("Hafta " + no + " — " + detay.baslik, "/hafta/" + no); // sanal sayfa (ADR-0019)
   chatDurumYaz();
   if (acik && durum.sohbetAcik) await sohbetGecmisiYukle(nesil); // kilitli önizlemede sohbet YENİDEN yüklenmez
 }
@@ -1222,6 +1229,7 @@ async function atolyeYukle() {
 /** Sol menü "🧪 Prompt Atölyesi" satırı → orta paneli atölye görünümüne çevirir. */
 async function atolyeAc() {
   durum.gorunum = "atolye";
+  analitikSayfa("Prompt Atölyesi", "/atolye");
   haritaCiz(); // sol menü aktif durumunu tazele (atölye satırı active, hafta active kalkar)
   const panel = document.getElementById("hafta-paneli");
   panel.innerHTML = "";
@@ -1514,6 +1522,7 @@ function anahtarKartiCiz(hataMetni) {
       sohbetPaneliCiz("Tarayıcın anahtarı saklamaya izin vermedi (gizli pencere ya da site verisi engelli olabilir).");
       return;
     }
+    analitikOlay("anahtar_eklendi"); // yalnız olay adı — anahtar GİTMEZ (ADR-0019)
     anahtarDegisti();
   });
   kart.appendChild(form);
@@ -1618,6 +1627,7 @@ async function gonder() {
     if (anahtarNesil !== anahtarNesli) { eskiAnahtarBilgisi(true); return; } // anahtar değişti — cevabı yeni panele ekleme
     bekleyen.remove();
     mesajEkle("asistan", yanit.icerik);
+    analitikOlay("sohbet_mesaji"); // yalnız olay adı — mesaj/cevap metni GİTMEZ (ADR-0019)
     // YUMUŞAK KAPI: bir oku/tartış görevi öğretmen cevabı bekliyorsa, kullanıcının samimi bir
     // cevabı görevi geçirir. Yetersizse gorevBekleyen dolu kalır; öğretmenin normal yanıtı zaten
     // "biraz daha aç" diye yönlendirir (ekstra sabit nudge basma — çift olmasın).
@@ -1813,6 +1823,7 @@ function moduMetinleriUygula(site) {
  *  Butonlar mevcut akışı çağırır (haftaSec / mulakatAlanSec) — görev/sohbet mekanizmasına dokunmaz. */
 function karsilamaCiz(ilkAcik) {
   durum.gorunum = "karsilama";     // hiçbir hafta/kademe aktif değil (haritaCiz nötr çizer)
+  analitikSayfa("Ana sayfa", "/");
   haritaCiz();                     // sol menüleri çiz (Eğitim + Mülakat senkron)
   const gb = document.getElementById("gorev-bar");
   if (gb) gb.hidden = true;
@@ -1864,6 +1875,7 @@ const ozellikler = api("/api/ozellikler").catch(() => ({ mulakat: false }));
 (async function basla() {
   try {
     const oz = await ozellikler;
+    analitikBaslat(oz.gaOlcumKimligi); // analitik.js (ADR-0019): kimlik yoksa hiçbir şey yüklenmez/gönderilmez
     durum.mulakatEtkin = !!oz.mulakat;
     durum.site = !!oz.site;
     durum.sunucuAi = !!oz.sunucuAi; // sitede hep false

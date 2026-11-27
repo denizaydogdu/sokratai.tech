@@ -16,6 +16,7 @@
   - Site hız sınırları (isteğe bağlı, tek NAT arkasındaki sınıf/ofis için): `APP_SITE_HIZ_*` (yazma/dk 60, sohbet/dk 20, geri-yükle/saat 10, yeni ziyaretçi/saat 20; `docs/kurulum-site.md` §7.6)
   - Site dağıtımı/işletmesi: `docs/kurulum-site.md` (runbook) + `deploy/` (systemd, nginx, env, PostgreSQL
     şablonları — gerçek host/IP/sır YOK); nginx arkasında `APP_SITE_IZINLI_ORIGINLER`
+  - SEO + GA4 (isteğe bağlı, ADR-0019): `APP_SITE_TEMEL_URL` (canonical/sitemap) + `APP_SITE_GA_OLCUM_KIMLIGI` (boş = analitik yok); `docs/kurulum-site.md` §10.7
   - Docker imajı (Dokploy + Traefik, ADR-0018): `docker build -t ai-ogretmen .` — kurulum/ortam/volume/sağlık
     (canlılık `/api/saglik/canli`, hazırlık `/api/saglik`): `docs/kurulum-site.md` §10
 - PostgreSQL uyumluluk testi (opt-in, atılabilir DB ile): `PG_TEST_URL=jdbc:postgresql://localhost:5432/<db>

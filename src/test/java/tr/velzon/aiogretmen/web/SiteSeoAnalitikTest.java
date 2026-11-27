@@ -1,0 +1,110 @@
+package tr.velzon.aiogretmen.web;
+
+import jakarta.servlet.http.Cookie;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+import tr.velzon.aiogretmen.config.ZiyaretciCerezi;
+import tr.velzon.aiogretmen.config.ZiyaretciKullaniciBaglami;
+
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+/**
+ * Faz 12 (ADR-0019): SEO uçları ve GA4 ölçüm kimliği — ayarlar VERİLMİŞ site.
+ * <ul>
+ *   <li>{@code /api/ozellikler} geçerli ölçüm kimliğini {@code gaOlcumKimligi} olarak verir (ziyaretçi kimliği yine yok).</li>
+ *   <li>{@code /robots.txt} ve {@code /sitemap.xml} temel URL'den mutlak adres üretir.</li>
+ *   <li>Tarayıcı botu uçları ({@code robots.txt}, {@code sitemap.xml}, {@code favicon.svg}) ziyaretçi/XSRF çerezi
+ *       YAZMAZ, ziyaretçi satırı AÇMAZ — {@code /api/saglik} gibi.</li>
+ *   <li>Ana sayfa canonical + {@code og:url} taşır; ziyaretçi çerezi her zamanki gibi yazılır.</li>
+ * </ul>
+ */
+@SpringBootTest(properties = {
+        "spring.datasource.url=jdbc:h2:mem:siteseo;DB_CLOSE_DELAY=-1",
+        "spring.ai.openai.api-key=",
+        "app.hafiza-dir=target/test-hafiza-siteseo",
+        "app.rapor-dir=target/test-raporlar-siteseo",
+        "app.site.ga-olcum-kimligi=G-TEST12345",
+        "app.site.temel-url=https://ornek.example/"
+})
+@ActiveProfiles("site")
+@AutoConfigureMockMvc
+class SiteSeoAnalitikTest {
+
+    private static final String CEREZ = "RRRRRRRRRRRRRRRRRRRRRr";
+
+    @Autowired
+    MockMvc mvc;
+
+    @Autowired
+    JdbcTemplate jdbc;
+
+    @Test
+    void ozelliklerGaKimliginiVerir() throws Exception {
+        mvc.perform(get("/api/ozellikler"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.site").value(true))
+                .andExpect(jsonPath("$.gaOlcumKimligi").value("G-TEST12345"))
+                .andExpect(jsonPath("$.kullanici").doesNotExist());
+    }
+
+    @Test
+    void robotsTxtApiyiKapatirSitemapGosterir() throws Exception {
+        MvcResult r = mvc.perform(get("/robots.txt")).andExpect(status().isOk()).andReturn();
+        String govde = r.getResponse().getContentAsString();
+        assertThat(r.getResponse().getContentType()).startsWith("text/plain");
+        assertThat(govde).contains("User-agent: *").contains("Allow: /").contains("Disallow: /api/")
+                .contains("Sitemap: https://ornek.example/sitemap.xml");
+    }
+
+    @Test
+    void sitemapYalnizSunucudaCozulenAnaSayfayiListeler() throws Exception {
+        MvcResult r = mvc.perform(get("/sitemap.xml")).andExpect(status().isOk()).andReturn();
+        String govde = r.getResponse().getContentAsString();
+        assertThat(r.getResponse().getContentType()).startsWith("application/xml");
+        assertThat(govde).startsWith("<?xml version=\"1.0\" encoding=\"UTF-8\"?>")
+                .contains("<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">")
+                .contains("<loc>https://ornek.example/</loc>");
+        // SPA: hafta/gün görünümleri sunucuda ayrı URL değil → listelenmez
+        assertThat(govde.split("<loc>", -1)).hasSize(2);
+    }
+
+    @Test
+    void botUclariCerezYazmazZiyaretciSatiriAcmaz() throws Exception {
+        int once = jdbc.queryForObject("SELECT COUNT(*) FROM ziyaretci", Integer.class);
+        for (String yol : List.of("/robots.txt", "/sitemap.xml", "/favicon.svg")) {
+            MvcResult r = mvc.perform(get(yol).cookie(new Cookie(ZiyaretciCerezi.AD, CEREZ)))
+                    .andExpect(status().isOk()).andReturn();
+            assertThat(r.getResponse().getHeaders("Set-Cookie")).as(yol + " çerez yazmaz").isEmpty();
+            assertThat(r.getRequest().getAttribute(ZiyaretciCerezi.ISTEK_OZNITELIGI)).as(yol).isNull();
+        }
+        assertThat(jdbc.queryForObject("SELECT COUNT(*) FROM ziyaretci", Integer.class)).isEqualTo(once);
+        assertThat(jdbc.queryForObject("SELECT COUNT(*) FROM ziyaretci WHERE id = ?", Integer.class,
+                ZiyaretciKullaniciBaglami.ONEK + CEREZ)).isZero();
+    }
+
+    @Test
+    void anaSayfaCanonicalVeOgUrlTasirCerezYazmayaDevamEder() throws Exception {
+        for (String yol : List.of("/", "/index.html")) {
+            MvcResult r = mvc.perform(get(yol)).andExpect(status().isOk()).andReturn();
+            String html = r.getResponse().getContentAsString();
+            assertThat(r.getResponse().getContentType()).startsWith("text/html");
+            assertThat(html).as(yol).contains("<link rel=\"canonical\" href=\"https://ornek.example/\">")
+                    .contains("<meta property=\"og:url\" content=\"https://ornek.example/\">")
+                    .doesNotContain("seo:alan");
+            assertThat(html).contains("<title>").contains("<script src=\"app.js\"></script>");
+            assertThat(r.getResponse().getHeaders("Set-Cookie"))
+                    .anyMatch(c -> c.startsWith(ZiyaretciCerezi.AD + "="));
+        }
+    }
+}

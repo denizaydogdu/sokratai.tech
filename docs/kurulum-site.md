@@ -366,6 +366,8 @@ servisinin **dış portunu yayınlama**. Tablolar uygulamanın ilk açılışın
 | `APP_SITE_GUVENILIR_VEKIL` | Traefik konteynerinin IP'si/alt ağı (Java regex) — §10.5 |
 | `APP_SITE_HIZ_*`, `APP_SITE_DB_HAVUZ` | İsteğe bağlı (§7.6) |
 | `APP_SITE_DB_BAGLANTI_ZAMAN_ASIMI_MS` | İsteğe bağlı; varsayılan `5000` (Hikari bağlantı bekleme, ms) — §10.4 sağlık kontrolü |
+| `APP_SITE_TEMEL_URL` | İsteğe bağlı: `https://<alan-adi>` (şema dahil, yol yok) — canonical, `og:url`, `robots.txt` Sitemap satırı, `sitemap.xml`; boşsa bunlar yok (§10.7) |
+| `APP_SITE_GA_OLCUM_KIMLIGI` | İsteğe bağlı: GA4 ölçüm kimliği `G-XXXXXXXXXX`; boş = analitik tamamen kapalı, biçim dışı = boş + WARN (§10.7, ADR-0019) |
 
 `OPENROUTER_API_KEY` **verilmez** (sitede kullanılmaz, ADR-0017).
 
@@ -443,3 +445,32 @@ kullanır. Ayrıca https ile girince `aio_ziyaretci` çerezi `Secure` olmalı (d
   İkisi birlikte geri yüklenir; yalnız biri yetmez (hafıza dosyaları `z-<kimlik>` ile veritabanına bağlı).
 - Güvenlik notu: sitenin alan adı altında **güvenilmeyen bir alt alan adı açma** (çerez sabitleme riski — ADR-0018
   §Güvenlik notu).
+
+### 10.7 SEO ve analitik
+> ADR-0019. İki değişken de isteğe bağlıdır; verilmezse site eskisi gibi çalışır.
+
+- **Ne var:** Türkçe `<title>` + `description`, Open Graph / Twitter kartı, schema.org `Course` (JSON-LD),
+  `favicon.svg`, `GET /robots.txt` (herkese açık, `/api/` kapalı) ve `GET /sitemap.xml`. Bot uçları çerez yazmaz,
+  ziyaretçi kaydı açmaz (sağlık uçları gibi).
+- **`APP_SITE_TEMEL_URL=https://<alan-adi>`:** ana sayfaya canonical + `og:url`, `robots.txt`'ye `Sitemap:` satırı
+  eklenir, `sitemap.xml` açılır (yoksa 404). `www` kullanıyorsan tercih ettiğin TEK adresi yaz.
+- **Sınır (SPA):** hafta/gün/kaynak görünümleri tarayıcıda JS ile çizilir, sunucuda ayrı adresleri yok → site
+  haritasında yalnız ana sayfa var. Derslerin aramada tek tek çıkması sunucuda üretilen ders sayfaları ister.
+- **Google Search Console:** <https://search.google.com/search-console> → *Mülk ekle* → **Alan adı** →
+  verilen `google-site-verification=…` TXT kaydını alan adının DNS'ine (Hostinger → DNS) ekle → *Doğrula*. Sonra
+  *Site haritaları* → `https://<alan-adi>/sitemap.xml` gönder.
+- **Google Analytics 4:** <https://analytics.google.com> → mülk oluştur → *Veri akışı* → **Web** → adres
+  `https://<alan-adi>` → ölçüm kimliğini (`G-…`) `APP_SITE_GA_OLCUM_KIMLIGI`'ye yaz → Redeploy. Sanal sayfa
+  görüntülemelerini uygulama kendisi gönderir (adres çubuğu değişmez); *Gelişmiş ölçüm* ayarına dokunmak gerekmez.
+  Doğrulama: siteyi aç, bir haftaya tıkla → GA4 *Gerçek zamanlı*'da `/hafta/N` görünmeli.
+- **"Şu an kaç kişi var?":** GA4 → *Raporlar* → **Gerçek zamanlı** (son 30 dakikadaki etkin kullanıcılar).
+- **Ne gönderilir:** sanal sayfa görüntülemesi (`/`, `/hafta/3`, `/hafta/3/gun/2`, `/kaynak/<slug>`, `/atolye`) ve
+  adı sabit olaylar `gorev_tamamlandi` (hafta/gün numarası), `sohbet_mesaji`, `anahtar_eklendi`. **Gönderilmez:**
+  ziyaretçi kimliği, ilerleme kodu, sohbet metni, OpenRouter anahtarı (`user_id` yok). Google sinyalleri ve reklam
+  kişiselleştirmesi kapalı; GA4 IP adresini saklamaz.
+- **Çerez onay bandı yok** (kullanıcı kararı, ADR-0019). GA4 `_ga` çerezlerini Google yazar.
+- **CSP:** `index.html` yalnız `www.googletagmanager.com` (betik) ve `*.google-analytics.com`,
+  `*.analytics.google.com`, `*.googletagmanager.com` (bağlantı/görsel) için genişletildi; satır içi betik yok.
+- **Kapatmak:** `APP_SITE_GA_OLCUM_KIMLIGI`'yi sil → Redeploy (betik yüklenmez, hiçbir istek gitmez).
+- **Paylaşım görseli yok:** `og:image` (1200×630 PNG) eklenmedi — ikili dosya sızıntı taramasının izin listesine
+  (`tools/sizinti-ikili-izinli.txt`) girmeden işlenemez; eklenince `twitter:card` `summary_large_image` yapılır.

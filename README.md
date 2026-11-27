@@ -226,6 +226,10 @@ Site modunda (`site` profili, ADR-0017) uygulama herkese açık bir eğitim site
   ilerleme kodu geri yükleme IP başına 10/saat, yeni ziyaretçi IP başına 20/saat (aşımda 429; sayaçlar
   bellekte).
 - **180 gün temizliği:** her gece 03:30'da 180 gündür gelmeyen ziyaretçinin bütün verisi silinir.
+- **SEO ve analitik (Faz 12, ADR-0019):** Türkçe başlık/açıklama, Open Graph + Twitter kartı, schema.org
+  `Course` (JSON-LD), `robots.txt` ve `sitemap.xml`; canonical ve site haritası `APP_SITE_TEMEL_URL` ile.
+  Google Analytics 4 yalnız `APP_SITE_GA_OLCUM_KIMLIGI` verilirse yüklenir (çerez onay bandı yok — kullanıcı
+  kararı); Google'a ziyaretçi kimliği, ilerleme kodu, sohbet metni ya da anahtar gitmez. Yerel mod izlenmez.
 - Ziyaretçi verisini kendisi "🔄 Sıfırla" ile silebilir; tamamen silinmesi için işletmen ilerleme
   koduyla siler ([docs/kurulum-site.md](docs/kurulum-site.md) §7.3).
 
@@ -648,6 +652,8 @@ sunucuda şablonu `deploy/site.env.ornek`, yerelde `.env.ornek`'teki yorumlu sat
 | `APP_SITE_DB_BAGLANTI_ZAMAN_ASIMI_MS` | `5000` | Havuzdan bağlantı bekleme üst sınırı (Hikari `connection-timeout`, ms). Veritabanı düşükken `/api/saglik` en geç ~7 sn'de 503 döner (5 sn + 2 sn sorgu); health check zaman aşımı bundan büyük olmalı |
 | `APP_SITE_IZINLI_ORIGINLER` | boş | `CsrfKoruma`'nın yerel origin'e ek olarak kabul ettiği origin'ler, virgülle (ör. `https://egitim.ornek.com`; şema dahil, sonda `/` yok) |
 | `APP_SITE_GUVENLI_CEREZ` | `true` | `aio_ziyaretci` ve `XSRF-TOKEN` çerezlerinde `Secure`; yalnız yerel http denemesinde `false` |
+| `APP_SITE_GA_OLCUM_KIMLIGI` | boş | Google Analytics 4 ölçüm kimliği (`G-XXXXXXXXXX`); boş/biçim dışı = analitik tamamen kapalı (ADR-0019) |
+| `APP_SITE_TEMEL_URL` | boş | Sitenin kök adresi (ör. `https://egitim.ornek.com`, yol yok); canonical, `og:url`, `robots.txt` Sitemap satırı ve `sitemap.xml` için — boşsa bunlar yok |
 | `APP_SITE_GUVENILIR_VEKIL` | Tomcat varsayılanı | `X-Forwarded-*` başlıklarına güvenilen vekil (Java regex, `server.tomcat.remoteip.internal-proxies`). Docker/Dokploy'da Traefik'in IP'sine/alt ağına daraltılır (ADR-0018) |
 
 Sitede `OPENROUTER_API_KEY` **kullanılmaz**: `application-site.yml` sunucu anahtarını zorla boşaltır,

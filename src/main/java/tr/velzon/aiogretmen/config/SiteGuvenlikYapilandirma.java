@@ -83,12 +83,13 @@ public class SiteGuvenlikYapilandirma {
      * Ertelenmiş CSRF token'ını her istekte yükler → {@code XSRF-TOKEN} çerezi ilk yanıtta yazılır
      * (Spring Security "SPA" deseni). Statik sayfalar token'ı sunucu şablonu olmadan çerezden okur.
      * {@code GET /api/saglik} ve {@code /api/saglik/canli} ({@link SaglikYolu}) atlanır: sağlık kontrolü {@code XSRF-TOKEN} çerezi almaz
-     * (GET güvenli yöntem — CSRF denetimi zaten yok, token ertelenmiş kalır ve yazılmaz).
+     * (GET güvenli yöntem — CSRF denetimi zaten yok, token ertelenmiş kalır ve yazılmaz). Bot yolları
+     * ({@link TaramaYolu}: {@code robots.txt}, {@code sitemap.xml}, {@code favicon.svg}) de aynı nedenle atlanır.
      */
     static final class CsrfCerezFiltresi extends OncePerRequestFilter {
         @Override
         protected boolean shouldNotFilter(HttpServletRequest istek) {
-            return SaglikYolu.mi(istek);
+            return SaglikYolu.mi(istek) || TaramaYolu.mi(istek);
         }
 
         @Override
