@@ -442,7 +442,7 @@ Sürümler `pom.xml`'den alınmıştır.
 | Güvenlik | `spring-boot-starter-security` (yerel modda açık zincir, site modunda girişsiz + CSRF token), `spring-boot-starter-oauth2-resource-server`, `org.springaicommunity:mcp-server-security` 0.0.6 (MCP HTTP) |
 | Veri erişimi | `spring-boot-starter-data-jdbc` + H2 (yerel/MCP modları, dosya tabanlı) + `org.postgresql:postgresql` (`runtime`, site modu — ADR-0014; sürüm Spring Boot parent'tan) |
 | Markdown | `commonmark` 0.24.0 + `commonmark-ext-gfm-tables` 0.24.0 (tablo desteği, ADR-0006) |
-| Test | `spring-boot-starter-test`, `spring-security-test`, ArchUnit (`archunit-junit5` 1.4.2) |
+| Test | `spring-boot-starter-test`, `spring-security-test`, ArchUnit (`archunit-junit5` 1.4.2), Playwright for Java (`playwright` 1.65.0 — ön yüz davranış testleri, ADR-0021) |
 | Derleme | Maven Wrapper (`./mvnw`) |
 | Arayüz | Bağımlılıksız HTML/CSS/JavaScript (`src/main/resources/static/`), CSP: `default-src 'self'` (satır içi betik/stil yok) |
 | Site dağıtımı | Canlı: Docker + Dokploy/Traefik (ADR-0018, `Dockerfile`); alternatif: systemd + nginx (TLS, certbot) — şablonlar `deploy/` altında |
@@ -472,6 +472,9 @@ cd sokratai.tech
 ```bash
 ./mvnw verify
 ```
+Ön yüz (JS) davranış testleri (`OnYuzDavranisTest`, ADR-0021) gerçek Chromium ister; bir kez kurun:
+`./mvnw exec:java -e -Dexec.mainClass=com.microsoft.playwright.CLI -Dexec.args="install chromium" -Dexec.classpathScope=test`
+(kurulu değilse bu testler atlanır, derleme kırılmaz). Yalnız onlar: `./mvnw -Dtest=OnYuzDavranisTest test`.
 
 ### 3a. Anahtarla çalıştırma (önerilen yol: `baslat.sh`)
 ```bash

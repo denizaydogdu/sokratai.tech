@@ -23,6 +23,7 @@
 - PostgreSQL uyumluluk testi (opt-in, atılabilir DB ile): `PG_TEST_URL=jdbc:postgresql://localhost:5432/<db>
   PG_TEST_USERNAME=... ./mvnw -Dtest=SitePostgresEntegrasyonTest test` (değişken yoksa atlanır)
 - Sadece mimari testleri: `./mvnw -Dtest=MimariTestleri test`
+- Ön yüz (JS) davranış testleri (Playwright, ADR-0021): `./mvnw -Dtest=OnYuzDavranisTest test` — Chromium bir kez: `./mvnw exec:java -e -Dexec.mainClass=com.microsoft.playwright.CLI -Dexec.args="install chromium" -Dexec.classpathScope=test` (kurulu değilse atlanır)
 - Müfredat üret (HTML → content/): `node tools/html-to-content.mjs`
 
 ## Sınırlar

@@ -21,6 +21,7 @@
         <java.version>17</java.version>
         <spring-ai.version>1.1.8</spring-ai.version>
         <archunit.version>1.4.2</archunit.version>
+        <playwright.version>1.65.0</playwright.version>
     </properties>
 
     <dependencyManagement>
@@ -127,6 +128,14 @@
             <scope>test</scope>
             <!-- mockJwt() post-processor: geçerli JWT'yi decoder'a gerek kalmadan enjekte eder
                  (auth testi TDD — token'sız 401, geçerli JWT 200). -->
+        </dependency>
+        <dependency>
+            <!-- Ön yüz davranış testleri gerçek tarayıcıda (ADR-0021). Yalnız test; imaja girmez. Tarayıcı ikilisi
+                 repoda/jar'da DEĞİL — bir kez kurulur (~/.cache/ms-playwright); kurulu değilse testler atlanır. -->
+            <groupId>com.microsoft.playwright</groupId>
+            <artifactId>playwright</artifactId>
+            <version>${playwright.version}</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>com.tngtech.archunit</groupId>
