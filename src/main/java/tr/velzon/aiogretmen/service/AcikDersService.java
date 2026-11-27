@@ -134,7 +134,8 @@ public class AcikDersService {
         String cozulen = String.join("/", parcalar);
         java.util.regex.Matcher m = KAYNAK_DOSYASI.matcher(cozulen);
         if (m.matches() && kaynak(m.group(1)).isPresent()) {
-            return kaynakYolu(m.group(1)) + (ek.startsWith("#") ? ek : "");
+            int parca = ek.indexOf('#'); // sorgu atılır, parça (sorgudan sonra gelse de) korunur
+            return kaynakYolu(m.group(1)) + (parca >= 0 ? ek.substring(parca) : "");
         }
         return DEPO_URL + cozulen.replace(" ", "%20") + ek;
     }

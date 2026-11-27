@@ -86,6 +86,9 @@ class AcikDersServiceTest {
         String k = "content/kaynaklar";
         assertThat(s.baglantiCoz("iyi-kaynak.md", k)).isEqualTo("/kaynak/iyi-kaynak");
         assertThat(s.baglantiCoz("./iyi-kaynak.md#bolum-2", k)).isEqualTo("/kaynak/iyi-kaynak#bolum-2");
+        // Sorgu atılır ama parça (#...) korunur — sorgu parçadan önce gelse bile.
+        assertThat(s.baglantiCoz("iyi-kaynak.md?a=1#b", k)).isEqualTo("/kaynak/iyi-kaynak#b");
+        assertThat(s.baglantiCoz("iyi-kaynak.md?a=1", k)).isEqualTo("/kaynak/iyi-kaynak");
         assertThat(s.baglantiCoz("yok-boyle.md", k)).isEqualTo(AcikDersService.DEPO_URL + "content/kaynaklar/yok-boyle.md");
         assertThat(s.baglantiCoz("../../docs/adr/0001-x.md", k)).isEqualTo(AcikDersService.DEPO_URL + "docs/adr/0001-x.md");
         assertThat(s.baglantiCoz("../hafta-01/gun-1.md?a=1", k))
