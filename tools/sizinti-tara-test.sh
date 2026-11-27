@@ -229,6 +229,11 @@ sifre_dene "YAML '  $P: …'"           engel "  $P: Hunter2real"
 sifre_dene "PGPASSWORD=…"             engel "PGPASS""WORD=Hunter2real"
 sifre_dene "export DB_PASS=…"         engel "export DB_PA""SS=Hunter2real"
 sifre_dene "YAML $P: \${X}"           gecer "$P: \${X}"
+sifre_dene "şifre değeri nokta ile başlıyor" engel "DB_PASS""WORD=.Xy7kQ"
+sifre_dene "anahtar değeri soru ile başlıyor" engel "API_K""EY=?abc123"
+sifre_dene "YAML $P: \$x (dolar ile başlayan)" engel "  $P: \$3cr3tVal"
+sifre_dene "$P: {cipher}x"                 engel "spring.datasource.$P={cipher}abc"
+sifre_dene "belge anısı PGPASSWORD=,"      gecer "(spring.datasource.$P=, YAML $P:, PGPASS""WORD=, export DB_PA""SS=)"
 sifre_dene "YAML $P: <yer-tutucu>"    gecer "$P: <yer-tutucu>"
 
 # 15) Etiketler: açıklamalı etiket mesajında IP ENGEL; blob'a hafif etiket ENGEL; temiz etiket geçer

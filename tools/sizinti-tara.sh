@@ -80,15 +80,16 @@ D_IPV6='(?i)(?<![\w:.])(?!2001:0?db8:)(?!2000::(?![0-9a-f]))[23][0-9a-f]{3}:(?:[
 D_ROOT='root@[A-Za-z0-9.-]+'
 D_ANAHTAR_OZEL='-----BEGIN [A-Z ]*PRIVATE KEY'
 D_API='(sk-or-v1-[A-Za-z0-9]{20,}|sk-ant-[A-Za-z0-9_-]{20,}|gh[pousr]_[A-Za-z0-9]{30,}|github_pat_[A-Za-z0-9_]{60,}|AKIA[0-9A-Z]{16})'
-# Ortam/env biçiminde şifre ataması (ANAHTAR=değer, '=' çevresinde boşluk yok). DEĞER ŞART: ilk karakteri harf/rakam
-# ya da !#%&*+/@^_~- olmalı. Eşleşmez: <yer-tutucu>, boş değer, ${...}, "...", belge metnindeki `PGPASSWORD=,` /
+# Ortam/env biçiminde şifre ataması (ANAHTAR=değer, '=' çevresinde boşluk yok). DEĞER ŞART: ilk karakter boşluk,
+# tırnak, < $ , ; ) ] } dışında HERHANGİ bir şey (nokta/soru/parantez/köşeli ile başlayan şifreler de yakalanır). Eşleşmez: <yer-tutucu>, boş değer, ${...}, "...", belge metnindeki `PGPASSWORD=,` /
 # `X=)` gibi değersiz anılar ve XSRF-TOKEN gibi tireli adlar (çerez adı); Java `X = "..."` sabitleri (boşluklu) de.
-D_SIFRE='(?<![\w-])(?:[A-Z0-9_]*_)?(?:PASSWORD|SECRET|TOKEN|API_KEY)=["\x27]?(?!\.\.\.)[\w!#%&*+/@^~-]'
+D_SIFRE='(?<![\w-])(?:[A-Z0-9_]*_)?(?:PASSWORD|SECRET|TOKEN|API_KEY)=["\x27]?(?!\.\.\.)[^\s<$"\x27\x60,;)\]}]'
 # Spring/YAML/kabuk biçimleri (satır başında anahtar; büyük-küçük harf duyarsız): spring.datasource.password=x,
 # YAML `  password: x`, PGPASSWORD=x, export DB_PASS=x. Eşleşmez: ${...}, <yer-tutucu>, ..., boş değer; satır
 # başına bağlı olduğundan Java/JS kodundaki `String password = ...` gibi tanımlar da eşleşmez. Değer D_SIFRE'deki
-# gibi gerçek bir karakterle başlamalı (`password=,` / `password:)` belge anısı eşleşmez).
-D_SIFRE_AYAR='(?i)^\s*(export\s+)?[\w.-]*(password|passwd|_pass|secret|api[_-]?key)\s*[=:]\s*["\x27]?(?!\.\.\.)[\w!#%&*+/@^~-]'
+# gibi: ilk karakter boşluk, tırnak, , ; ) ] } dışında herhangi bir şey; `$X` yakalanır, yalnız `${` hariç
+# (`password=,` / `password:)` belge anısı eşleşmez).
+D_SIFRE_AYAR='(?i)^\s*(export\s+)?[\w.-]*(password|passwd|_pass|secret|api[_-]?key)\s*[=:]\s*["\x27]?(?!\$\{|<|\.\.\.)[^\s"\x27\x60,;)\]}]'
 
 D_EPOSTA='[A-Za-z0-9._%+-]+@(gmail|hotmail|outlook|yahoo|icloud)\.com'
 D_HOSTINGER='hstgr\.cloud'
