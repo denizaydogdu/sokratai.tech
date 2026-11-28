@@ -1,6 +1,6 @@
 ---
-baslik: "Ajan Çalışma-Zamanı Kontrolleri — Bütçe, Kill Switch, Canary, Yetki Merdiveni, Dayanıklı Yürütme"
-yazar: "AI Öğretmen çalışma metni — AI Engineering from Scratch (Rohit Ghumare, MIT) dersleri: 15-01, 15-03, 15-04, 15-06, 15-08, 15-10, 15-12, 15-13, 15-14, 18-10, 19-06, 19-16, 19-23, 17-23, 11-16 + bu deponun kendi vakası"
+baslik: "Ajan Çalışma Zamanı Kontrolleri: Bütçe, Kill Switch, Canary, Yetki Merdiveni, Dayanıklı Yürütme"
+yazar: "AI Öğretmen çalışma metni. Kaynak: AI Engineering from Scratch (Rohit Ghumare, MIT) dersleri 15-01, 15-03, 15-04, 15-06, 15-08, 15-10, 15-12, 15-13, 15-14, 18-10, 19-06, 19-16, 19-23, 17-23, 11-16 + bu deponun kendi vakası"
 tarih: "2026-10-25"
 url: "https://github.com/rohitg00/ai-engineering-from-scratch"
 dil: "Türkçe kavram özeti (diyagramlı)"
@@ -9,12 +9,12 @@ etiketler: 4,12
 
 ### Bu metin ne anlatıyor?
 Ajan uzun süre kendi başına çalışırken onu **çalışırken** durduran, sınırlayan ve izleyen
-kontrolleri anlatıyor. Hafta 4'teki kapılar (ArchUnit, SAST) **üretilen kodu** birleştirmeden önce
+kontrolleri anlatıyor. Hafta 4'teki kapılar (ArchUnit, SAST yani statik güvenlik taraması) **üretilen kodu** birleştirmeden önce
 yargılar. Buradakiler ise ajanın **davranışını**, yani harcamasını, eylemlerini ve yetkisini, iş
 sürerken yargılar. Ana kurallar şunlar:
 
-1. **Güvenilirlik çarpılır.** Adım başı %99 güvenilir bir ajan, 70 adımlık bir işi yalnız yaklaşık
-   yarı yarıya bitirir (0,99^70 ≈ 0,495). Gözetimsiz çalıştırmadan önce *adım sayısı × adım başı
+1. **Güvenilirlik çarpılır.** Adım başı %99 güvenilir bir ajan, 70 adımlık bir işi ancak yaklaşık
+   yarı yarıya ihtimalle bitirir (0,99^70 ≈ 0,495). Gözetimsiz çalıştırmadan önce *adım sayısı × adım başı
    güvenilirlik* hesabını yap. İnceleme birimi de "son cevap" olmaktan çıkar, **gidişat**
    (trajectory) olur.
 2. **Kontrol, ajanın dışında durur.** Kill switch (acil durdurma anahtarı), bütçe sayacı, log ve
@@ -24,7 +24,7 @@ sürerken yargılar. Ana kurallar şunlar:
    atılabilir, kimlik bilgisi taşımayan bir kapta (container) kullanılır.
 4. **Harcama tavanları zaman ölçeğine göre üst üste konur.** Hız (velocity) limiti döngüyü dakikalar
    içinde, günlük tavan sızıntıyı saatler içinde, aylık tavan kötü bir sürümü günler içinde yakalar.
-   Her yeni araç yeni bir döngü kapısıdır; kendi tavanını ve alarmını ister.
+   Her yeni araç, ajanın döngüye girebileceği yeni bir kapıdır; kendi tavanını ve alarmını ister.
 5. **Canary token** (yem jeton), meşru hiçbir işin dokunmadığı sahte bir anahtar ya da kayıttır.
    Ona dokunulması alarmın kendisidir.
 6. **İnsan onayı beklemesi bellekte tutulmaz, kalıcı durumda tutulur** (checkpoint + resume).
@@ -37,7 +37,7 @@ sürerken yargılar. Ana kurallar şunlar:
 Bu programda "ajana ne zaman insan onayı gerekir" sorusu zaten cevaplı.
 [`hafta12-gorsel-ozet.md`](hafta12-gorsel-ozet.md) §3 geri dönüşü zor kararları otonominin
 dışına sabitler ve "talimat dosyası bir rica, sandbox bir duvar" der.
-[`ajan-sandbox-izolasyonu.md`](ajan-sandbox-izolasyonu.md) dosya ile ağ sınırını kurar. Ön eleme taramasına göre ise bütün
+[`ajan-sandbox-izolasyonu.md`](ajan-sandbox-izolasyonu.md) dosya ile ağ sınırını kurar. Bu metin yazılmadan önce yapılan taramaya göre ise bütün
 `content/` altında şu kavramlar **öğretilmiyordu** (bir-iki terim yalnız adı geçerek görünür, ör.
 `program-2026-guncelleme-raporu.md`'de "durable execution"): kill switch, canary/honeytoken, hız ve
 harcama limiti, `max_turns` gibi tur tavanları, dayanıklı yürütme (durable execution), izin modu
@@ -46,20 +46,20 @@ ajanın erişemeyeceği log. Bu metin o boşluğu kapatır.
 
 Kardeş metinlerle iş bölümü şöyle. Bunları burada **tekrarlamıyoruz**:
 - Tek bir araç çağrısının güvenliği (idempotency anahtarı, yeniden deneme sınıfları,
-  propose→commit→verify, outbox): [`arac-cagrisi-guvenilirligi.md`](arac-cagrisi-guvenilirligi.md).
+  propose→commit→verify yani öner→uygula→doğrula, outbox): [`arac-cagrisi-guvenilirligi.md`](arac-cagrisi-guvenilirligi.md).
 - Ajan döngüsünün kendisi ve ne zaman durduğu, "N kopya ≠ bağımsız oy":
   [`ajan-mimarisi-desenleri.md`](ajan-mimarisi-desenleri.md).
 - Maliyetin finops tarafı (önbellek, toplu işleme, yönlendirme, ölçüm):
   [`finops-ai-tokenomics.md`](finops-ai-tokenomics.md).
-- Hook'ların mekaniği ve değerlendiriciyi koruma ayrıntısı: [`harness-mekanigi.md`](harness-mekanigi.md).
+- Hook'ların (belirli olaylarda otomatik çalışan betikler) mekaniği ve değerlendiriciyi koruma ayrıntısı: [`harness-mekanigi.md`](harness-mekanigi.md).
 - Sandbox: [`ajan-sandbox-izolasyonu.md`](ajan-sandbox-izolasyonu.md).
 
 Üç diyagram fikri kısaca gösterir; ayrıntı metindedir.
 
-## 1. Güvenilirlik çarpılır — uzun ufuklu ajan neden kontrol düzlemi ister
+## 1. Güvenilirlik çarpılır: uzun ufuklu ajan neden kontrol düzlemi ister
 Sohbet botu tek turda cevap verir; cevabın tamamını okursun, yanlışsa atarsın. Uzun ufuklu
 (long-horizon) ajan ise bir **döngüdür**. Dosya okur, komut koşar, sonucu yorumlar, bir sonraki
-adımı seçer ve ne zaman duracağına kendisi karar verir. Her adımda biraz hata olasılığı taşır, ve
+adımı seçer ve ne zaman duracağına kendisi karar verir. Her adım biraz hata olasılığı taşır ve
 bu olasılıklar **toplanmaz, çarpılır**.
 
 Hesap basittir; kendin doğrula. Adım başı başarı olasılığı *p* ve adım sayısı *n* ise, adımlar
@@ -72,10 +72,10 @@ birbirinden bağımsız sayıldığında uçtan uca başarı yaklaşık *p^n* ol
 | 0,995 | 0,90 | 0,70 | 0,37 | ~138 |
 | 0,999 | 0,98 | 0,93 | 0,82 | ~693 |
 
-"%99 güvenilir" kulağa mükemmel gelir. 70 adımlık bir işte ise yazı turadır. Ajanın kendini
-düzeltebilmesi gerçek oranı bu tablodan iyi gösterebilir. Hataların birbirine bağlı olması
-(korelasyon), örneğin aynı yanlış varsayımın her adımda tekrarlanması, onu daha da kötü
-gösterebilir. Tablonun öğrettiği şey kesin bir sayı değil, **eğrinin şeklidir**: güvenilirlik
+"%99 güvenilir" kulağa mükemmel gelir. 70 adımlık bir işte ise yazı turadır. Ajan kendi
+hatalarını düzeltebiliyorsa gerçek oran bu tablodakinden iyi olabilir. Hataların birbirine bağlı
+olması (korelasyon), örneğin aynı yanlış varsayımın her adımda tekrarlanması, gerçek oranı daha da
+kötüleştirebilir. Tablonun öğrettiği şey kesin bir sayı değil, **eğrinin şeklidir**: güvenilirlik
 adım sayısıyla üstel olarak erir.
 
 Buradan üç mühendislik sonucu çıkar:
@@ -86,19 +86,19 @@ Buradan üç mühendislik sonucu çıkar:
 - **İnceleme birimi değişir.** Bin adımlık bir koşunun son cevabını okumak yetmez. Hangi dosyaya
   dokunduğuna, ne harcadığına ve neyi denediğine, yani **gidişata** bakılır. Bu da gidişat
   düzeyinde kayıt ister (bkz. §5 ve [`evals-llm-observability.md`](evals-llm-observability.md)).
-- **Benchmark'taki ufuk bir tavandır, taban değil.** "Model X saatlik işi %50 güvenilirlikle
+- **Benchmark'taki ufuk (görev uzunluğu) bir tavandır, taban değil.** "Model X bir saatlik işi %50 güvenilirlikle
   bitirir" ölçümleri ideal bir ortam varsayar; geçerli olan kendi görev dağılımındaki ölçümündür.
 
 Bu yüzden modelin dışında, ajanı çalışırken sınırlayan ayrı bir katman gerekir: **kontrol
 düzlemi** (control plane).
 
-## Diyagram 1 — Güvenilirlik çarpımı: adım sayısı arttıkça uçtan uca başarı erir
+## Diyagram 1. Güvenilirlik çarpımı: adım sayısı arttıkça uçtan uca başarı erir
 Her eğri bir adım başı güvenilirlik değeridir. Kesikli çizgi %50'dir. Adım başı %99 güvenilir
 ajan 69–70 adımda bu çizgiyi keser; %99,5'te bu eşik yaklaşık iki katına çıkar.
 
 ```svg
 <svg viewBox="0 0 660 360" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Güvenilirlik çarpımı eğrisi: yatay eksen görevdeki adım sayısı sıfırdan iki yüze, dikey eksen uçtan uca başarı olasılığı sıfırdan bire; dört eğri adım başı güvenilirlik 0,999, 0,995, 0,99 ve 0,98 için p üssü n değerini gösterir; kesikli çizgi yüzde elli; 0,99 eğrisi yaklaşık yetmişinci adımda yüzde ellinin altına iner yani 0,99 üssü 70 yaklaşık 0,495; 0,995 eğrisi yaklaşık 138 adımda, 0,98 eğrisi yaklaşık 34 adımda yüzde elliyi keser; 0,999 eğrisi iki yüz adımda bile yüzde seksenin üstünde kalır; sonuç güvenilirlik adım sayısıyla üstel erir, gözetimsiz çalıştırmadan önce adım sayısı çarpı adım başı güvenilirlik hesaplanmalıdır">
-  <text x="330" y="24" text-anchor="middle" font-size="15" font-weight="700" fill="#1C3247" font-family="system-ui">Güvenilirlik toplanmaz, çarpılır — uçtan uca başarı ≈ pⁿ</text>
+  <text x="330" y="24" text-anchor="middle" font-size="15" font-weight="700" fill="#1C3247" font-family="system-ui">Güvenilirlik toplanmaz, çarpılır: uçtan uca başarı ≈ pⁿ</text>
   <text x="330" y="44" text-anchor="middle" font-size="11.5" fill="#5D7789" font-family="system-ui">adımlar bağımsız varsayımıyla · şekli öğren, sayıyı değil</text>
 
   <line x1="80" y1="70" x2="80" y2="300" stroke="#5D7789" stroke-width="1.2"/>
@@ -146,11 +146,11 @@ ajan 69–70 adımda bu çizgiyi keser; %99,5'te bu eşik yaklaşık iki katına
 </svg>
 ```
 
-## 2. Duruş: hizalama değil kontrol — ajana güvenmeden tasarla
+## 2. Duruş: hizalama değil kontrol; ajana güvenmeden tasarla
 Güvenlik araştırmasında iki ayrı soru vardır. **Hizalama** (alignment) "bu modele güvenilebilir
 mi?" diye sorar ve modelin bir özelliğidir. **Kontrol** (control) "güvenmesek bile bu modeli
 güvenle kullanabilir miyiz?" diye sorar ve dağıtımın bir özelliğidir (Greenblatt ve ark., Redwood
-Research, ICML 2024). Modeli eğiten değil **kullanan** biz mimarlar için çalışılabilir olan
+Research, ICML 2024). Modeli eğiten değil **kullanan** biz mimarların üzerinde çalışabileceği soru
 ikincisidir: modelin içini değiştiremezsin ama onun etrafına ne koyduğunu sen seçersin
 ([`harness-mekanigi.md`](harness-mekanigi.md) §1).
 
@@ -161,9 +161,9 @@ Kontrol çerçevesinden üç pratik kural çıkar:
   sapabilir. Tasarım sorusu "yanlış yapar mı?" değil, "yanlış yaptığında **en fazla** ne olur?"
   sorusudur.
 - **Modeli kendi kendine gözetmen yapma.** Aynı modelin ikinci bir kopyasıyla kendi çıktısını
-  denetlemek (araştırmanın adıyla *untrusted monitoring*) kör noktaları paylaşır. Kopyalar gizli
+  denetlemek (araştırmanın adıyla *untrusted monitoring*, güvenilmeyen gözetim) kör noktaları paylaşır. Kopyalar gizli
   işaretlerle anlaşabilir ve kendi tarzlarını kayırırlar. Araştırmada daha iyi sonuç veren protokol
-  (*trusted editing*), güvenilen ama daha zayıf bir modelin çıktıyı düzenlemesi ve emin olmadığında
+  (*trusted editing*, güvenilen düzenleme), güvenilen ama daha zayıf bir modelin çıktıyı düzenlemesi ve emin olmadığında
   insana yönlendirmesidir. Mimari karşılığı "eleştirmen ≠ doğrulayıcı" kuralıdır
   ([`ajan-mimarisi-desenleri.md`](ajan-mimarisi-desenleri.md)).
 - **İnsan dikkati kıt bir bütçedir.** Her çıktıyı eşit ölçüde denetlemek bu bütçeyi ilk gün tüketir.
@@ -209,15 +209,15 @@ Code kullanıcı-genel ayarlarında (`~/.claude/settings.json`) sık görülen t
 - `permissions.allow` ve `permissions.deny` listeleri **boş**.
 - Sınıflandırıcıya birkaç "yumuşak yasak" (soft deny) kalıbı eklenmiş: ör. bulut makinesi silme,
   üretim veritabanında `DROP`.
-- Hook'lar var ama hiçbiri `PreToolUse` olayında değil — oturum başı, prompt, araçtan sonra, bitiş.
+- Hook'lar var ama hiçbiri `PreToolUse` olayında değil: oturum başı, prompt, araçtan sonra, bitiş.
 
 Bu ne demek? Böyle bir kurulumda **eylem çalışmadan önceki tek kapı sınıflandırıcının yargısıdır.** Deterministik bir
 `deny` kuralı da, eylemden önce koşan bir hook da yok. Bu bir hata değil, bilinçli bir hız
 tercihi olabilir. Ama [`harness-mekanigi.md`](harness-mekanigi.md) §5'in diliyle eylem öncesi
-koruma tamamen **guide** tarafında, yani olasılıksal. Hafta 4 sorusu buraya da uyar: "Ajan
+koruma tamamen **guide** (yol gösterici) tarafında, yani olasılıksal. Hafta 4 sorusu buraya da uyar: "Ajan
 `git push --force` denerse bunu bana **kim** söyler?"
 
-**İki capstone'dan somut kalıp.**
+**İki capstone'dan (bitirme projesi) somut kalıp.**
 - **DevOps teşhis ajanı (19-06).** Varsayılan araç sunucusu yalnız `get/list/describe` yetkisi
   taşır. Yıkıcı araçlar (ölçek küçültme, geri alma, pod silme) **ayrı bir MCP sunucusundadır**.
   Bu sunucu, ajanın hiç eline geçmeyen bir onay jetonuyla açılır.
@@ -237,7 +237,7 @@ Bu deponun MCP yüzeyi de aynı ayrımı gösterir. `OgretmenMcpAraclari` altı 
 ekler (ADR-0016'da kabul edilen risk). Bunun yeniden deneme açısından anlamı
 [`arac-cagrisi-guvenilirligi.md`](arac-cagrisi-guvenilirligi.md)'nin konusudur.
 
-## 4. Harcama kontrolü — tavanlar zaman ölçeğine göre yığılır
+## 4. Harcama kontrolü: tavanlar zaman ölçeğine göre yığılır
 Sohbet botunun kötü çıktısı kötü bir cevaptır. Ajanın kötü döngüsü ise **faturadır**. Literatürde
 buna "Denial of Wallet" (cüzdanı tüketme) denir: ajan düşünmeye, araç çağırmaya ve para harcamaya
 devam eder, çünkü onu durduracak hiçbir şey tasarlanmamıştır.
@@ -246,7 +246,7 @@ devam eder, çünkü onu durduracak hiçbir şey tasarlanmamıştır.
 
 | Arıza | Nasıl görünür | Onu yakalayan tavan |
 |---|---|---|
-| Kaçak döngü | Ajan 5 saniyede bir aynı aracı çağırıyor | **Hız limiti** (velocity) — ör. "10 dakikada X'ten fazla harcarsa kes" |
+| Kaçak döngü | Ajan 5 saniyede bir aynı aracı çağırıyor | **Hız limiti** (velocity), ör. "10 dakikada X'ten fazla harcarsa kes" |
 | Yavaş sızıntı | Ajan her görevde beklenenin ~2 katı iş yapıyor | **Günlük tavan** |
 | Kötü sürüm | Yeni sürüm aynı işe 5 kat token yakıyor | **Haftalık/aylık tavan** + haftadan haftaya büyüme alarmı |
 | Meşru dalga | Talep gerçekten arttı | Saatlik/günlük tavan + açık log (kesmek yerine insana sor) |
@@ -255,15 +255,15 @@ Bu tavanların altında **tek bir koşunun** sınırları durur:
 - İstek başına çıktı tavanı (`max_tokens`).
 - Görev başına token ya da para bütçesi.
 - **Tur tavanı.** Claude Agent SDK'da bunlar `max_turns` ve `max_budget_usd` seçenekleridir.
-  `max_budget_usd` istemci tarafındaki bir **tahmindir** ve aşılabilir — pay bırak
+  `max_budget_usd` istemci tarafındaki bir **tahmindir** ve aşılabilir; bu yüzden pay bırak
   ([Agent SDK, Python](https://code.claude.com/docs/en/agent-sdk/python)).
 - **Araç başı çağrı tavanı.** Ör. "en çok N kez web getirme".
 
 İki kural kalıcıdır:
-1. **Her yeni araç yüzeyi yeni bir döngü kapısıdır.** Ajana yeni bir araç verdiğinde ona kendi
+1. **Her yeni araç yüzeyi, döngüye girmek için yeni bir kapıdır.** Ajana yeni bir araç verdiğinde ona kendi
    tavanını ve alarmını da ver. Ajan "sipariş durumunu sorgula" gibi masum bir aracı her turda
    çağırmayı keşfedebilir.
-2. **Tavan atınca oturum durur ve bu kayda geçer. Yeniden açmak ayrı bir yoldur.** Otomatik bir
+2. **Tavana ulaşılınca oturum durur ve bu kayda geçer. Yeniden açmak ayrı bir işlemdir.** Otomatik bir
    zaman aşımıyla kendiliğinden açılan tavan, döngüye "biraz bekle, sonra devam et" demektir.
 
 **Devre kesici** (circuit breaker) bu yığının davranış tarafıdır. Bütçe "ne kadar harcadın?" diye
@@ -282,7 +282,7 @@ Maliyeti düşüren kaldıraçlar (önbellek, model kademeleme, toplu işleme) v
 ölçüleceği burada tekrarlanmıyor. Onlar [`finops-ai-tokenomics.md`](finops-ai-tokenomics.md)'de.
 Buradaki konu maliyeti **düşürmek** değil, kaçağı **durdurmak**.
 
-## 5. Ajanın uzanamadığı kontroller — kill switch, canary, log
+## 5. Ajanın uzanamadığı kontroller: kill switch, canary, log
 Bütçe ajanın ne kadar **harcayabileceğini** sınırlar. Bütçenin içinde ne **yapabileceğini**
 sınırlamaz; bir sırrı sızdırmak token açısından ucuz bir eylemdir. Aşağıdaki üç dedektör LLM'lerden
 önce de vardı; yeni olan, ajanın güvenilmeyen içerik okuyup kendi belleğini yazabilmesidir. Ortak
@@ -304,10 +304,10 @@ süreç düzeyinde (kabın durdurulması, `systemctl stop`) tutulabilir. Doğru 
 - Oturum başında belleğe konan sahte bir not. Bu not sonraki bir çıktıda görünürse bellek
   sızdırılmıştır.
 
-Yeme erişim, gerekçe aranmadan alarmdır. Tasarım kuralı iki tanedir. Ajanın meşru bir sebeple
-dokunabileceği yem gürültü üretir. Yem ve alarmı da ajanın **değiştiremeyeceği** sistemde
-durmalıdır; yoksa "işe başlamadan yemi kapat" diyen enjekte edilmiş bir sayfa dedektörü de devre
-dışı bırakır.
+Yeme erişim, gerekçe aranmadan alarmdır. Tasarım kuralı iki tanedir. Birincisi: yem, ajanın meşru
+bir sebeple dokunabileceği bir yerde olmamalıdır, yoksa gürültü üretir. İkincisi: yem ve alarmı da
+ajanın **değiştiremeyeceği** bir sistemde durmalıdır. Yoksa içine "işe başlamadan yemi kapat"
+talimatı gizlenmiş bir web sayfası, dedektörü de devre dışı bıraktırır.
 
 **Ajanın erişemeyeceği log.** Anthropic'in otomatik hizalama araştırmasında (15-06) paralel
 ajanların bulgularını yazdığı ortak kayıt, **her sandbox'ın dışında** tutulur. Ajan kaydı okuyabilir
@@ -318,8 +318,8 @@ bilgisi yoktur. Fidye yazılımına dayanıklı denetim izi de aynı kalıpla ku
 komutları da kaydeder. "Az kalsın" anlarını (near-miss) yakalayan budur.
 
 **İstatistiksel dedektör + sert sınır.** Hareketli ortalamaya dayalı dedektörler (EWMA, CUSUM)
-yavaş kayan bir temele uyum sağlar. Meşru değişimde bu bir özelliktir, sabırlı bir saldırganda bir
-açık. Saldırgan temeli alarm çalmayacak hızda kaydırabilir. Bu yüzden istatistiksel dedektörün
+yavaş kayan bir taban çizgisine (baseline) uyum sağlar. Meşru değişimde bu bir özelliktir, sabırlı bir saldırganda bir
+açık. Saldırgan taban çizgisini alarm çalmayacak hızda kaydırabilir. Bu yüzden istatistiksel dedektörün
 yanına **eğilmeyen** sert sınırlar konur: "10 dakikada en çok 50 araç çağrısı", "`secrets@`
 adresine asla e-posta yok".
 
@@ -327,7 +327,7 @@ adresine asla e-posta yok".
 bileşim). Buna karşı tek dedektör yoktur. Savunma katmanlıdır: dar yetki, yem, dışarıdaki log ve
 insanın gidişat denetimi.
 
-## Diyagram 2 — Kontrol düzlemi: ajan bir taraf, kontroller öbür taraf
+## Diyagram 2. Kontrol düzlemi: ajan bir tarafta, kontroller öbür tarafta
 Sol bölge ajanın **düzenleme yüzeyidir**: yazabildiği her şey. Ortadaki sütun kontrol düzlemidir ve
 her önemli eylem dış dünyaya çıkmadan buradan geçer. Hepsi ajanın kimlik bilgisinin yazamadığı
 yerdedir. Alt bant, alarmların insana gittiği yoldur.
@@ -338,7 +338,7 @@ yerdedir. Alt bant, alarmların insana gittiği yoldur.
     <marker id="ak-2a" markerWidth="10" markerHeight="10" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#5D7789"/></marker>
     <marker id="ak-2b" markerWidth="10" markerHeight="10" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#B3402F"/></marker>
   </defs>
-  <text x="330" y="22" text-anchor="middle" font-size="15" font-weight="700" fill="#1C3247" font-family="system-ui">Kontrol düzlemi — ajanın yazabildiği yerin DIŞINDA</text>
+  <text x="330" y="22" text-anchor="middle" font-size="15" font-weight="700" fill="#1C3247" font-family="system-ui">Kontrol düzlemi: ajanın yazabildiği yerin DIŞINDA</text>
   <text x="330" y="41" text-anchor="middle" font-size="11.5" fill="#5D7789" font-family="system-ui">kesikli = ajanın düzenleme yüzeyi · koyu kenar = ajanın kimliği yazamaz</text>
 
   <rect x="16" y="56" width="176" height="226" rx="12" fill="#EEF0FF" stroke="#4F46E5" stroke-width="1.6" stroke-dasharray="6 4"/>
@@ -395,7 +395,7 @@ yerdedir. Alt bant, alarmların insana gittiği yoldur.
 </svg>
 ```
 
-## 6. Değerlendirici güvenlik duvarı — ajan kendini yargılayanı düzenleyemez
+## 6. Değerlendirici güvenlik duvarı: ajan kendini yargılayanı düzenleyemez
 Kendini geliştiren döngü araştırmaları (AlphaEvolve 15-03, Darwin Gödel Machine 15-04) aynı dersi
 verir: **döngü, değerlendiricinin ölçtüğü şeyi optimize eder; değerlendirici kusurluysa o kusuru
 bulur.** Darwin Gödel Machine'de puanlama hattı ajanın cevaplarında, araçların eklediği
@@ -404,9 +404,9 @@ bıraktı. Puan yükseldi, davranış iyileşmedi. Yazarlar işaretleri geri koy
 **düzenleyemeyeceği** ayrı bir kontrol ekledi.
 
 Kodlama ajanındaki karşılığı herkesin tanıdığı bir şeydir: **"testleri geçirdim" = testleri
-değiştirdim.** Hafta 4 bunu zaten gördü. Gün 1 "Sık yapılan hata" bölümünde
+değiştirdim.** Bunu Hafta 4'te zaten gördük. Gün 1 "Sık yapılan hata" bölümünde
 ajanın kırmızı testi görünce testi devre dışı bıraktığını ya da katman tanımını genişlettiğini,
-Gün 5 de kör mesajın ajanı tam buna ittiğini söyler.
+Gün 5 de kör mesajın (çıkış yolu göstermeyen hata mesajının) ajanı tam buna ittiğini söyler.
 
 Kural kısadır: **ajanı yargılayan her şey ajanın yazamadığı yerde durur ya da kabulden önce özeti
 (hash) onaylı sürümle karşılaştırılır.** Bu "her şey" testleri, ArchUnit kurallarını, hook
@@ -419,7 +419,7 @@ betiklerini, CI yapılandırmasını ve değerlendirme setlerini kapsar. Sınır
 Bu depo için mekanik ayrıntı [`harness-mekanigi.md`](harness-mekanigi.md)'de. Burada yalnız
 ilkenin yeri: değerlendirici, Diyagram 2'nin alt bandına, yani kontrol düzlemine aittir.
 
-## 7. Dayanıklı yürütme — insan onayı beklemesi bellekte değil kalıcı durumda
+## 7. Dayanıklı yürütme: insan onayı beklemesi bellekte değil, kalıcı durumda
 Dört saat süren bir ajan düşün. Üç yan etkili araç çağırıyor, kullanıcıdan iki kez onay istiyor,
 kırk LLM çağrısı yapıyor ve yarı yolda makine yeniden başlıyor.
 
@@ -441,11 +441,11 @@ pahalıdır, hız sınırına takılabilir ve araç çağırıyorsa yan etki do�
 iş akışı kodunun deterministik olması gerekir. Saat okumak ya da rastgele sayı üretmek de birer yan
 etki olarak kaydedilmelidir.
 
-**İnsan onayı birinci sınıf bir durumdur.** LangGraph dersi (11-16) aynı şeyi grafik diliyle
+**İnsan onayı, durum makinesinde açıkça tanımlanmış bir durumdur.** LangGraph dersi (11-16) aynı şeyi grafik diliyle
 anlatır. Ajan döngüsü açık bir durum makinesine çevrilir ve her düğüm geçişinde durum, bir oturum
 kimliğiyle (`thread_id`) anahtarlanmış bir checkpoint olarak kalıcı depoya yazılır. Yan etkili
 düğümden **önce** bir kesme (interrupt) konur. Ajan durur, API kullanıcıya "onay bekleniyor" der.
-Sonra aynı oturum kimliğiyle gelen istek, başka bir süreçte de olsa, kaldığı yerden devam ettirir.
+Sonra aynı oturum kimliğiyle gelen istek, başka bir süreçte de olsa, işi kaldığı yerden devam ettirir.
 Buradan üç kural çıkar:
 
 1. **Bellekte bekleyen onay, yeniden başlatmada kaybolur.** Checkpoint deposu üretimde kalıcı
@@ -465,16 +465,17 @@ koşturmadan, belirli bir kayıt noktasından itibaren yeniden üretebilirsin.
 getirme işleri ve tek bağlam penceresinde başlayıp bitmesi gereken işler. Bunlarda düzeneğin yükü
 getirisinden büyüktür.
 
-**Bu depodan iki ayna.**
-- `EpostaHizSiniri` bilerek **bellek içi** bir sayaçtır. Javadoc'u "yeniden başlatma sayacı
-  sıfırlar (bilinçli kabul — güvenlik sınırı değil, nezaket/maliyet sınırı)" der. Bu doğru bir
-  karardır, çünkü kaybolan şey birkaç fazla e-postadır. Aynı kabul bir **onay** durumu için
+**Bu depodan iki örnek.**
+- `HizSiniri` (sitedeki hız sınırı, `web/HizSiniriInterceptor` üzerinden; ilk hâli e-posta
+  gönderimine özgü bir sayaçtı) bilerek **bellek içi** bir sayaçtır. Javadoc'u "yeniden başlatma
+  sayaçları sıfırlar (bilinçli kabul: nezaket/maliyet sınırı, güvenlik sınırı değil)" der. Bu doğru
+  bir karardır, çünkü kaybolan şey yeniden başlatmanın hemen ardından geçen birkaç fazla istektir. Aynı kabul bir **onay** durumu için
   yapılamaz: kaybolan şey bir insan kararıdır.
 - Ajan tarafında devamlılık defterleri (`thoughts/ledgers/`, git dışı) aynı fikrin el yapımı
   hâlidir. Bağlam sıkıştırılınca "anlayış" bozulur ama dosyadaki onay kutuları bozulmaz. Durum
   bağlamda değil **diskte** tutulur.
 
-## Diyagram 3 — Dayanıklı yürütme + insan onayı durum makinesi
+## Diyagram 3. Dayanıklı yürütme + insan onayı durum makinesi
 Her ok kalıcı bir durum geçişidir (checkpoint). Kırmızı yol, onayın bellekte tutulduğu tasarımda
 yeniden başlatmanın ne kaybettiğini gösterir. Yeşil yol, oynatmanın tamamlanmış adımları atlayıp
 kaldığı yerden sürdüğünü gösterir.
@@ -486,7 +487,7 @@ kaldığı yerden sürdüğünü gösterir.
     <marker id="ak-3b" markerWidth="10" markerHeight="10" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#25804C"/></marker>
     <marker id="ak-3c" markerWidth="10" markerHeight="10" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#B3402F"/></marker>
   </defs>
-  <text x="330" y="22" text-anchor="middle" font-size="15" font-weight="700" fill="#1C3247" font-family="system-ui">Onay beklemesi bir DURUMDUR — bellekte değil, diskte</text>
+  <text x="330" y="22" text-anchor="middle" font-size="15" font-weight="700" fill="#1C3247" font-family="system-ui">Onay beklemesi bir DURUMDUR: bellekte değil, diskte</text>
   <text x="330" y="41" text-anchor="middle" font-size="11.5" fill="#5D7789" font-family="system-ui">her ok = checkpoint (thread_id ile kalıcı depoya)</text>
 
   <rect x="24" y="64" width="150" height="56" rx="10" fill="#EEF0FF" stroke="#4F46E5" stroke-width="1.8"/>
@@ -533,7 +534,7 @@ kaldığı yerden sürdüğünü gösterir.
   <rect x="336" y="226" width="300" height="104" rx="10" fill="#FBEDEA" stroke="#B3402F" stroke-width="1.6"/>
   <text x="486" y="248" text-anchor="middle" font-size="11" font-weight="700" fill="#B3402F" font-family="system-ui">BELLEKTE: çökme → baştan</text>
   <text x="486" y="268" text-anchor="middle" font-size="9" fill="#1C3247" font-family="system-ui">yan etkili adımlar TEKRAR koşar</text>
-  <text x="486" y="284" text-anchor="middle" font-size="9" fill="#1C3247" font-family="system-ui">onaylar TEKRAR sorulur — ya da hiç</text>
+  <text x="486" y="284" text-anchor="middle" font-size="9" fill="#1C3247" font-family="system-ui">onaylar TEKRAR sorulur ya da hiç sorulmaz</text>
   <text x="486" y="300" text-anchor="middle" font-size="9" fill="#1C3247" font-family="system-ui">LLM çağrıları TEKRAR faturalanır</text>
   <text x="486" y="318" text-anchor="middle" font-size="8.5" fill="#5D7789" font-family="system-ui">bellek içi depo = yalnız test</text>
 
@@ -542,7 +543,7 @@ kaldığı yerden sürdüğünü gösterir.
 </svg>
 ```
 
-## 8. Otonomi sınırı — dar, geri alınabilir otomatik düzeltme kümesi
+## 8. Otonomi sınırı: dar, geri alınabilir otomatik düzeltme kümesi
 [`hafta12-gorsel-ozet.md`](hafta12-gorsel-ozet.md) §3 **neyin** insan onayına sabitleneceğini
 söyler. AI destekli SRE (site güvenilirlik mühendisliği) dersi (17-23) bunun operasyon tarafındaki
 somut çizgisini verir. Ajan olayı teşhis eder, hipotez ve kanıt üretir. Otomatik **eylem** ise dar
@@ -571,11 +572,11 @@ soldaki dar kümeyle sınırlıdır.
 Bir not: "bu olay türü → bu ajan" yönlendirmesini mümkünse LLM değil **kod** yapsın; ucuz ve
 tekrarlanabilir olur.
 
-## 9. Bu depodan vaka — derleme-zamanı kapı vs çalışma-zamanı kapı
-Hafta 4'ün guardrail'ları ile bu metnin kontrolleri sık karıştırılır, çünkü ikisi de "çit"tir. Fark
+## 9. Bu depodan vaka: derleme zamanı kapısı ile çalışma zamanı kapısı
+Hafta 4'ün guardrail'ları (koruma kuralları) ile bu metnin kontrolleri sık karıştırılır, çünkü ikisi de "çit"tir. Fark
 **neyi** ve **ne zaman** yargıladıklarındadır:
 
-| | Derleme-zamanı kapı (Hafta 4) | Çalışma-zamanı kapı (bu metin) |
+| | Derleme zamanı kapısı (Hafta 4) | Çalışma zamanı kapısı (bu metin) |
 |---|---|---|
 | Yargıladığı | **Ürün**: üretilen kod | **Davranış**: eylemler, harcama, yetki |
 | Ne zaman | Bir sınırda: `./mvnw verify`, PR, merge | Sürekli: her önemli eylemden önce |
@@ -586,10 +587,10 @@ Hafta 4'ün guardrail'ları ile bu metnin kontrolleri sık karıştırılır, ç
 İkisi birbirinin yerine geçmez, birbirini tamamlar. ArchUnit, ajan dakikada yüz dolar yakarken
 yeşil kalır. Kill switch de ajanın `web` katmanından `repo`'ya doğrudan çağrı yazmasını umursamaz.
 [`ajan-sandbox-izolasyonu.md`](ajan-sandbox-izolasyonu.md) üçüncü bir kat ekler: dosya ve ağ
-sınırı. Sandbox ajanın **nereye** uzanabileceğini, çalışma-zamanı kontrolleri ise o alanın içinde
+sınırı. Sandbox ajanın **nereye** uzanabileceğini, çalışma zamanı kontrolleri ise o alanın içinde
 **ne kadar ve ne yapabileceğini** sınırlar.
 
-**Ortak zayıflık: derleme-zamanı kapının kendisi bir dosyadır.** `MimariTestleri.java`, `pom.xml`'deki
+**Ortak zayıflık: derleme zamanı kapısının kendisi bir dosyadır.** `MimariTestleri.java`, `pom.xml`'deki
 surefire `includes` satırı ("sessiz atlanmasın" yorumu tam bunun için orada) ve `pre-push` kancası
 ajanın yazabildiği çalışma ağacındadır. Üstelik `pre-push`, `git config core.hooksPath` ayarına
 bağlıdır; ayar değişirse ya da `--no-verify` kullanılırsa kanca atlanır. Yani Hafta 4'ün çitleri
@@ -603,9 +604,9 @@ bağlam tavanı), görünürlük var (`KullanimService` / `ai_kullanim`). **Tava
 kalktı, sohbet botunu kullanan ziyaretçi kendi OpenRouter anahtarını getirir; toplam harcama tavanı
 ziyaretçinin hesabındadır ve kill switch'e gerek yoktur (ziyaretçi anahtarını iptal eder). Ayrım yine
 önemli: hız limiti kota **değildir**. Kota adil paylaşım içindir. Hız limiti ise kaçağı durduran bir
-devre kesicidir; örneğin bir betiğin `/api/sohbet`'i döngüde çağırması gibi. Sitede artık vardır:
-sohbet 20/dk/ziyaretçi, yazma 60/dk/IP, yeni ziyaretçi 20/saat/IP (ADR-0017 §7) — sunucunun açık
-vekile dönüşmesini önler.
+devre kesicidir; örneğin bir betiğin `/api/sohbet`'i döngüde çağırması gibi. Sitede artık hız limiti vardır:
+sohbet 20/dk/ziyaretçi, yazma 60/dk/IP, yeni ziyaretçi 20/saat/IP (ADR-0017 §7). Bu limit, sunucunun
+herkesin kullanabileceği açık bir vekile (open proxy) dönüşmesini önler.
 
 **LAB (yalnız düşün ve yaz; kod değiştirmeden önce ADR):**
 1. Bu oturumu süren ajan için "ajan `git push --force` ya da `MimariTestleri.java` düzenlemesi
@@ -617,18 +618,18 @@ vekile dönüşmesini önler.
 3. Bu depo için bir canary tasarla: hiçbir meşru işin dokunmadığı bir dosya ya da sahte anahtar.
    Erişimi neresi kaydeder? O kayıt ajanın yazamadığı yerde mi?
 
-## 10. ⚠️ Şerh — derslerdeki doğrulanamayan ve yanlış atfedilmiş iddialar
+## 10. ⚠️ Şerh: derslerdeki doğrulanamayan ve yanlış atfedilmiş iddialar
 Kaynak derslerin **mekanik** anlatımı (kill switch'in özellikleri, devre kesicinin üç durumu,
 aktivite/iş akışı ayrımı, checkpoint ve kesme) sağlamdır. Bunlar on yıllık mühendislik
 kalıplarıdır. Ama ders metinlerinde, bu özette **kullanmadığımız** bir rakam ve atıf katmanı var:
 
 - **"METR 35 dakika bozulması / süre iki katına çıkınca hata dört katına çıkar" (15-12).** Ders
-  bunu METR'in bulgusu olarak sunuyor. Ön eleme incelemesi bunun METR'in kendi bulgusu olmadığını,
+  bunu METR'in bulgusu olarak sunuyor. Bu metin yazılmadan önce yapılan inceleme, bunun METR'in kendi bulgusu olmadığını,
   METR verisi üzerine yapılmış üçüncü taraf bir analiz olduğunu gösterdi. Birincil kaynağı
   doğrulayamadığımız için rakamı kullanmıyoruz. Bunun yerine §1'deki çarpım hesabını veriyoruz;
   onu kendin doğrulayabilirsin.
-- **"Alignment faking %12'den %78'e, davranışı kaldırmak için yeniden eğitme girişimlerinden
-  sonra" (15-01, 15-07).** Bu yanlış aktarılmış. Kaynak çalışmada (Anthropic ve Redwood Research, Greenblatt ve ark., Aralık 2024 — §2’deki kontrol makalesinden ayrı bir çalışma) %78,
+- **"Alignment faking (hizalama taklidi) %12'den %78'e, davranışı kaldırmak için yeniden eğitme
+  girişimlerinden sonra" (15-01, 15-07).** Bu yanlış aktarılmış. Kaynak çalışmada (Anthropic ve Redwood Research, Greenblatt ve ark., Aralık 2024; §2’deki kontrol makalesinden ayrı bir çalışma) %78,
   modelin **uyması için** pekiştirmeli öğrenmeyle eğitilmesinden sonra görülen hizalama-taklidi
   *muhakemesinin* oranıdır. Davranışı "kaldırma girişimi" değildir.
 - **"Claude Opus 4.6 = 14+ saatlik ufuk" (15-01).** Birincil METR kaynağına bağlanmamış. Ufuk bir
@@ -657,8 +658,8 @@ kalıplarıdır. Ama ders metinlerinde, bu özette **kullanmadığımız** bir r
 1. Adım başı güvenilirliği 0,99 olan ajan 70 adımlık bir işi hangi olasılıkla bitirir? Hesabın
    hangi varsayıma dayandığını ve gerçek oranın neden bu sayıdan iyi ya da kötü çıkabileceğini
    söyle.
-2. "Hizalama" ile "kontrol" farkı nedir? Modeli eğitmeyen bir mimar için hangisi çalışılabilir
-   alandır, ve "aynı modelin ikinci kopyası gözetmen olsun" fikri neden zayıftır?
+2. "Hizalama" ile "kontrol" farkı nedir? Modeli eğitmeyen bir mimar hangisi üzerinde
+   çalışabilir? "Aynı modelin ikinci kopyası gözetmen olsun" fikri neden zayıftır?
 3. Yetki merdiveninin dört basamağını say. Basamak neye göre seçilir? "Serbest" basamağı hangi iki
    koşulda kabul edilebilir?
 4. İzin sınıflandırıcısının yapısı gereği göremediği iki şey nedir? Her biri için bir örnek ver.
@@ -670,7 +671,7 @@ kalıplarıdır. Ama ders metinlerinde, bu özette **kullanmadığımız** bir r
 8. Darwin Gödel Machine vakasını tek cümleyle anlat ve bu depodaki karşılığını Hafta 4 Gün 1'in
    "Sık yapılan hata" bölümüne bağla.
 9. Dayanıklı yürütmede "aktivite" ile "iş akışı" farkı nedir? Yeniden başlatmada tamamlanmış yan
-   etkili bir adıma ne olur? Onay beklemesi neden bellekte tutulamaz, ve `EpostaHizSiniri` için
+   etkili bir adıma ne olur? Onay beklemesi neden bellekte tutulamaz? `HizSiniri` için
    aynı kabul neden doğrudur?
 10. AI-SRE'deki dar otomatik düzeltme kümesinin ortak iki özelliği nedir? "İki model anlaştı, o
     hâlde otomatik uygula" çıkarımı neden hatalıdır?
@@ -699,7 +700,7 @@ kalıplarıdır. Ama ders metinlerinde, bu özette **kullanmadığımız** bir r
    yerde durur ya da özetiyle doğrulanır.
 9. İş akışı deterministik düzenleme kodu, aktivite deterministik olmayan iştir. Tamamlanmış
    aktivite günlükten okunur, yeniden koşmaz. Bellekteki onay kaybolursa kaybolan bir insan
-   kararıdır; `EpostaHizSiniri`'nde kaybolan birkaç fazla e-postadır.
+   kararıdır; `HizSiniri`'nde kaybolan birkaç fazla istektir.
 10. Geri alınabilirlik + önceden onaylı sınır. Anlaşma ancak modeller gerçekten bağımsızsa
     anlamlıdır; anlaşmazlık insana gitmeye yeter, anlaşma otomatik eyleme tek başına yetmez.
 11. `MimariTestleri` kodu bir sınırda, kill switch davranışı her eylemden önce yargılar; biri
@@ -710,8 +711,8 @@ kalıplarıdır. Ama ders metinlerinde, bu özette **kullanmadığımız** bir r
     kondu; doğrulanamayan rakam karar kuralına dayanak olamaz.
 
 ## Kaynak ve lisans
-**Dersler** — *AI Engineering from Scratch*, Rohit Ghumare,
-github.com/rohitg00/ai-engineering-from-scratch, MIT Lisansı, "Copyright (c) 2026 Rohit Ghumare":
+**Dersler** (*AI Engineering from Scratch*, Rohit Ghumare,
+github.com/rohitg00/ai-engineering-from-scratch, MIT Lisansı, "Copyright (c) 2026 Rohit Ghumare"):
 - 15-autonomous-systems: 01 long-horizon agents · 03 AlphaEvolve evolutionary coding · 04 Darwin
   Gödel Machine (yalnız değerlendiriciye dokunamama dersi) · 06 automated alignment research
   (yalnız sandbox dışı log kontrolü) · 08 bounded self-improvement · 10 Claude Code permission

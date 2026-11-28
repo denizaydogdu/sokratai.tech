@@ -1,6 +1,6 @@
 ---
 baslik: "Temeller Tazeleme: Developer Testing (Test Piramidi + TDD)"
-yazar: "Faz 0 — Mühendislik Temelleri"
+yazar: "Faz 0: Mühendislik Temelleri"
 tarih: "2026-07-10"
 dil: "Türkçe kavram özeti (diyagramlı)"
 etiketler: 4
@@ -9,7 +9,7 @@ etiketler: 4
 ### Bu metin ne anlatıyor?
 Bu metin, yazdığın kodun doğru çalıştığını **elle denemek yerine** yine kodla nasıl kontrol
 edeceğini anlatıyor. Bu kontrol programcıklarına "test" denir; bir kez yazılır, her
-değişiklikten sonra saniyeler içinde tekrar çalıştırılır. Metin sırasıyla şunları görüyor:
+değişiklikten sonra saniyeler içinde tekrar çalıştırılır. Metin sırasıyla şunları ele alıyor:
 test türleri ve aralarındaki fark, hangi türden ne kadar yazılacağı, testi önce yazma
 yöntemi (TDD), gerçek bağımlılıkların yerine konan sahte nesneler ve iyi bir testin
 nitelikleri.
@@ -19,26 +19,27 @@ Test yazmak "fazladan iş" değil, **değişim güvenliğidir**: kodu yarın boz
 değiştirebilmenin sigortasıdır. Bu programda yapay zekâ ajanlarına kod yazdırırken de aynısı
 geçerli: burada **ajan (agent)**, verilen görevi kendi başına adım adım yürüten yapay zekâ
 programıdır; **harness** ise o ajanı çalıştıran, ona araç ve geri bildirim sağlayan çerçeve
-düzenektir. Bu düzenekte testler ajanın **sensörüdür** (sensor) — bir değişikliğin doğru mu
-yanlış mı olduğunu ajana **okunur (legible)**, yani makinece anlaşılır ve **zorlanabilir
-(enforceable)**, yani geçilmeden ilerlenemez biçimde söyleyen geri-besleme kanalı.
+düzenektir. Bu düzenekte testler ajanın **sensörüdür** (sensor): bir değişikliğin doğru mu
+yanlış mı olduğunu ajana söyleyen geri bildirim kanalıdır. Bu bilgiyi **okunur (legible)**,
+yani makinenin anlayacağı biçimde ve **zorlanabilir (enforceable)**, yani test geçmeden
+ilerlenemeyecek biçimde verir.
 
 ## 1. Test türleri: birim (unit) · entegrasyon (integration) · uçtan-uca (E2E)
 Üç tür test, sistemi farklı büyüklükte "dilimler" halinde sınar; kapsam büyüdükçe
 gerçekçilik artar ama hız düşer, maliyet yükselir:
 
 - **Birim testi (unit test):** Tek bir sınıfı/fonksiyonu **izole** sınar. Bağımlılıklar
-  sahte nesnelerle (test double — 4. bölüm) değiştirilir; disk, ağ, veritabanı yoktur.
+  sahte nesnelerle (test double, bkz. 4. bölüm) değiştirilir; disk, ağ, veritabanı yoktur.
   Milisaniyelerle ölçülür. "Bu hesap doğru mu?" sorusunu yanıtlar.
 - **Entegrasyon testi (integration test):** Birkaç bileşenin **birlikte** doğru
-  konuştuğunu sınar — örneğin servis + repository + gerçek veritabanı (DB). Daha
+  çalıştığını sınar. Örnek: servis + repository + gerçek veritabanı (DB). Daha
   gerçekçi ama daha yavaş; kurulum (test veritabanı, container) gerektirir.
 - **Uçtan-uca test (end-to-end / E2E):** Sistemi kullanıcı gibi baştan sona sınar
   (HTTP isteği → tüm katmanlar → yanıt). En gerçekçi ama en yavaş, en kırılgan
   (flaky) ve en pahalı olanı.
 
-Aşağıdaki diyagram, aynı davranışın birim testinde tek sınıfla, entegrasyon testinde
-ise birden çok bileşen artı veritabanıyla sarıldığını gösteriyor:
+Aşağıdaki diyagram iki testin kapsamını karşılaştırıyor: birim testi yalnız tek bir sınıfı,
+entegrasyon testi ise birden çok bileşeni ve veritabanını kapsar:
 
 ```svg
 <svg viewBox="0 0 640 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Kapsam farkı: birim testi tek sınıfı sarar, entegrasyon testi birkaç bileşen ve veritabanını sarar">
@@ -71,8 +72,8 @@ ise birden çok bileşen artı veritabanıyla sarıldığını gösteriyor:
 Sağlıklı bir test takımı **piramit** biçimindedir: geniş bir birim testi tabanı, daha
 az entegrasyon testi, tepede çok az E2E testi. Neden? Çünkü aşağı indikçe testler
 **daha çok, daha hızlı ve daha ucuz**; yukarı çıktıkça **daha az, daha yavaş, daha
-pahalı ve daha kırılgan** olur. Ters piramit (çoğu E2E) yavaş ve güvenilmez bir yapı
-üretir — "dondurma külahı" (ice-cream cone) anti-deseni.
+pahalı ve daha kırılgan** olur. Ters piramit (testlerin çoğu E2E) yavaş ve güvenilmez bir
+test takımı üretir. Bu kötü desenin adı "dondurma külahı"dır (ice-cream cone anti-pattern).
 
 ```svg
 <svg viewBox="0 0 640 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Test piramidi: geniş taban birim testi, orta entegrasyon, ince tepe uçtan-uca; aşağı çok hızlı ucuz, yukarı az yavaş pahalı">
@@ -101,16 +102,16 @@ pahalı ve daha kırılgan** olur. Ters piramit (çoğu E2E) yavaş ve güvenilm
 
 **Şerh:** Piramit bir başparmak kuralıdır, kutsal bir oran değil. Katmanların kesin yüzdesi
 projeye göre değişir; iş mantığının çoğu veritabanı sorgularında olan bir sistemde entegrasyon
-testleri hakkıyla daha kalın olur. Değişmeyen fikir şudur: **hızlı ve ucuz testler çoğunlukta,
+katmanının daha kalın olması doğaldır. Değişmeyen fikir şudur: **hızlı ve ucuz testler çoğunlukta,
 yavaş ve kırılgan testler azınlıkta olsun.** Ayrıca hiçbir test takımı hatasızlığı garanti
-etmez; testler yalnızca sınadıkları davranışlar hakkında konuşur.
+etmez; testler yalnızca sınadıkları davranışlar hakkında bilgi verir.
 
 ## 3. TDD döngüsü: Kırmızı → Yeşil → Refactor
-Test-Güdümlü Geliştirme (Test-Driven Development, TDD) testi **önce** yazmaktır. Küçük
-bir üç adımlı döngü döner: önce başarısız olan bir test yaz (Kırmızı), sonra onu
+Test-Güdümlü Geliştirme (Test-Driven Development, TDD) testi **önce** yazmaktır. Üç
+adımlı küçük bir döngüdür: önce başarısız olan bir test yaz (Kırmızı), sonra onu
 geçirecek **en basit** kodu yaz (Yeşil), sonra davranışı bozmadan kodu temizle
 (Refactor). Sonra bir sonraki küçük davranış için baştan başla. Bu döngü hem tasarımı
-sürükler hem her adımda çalışan bir test ağı bırakır.
+yönlendirir hem de her adımın sonunda geride çalışan bir test ağı bırakır.
 
 ```svg
 <svg viewBox="0 0 640 270" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="TDD döngüsü: kırmızı yazamayan test, yeşil geçir, refactor temizle, sonra tekrar">
@@ -123,7 +124,7 @@ sürükler hem her adımda çalışan bir test ağı bırakır.
   <circle cx="150" cy="100" r="50" fill="#FBF0DE" stroke="#C77A17" stroke-width="1.8"/>
   <text x="150" y="90" text-anchor="middle" font-size="14" font-weight="700" fill="#C77A17" font-family="system-ui">KIRMIZI</text>
   <text x="150" y="107" text-anchor="middle" font-size="10.5" fill="#1C3247" font-family="system-ui">testi yaz,</text>
-  <text x="150" y="120" text-anchor="middle" font-size="10.5" fill="#1C3247" font-family="system-ui">düşsün</text>
+  <text x="150" y="120" text-anchor="middle" font-size="10.5" fill="#1C3247" font-family="system-ui">geçmesin</text>
   <circle cx="490" cy="100" r="50" fill="#E9F4EE" stroke="#25804C" stroke-width="1.8"/>
   <text x="490" y="90" text-anchor="middle" font-size="14" font-weight="700" fill="#25804C" font-family="system-ui">YEŞİL</text>
   <text x="490" y="107" text-anchor="middle" font-size="10.5" fill="#1C3247" font-family="system-ui">en basit</text>
@@ -145,8 +146,8 @@ sürükler hem her adımda çalışan bir test ağı bırakır.
 
 Birim testinde gerçek veritabanına ya da gerçek e-posta sunucusuna dokunmak istemeyiz.
 Onların yerine, aynı arayüzü uygulayan ama test için üretilmiş nesneler koyarız; bunların
-ortak adı **test sahnesi dublörü / test sahtesi (test double)**. Ad, sinemadaki dublörden
-gelir: oyuncunun yerine geçer, ama yalnızca o sahne için.
+ortak adı **test sahtesi ya da test dublörü (test double)**. Ad, sinemadaki dublörden
+gelir: dublör oyuncunun yerine geçer, ama yalnızca o sahne için.
 
 Günlük konuşmada hepsine "mock" denir; oysa beşi farklı işler yapar ve sınavda ayrımı
 sorulur:
@@ -157,8 +158,8 @@ sorulur:
 - **Stub (hazır cevap):** Kendisine sorulduğunda **önceden belirlenmiş bir değer döndürür**.
   "Kur servisi çağrılırsa 32,5 dönsün" gibi. Testin girdisini kurar; doğrulama için
   kullanılmaz.
-- **Spy (kayıt tutan):** Stub gibi cevap verir, **ek olarak kendisine ne yapıldığını kaydeder**
-  — kaç kez çağrıldı, hangi argümanlarla. Test sonunda bu kayda bakarsın. Yani doğrulama
+- **Spy (kayıt tutan):** Stub gibi cevap verir, **ek olarak kendisine ne yapıldığını kaydeder**:
+  kaç kez ve hangi argümanlarla çağrıldığını. Test sonunda bu kayda bakarsın. Yani doğrulama
   çağrıdan **sonra** yapılır.
 - **Mock (beklenti kuran):** Kendisinden **önceden ne beklendiği tarif edilen** nesnedir:
   "`gonder()` tam bir kez ve şu adresle çağrılmalı." Beklenti karşılanmazsa testi kendisi
@@ -167,9 +168,10 @@ sorulur:
   gerçekleme; klasik örnek, veritabanı yerine `Map` ile tutulan bellek-içi repository.
   Diğerlerinden farkı, içinde gerçek bir mantık bulunmasıdır.
 
-Pratik ayraç: **Sonucu mu doğruluyorsun, etkileşimi mi?** Dönen değere bakıyorsan stub veya
-fake yeter (durum doğrulaması — state verification). "Şu metot şu argümanla çağrıldı mı?"
-diye soruyorsan spy ya da mock kullanırsın (etkileşim doğrulaması — behaviour verification).
+Pratik ölçüt: **Sonucu mu doğruluyorsun, etkileşimi mi?** Dönen değere bakıyorsan stub veya
+fake yeter; buna durum doğrulaması (state verification) denir. "Şu metot şu argümanla çağrıldı
+mı?" diye soruyorsan spy ya da mock kullanırsın; buna etkileşim doğrulaması (behaviour
+verification) denir.
 
 **Şerh:** Etkileşim doğrulaması dozunda kullanılmalı. Her çağrıyı mock'la sabitleyen test,
 kodun *nasıl* yazıldığına kilitlenir; davranış aynı kalsa bile iç düzenlemede test kırılır.
@@ -179,22 +181,22 @@ Böyle testler refactoring'i kolaylaştırmak yerine zorlaştırır.
 Bir testin değeri, hızlı ve güvenilir bir sinyal olmasındadır. İyi testin nitelikleri
 İngilizce baş harfleriyle **FIRST** diye anılır:
 
-- **F — Hızlı (Fast):** Milisaniyeler. Yavaş takım çalıştırılmaz; çalıştırılmayan test
-  değersizdir.
-- **I — Bağımsız / izole (Independent, isolated):** Her test kendi verisini kurar, başka
+- **F = Hızlı (Fast):** Milisaniyeler içinde çalışır. Yavaş test takımını kimse çalıştırmaz;
+  çalıştırılmayan test de değersizdir.
+- **I = Bağımsız / izole (Independent, isolated):** Her test kendi verisini kurar, başka
   testin sırasına ya da kalıntısına bağlı olmaz. Sırayı değiştirince kırılmamalı.
-- **R — Tekrarlanabilir (Repeatable / deterministic):** Aynı girdi hep aynı sonucu verir;
-  saat, rastgele sayı, ağ gibi belirsizliklerden arındırılır — yoksa "kırılgan"
+- **R = Tekrarlanabilir (Repeatable / deterministic):** Aynı girdi hep aynı sonucu verir;
+  saat, rastgele sayı, ağ gibi belirsizliklerden arındırılır. Yoksa test "kırılgan"
   (flaky) olur.
-- **S — Kendi kendini doğrulayan (Self-validating):** Test, geçti mi kaldı mı sorusunu
+- **S = Kendi kendini doğrulayan (Self-validating):** Test, geçti mi kaldı mı sorusunu
   kendisi yanıtlar. Ekrana döktüğü çıktıyı insanın gözle karşılaştırması gerekiyorsa o test
   otomatik değildir.
-- **T — Zamanında (Timely):** Test, ilgili kodla aynı dönemde yazılır; TDD'de hemen öncesinde.
+- **T = Zamanında (Timely):** Test, ilgili kodla aynı dönemde yazılır; TDD'de hemen öncesinde.
   Aylar sonra yazılan test hem eksik kalır hem de var olan hatayı "doğru davranış" sanıp
   betonlaştırabilir.
 
-Bu beşe pratikte bir de **okunurluk** eklenir: iyi bir test adı belge gibidir —
-`bosSepetToplamiSifirDoner` gibi "ne + koşul + beklenen" kalıbı. Testin gövdesi de standart
+Bu beşe pratikte bir de **okunurluk** eklenir: iyi bir test adı belge gibidir. Örnek:
+`bosSepetToplamiSifirDoner` ("ne + koşul + beklenen" kalıbı). Testin gövdesi de standart
 bir düzenle okunur: **Hazırla → Uygula → Doğrula** (Arrange–Act–Assert).
 
 ## Öz-sınav (kendini test et)
@@ -205,7 +207,7 @@ bir düzenle okunur: **Hazırla → Uygula → Doğrula** (Arrange–Act–Asser
 3. TDD döngüsünün üç adımını sırayla say. "Yeşil" adımında neden **en basit** kodu
    yazarız?
 4. "Kırılgan test" (flaky) nedir, hangi iyi-test niteliğinin eksikliğinden doğar?
-5. Testler bir ajan (agent) için neden "sensör" sayılır — hangi geri-besleme boşluğunu
+5. Testler bir ajan (agent) için neden "sensör" sayılır? Hangi geri bildirim boşluğunu
    doldururlar?
 6. Stub ile mock arasındaki fark nedir? Hangisini "dönen değer doğru mu", hangisini "bu metot
    çağrıldı mı" sorusu için kullanırsın?

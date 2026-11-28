@@ -1,6 +1,6 @@
 ---
-baslik: "Araç Çağrısı Güvenilirliği — Ajanın Eli Aynı Yere İki Kez Değmesin"
-yazar: "AI Öğretmen çalışma metni — AI Engineering from Scratch (Rohit Ghumare, MIT) dersleri: 13-29, 13-13, 13-01, 13-03, 13-28, 13-09, 16-22, 15-15, 15-16 + bu deponun kendi vakası (gorev_isaretle)"
+baslik: "Araç Çağrısı Güvenilirliği: Ajanın Eli Aynı Yere İki Kez Değmesin"
+yazar: "AI Öğretmen çalışma metni; kaynağı AI Engineering from Scratch (Rohit Ghumare, MIT) dersleri: 13-29, 13-13, 13-01, 13-03, 13-28, 13-09, 16-22, 15-15, 15-16 + bu deponun kendi vakası (gorev_isaretle)"
 tarih: "2026-10-25"
 url: "https://github.com/rohitg00/ai-engineering-from-scratch"
 dil: "Türkçe kavram özeti (diyagramlı)"
@@ -9,34 +9,41 @@ etiketler: 9,10,11
 
 ### Bu metin ne anlatıyor?
 Ajan bir aracı çağırır, yanıt gelmez, ajan yeniden dener. Sonuç: ödeme iki kez çekilir, e-posta
-iki kez gider, işaretlediğin görev geri açılır. Bu metin, ajanın dünyaya dokunan araç çağrılarını
-**tekrarlandığında zarar vermeyecek** biçimde kurmayı anlatır. Akılda kalacak altı kural:
+iki kez gider, işaretlediğin görev geri açılır. Bu metin, ajanın dış dünyada değişiklik yapan araç
+çağrılarını **tekrarlandığında zarar vermeyecek** biçimde kurmayı anlatır. Akılda kalacak altı kural:
 
-1. **Yeni istek kimliği (RPC id) idempotency değildir.** Aynı iş niyetini tanıyan bir
-   **idempotency anahtarı**, argümanların **parmak izi** (aynı anahtar + farklı argüman = reddet)
-   ve anahtarı sahiplenmeyi etkiyle **tek transaction'da** (ya da outbox'ta) birleştiren sınır şart.
-2. **Yeniden denemeyi sınıflandır:** yan etkisiz okuma = güvenli; anahtarlı yazma = yalnız *aynı
-   anahtar + aynı argümanla* koşullu; anahtarsız yazma = güvensiz: otomatik deneme yok, önce
-   durumu yeniden oku. Denemeler bütçeli, üstel geri çekilmeli ve **jitter**'lı olur.
-3. **İki saat kur:** boşta kalma süresi (ilerleme sıfırlar) + kesin üst sınır (hiçbir şey
-   uzatmaz). İptal bir yarıştır; ajan döngüsünün tavanı ve devre kesicisi olur.
-4. **Uzun ömürlü durum açık bir tutamaç (handle) altında** paylaşılan depoda yaşar, yapışkan
-   oturumda (sticky session) değil. Tutamacı döndürmeden önce kaydet.
+1. **Yeni istek kimliği (RPC id) idempotency değildir** (idempotency: aynı isteğin tekrarı sonucu
+   değiştirmez). Şunlar şart: aynı iş niyetini tanıyan bir **idempotency anahtarı**, argümanların
+   **parmak izi** (aynı anahtar + farklı argüman = reddet) ve anahtarı sahiplenmeyi asıl etkiyle
+   **tek bir transaction (işlem bütünlüğü)** içinde (ya da outbox'ta) birleştiren bir sınır.
+2. **Yeniden denemeyi sınıflandır:** yan etkisiz okuma = güvenli; anahtarlı yazma = koşullu (yalnız
+   *aynı anahtar + aynı argümanla* denenir); anahtarsız yazma = güvensiz: otomatik deneme yok, önce
+   durumu yeniden oku. Denemeler bütçeli, üstel geri çekilmeli ve **jitter**'lı (rastgele bekleme
+   paylı) olur.
+3. **İki saat kur:** boşta kalma süresi (her ilerleme bildirimi onu sıfırlar) + kesin üst sınır
+   (hiçbir şey onu uzatamaz). İptal bir yarıştır. Ajan döngüsünün bir tavanı ve bir devre kesicisi
+   (circuit breaker) olur.
+4. **Uzun ömürlü durum paylaşılan depoda yaşar** ve istemcinin her çağrıda açıkça taşıdığı bir
+   tutamaçla (handle, ör. sepet kimliği) bulunur; yapışkan oturumda (sticky session) değil.
+   Tutamacı döndürmeden önce kaydet.
 5. **Önemli eylem: öner → onayla → ön koşulu kontrol et → uygula → yeniden okuyarak doğrula**;
    doğrulama tutmazsa geri al.
-6. Bunların hepsi **Spring + PostgreSQL** ile kurulur; iş akışı motoruna ölçüp yetmediğini görünce geç.
+6. Bunların hepsi **Spring + PostgreSQL** ile kurulur; iş akışı motoruna ancak ölçüp bunların
+   yetmediğini görünce geç.
 
-Sonda bu deponun `gorev_isaretle` aracı laboratuvardır: 2026-10-26'ya kadar bir toggle'dı; eski
-kodu okuyup tekrar çağrıda ne olduğunu, sonra düzeltmeyi ve mock'lu testin gizlediği hatayı göreceksin.
+Metnin sonunda bu deponun `gorev_isaretle` aracı laboratuvar olarak kullanılıyor: araç 2026-10-26'ya
+kadar bir toggle'dı (her çağrıda durumu tersine çeviren anahtar). Eski kodu okuyup araç tekrar
+çağrılınca ne olduğunu, sonra düzeltmeyi ve mock'lu (sahte nesneli) testin gizlediği hatayı göreceksin.
 
 ## Neden bu özet
 [MCP adapter](mcp-adapter.md) §7'deki hata tablosu "belirsiz yazmada otomatik yeniden deneme
-YASAK" der ve durur; *o zaman ne yapılır?* cevapsızdı. [API tasarımı](api-tasarim-grpc.md)
-idempotency anahtarını tek satırla anar; outbox, jitter ve "etkin-tek-sefer" hiçbir kaynakta yoktu.
+YASAK" der ama orada kalır; *o zaman ne yapılır?* sorusu cevapsızdı. [API tasarımı](api-tasarim-grpc.md)
+idempotency anahtarını tek satırla anar; outbox, jitter ve "etkin-tek-sefer" programın hiçbir
+kaynağında yoktu.
 Ajan bu eksiği büyütür: insan butona iki kez basar, LLM ise **kendi kendine** yeniden dener.
 Bu metin Hafta 9'u (araç = adapter) Hafta 11'e ([DDIA özeti](hafta11-ddia-veri-yogun.md): kayıp
 güncelleme, kendi yazdığını okuma, çift yazma) bağlar; Hafta 10'un ADR disiplini de §7'deki
-"motor mu, PostgreSQL mi" kararının biçimidir.
+"motor mu, PostgreSQL mi" kararına biçim verir.
 
 Kardeş metinler (burada tekrarlanmaz): harcama tavanı, kill switch ve insan onayı beklemesinin kalıcı
 durum olması [ajan çalışma zamanı kontrolleri](ajan-calisma-zamani-kontrolleri.md)'nde; ajan döngüsü
@@ -48,7 +55,8 @@ kendisi var: modelin "şunu yap" dediği anla dünyanın gerçekten değiştiği
 
 ## 1. Sorun: her parça doğru davrandı, sistem yanlış
 Dersin açılış sahnesi bir dağıtık sistemler klasiğidir. İstemci bir aracı çağırır, sunucu işe
-başlar, ilerleme bildirimleri gelir, araya giren bir ters vekil (reverse proxy) akışı tamponlar.
+başlar, ilerleme bildirimleri gelir, araya giren bir reverse proxy (istemciyle sunucu arasındaki ara
+sunucu) akışı tampona alır.
 İstemcinin süresi dolar ve bağlantıyı keser. Sunucu işi **bir milisaniye sonra** bitirir. İstemci
 **yeni bir JSON-RPC id** ile yeniden dener ve değişiklik ikinci kez çalışır. Her bileşen yerel
 olarak doğru davrandı; sistem bütün olarak yanlış sonuç verdi.
@@ -64,30 +72,32 @@ kalıcı görev durumu, yeniden bağlanma politikası. Protokol bunları senin y
   denerse tek bir niyet en kötü durumda 3 × 3 × 3 = 27 çağrıya dönüşür. Bu yüzden yeniden
   deneme **tek katmanda** ve bir **deneme bütçesiyle** (retry budget) yapılır.
 - **Model paralel çağrı üretir.** Sağlayıcıların çoğu modelin bir turda birden çok araç
-  çağrısı yaymasına izin verir. Okumalar için bu iyidir. Ama sıra bağımlı çağrılar (`dosya_olustur`
+  çağrısı üretmesine izin verir. Okumalar için bu iyidir. Ama sıra bağımlı çağrılar (`dosya_olustur`
   sonra `dosya_yaz`) ve **aynı kaynağa yapılan iki yazma** asla paralel gitmez. Her araca kayıt
-  defterinde (tool registry) bir `parallel_safe` işareti koy ve fan-out'un alt sistemlerin hız
-  sınırını (rate limit) aşmayacağını kontrol et. *Şerh:* ders paralel çağrının "duvar saatinde
-  %60–70 kazanç" getirdiğini söyler; bu, iş yüküne bağlı genel bir benchmark'tır. Kendi araç
-  gecikmelerinle ölçmeden rakam olarak alma.
+  defterinde (tool registry) bir `parallel_safe` işareti koy ve paralel dağılan çağrıların (fan-out)
+  alt sistemlerin hız sınırını (rate limit) aşmayacağını kontrol et. *Şerh:* ders paralel çağrının
+  "toplam geçen sürede (wall-clock) %60–70 kazanç" getirdiğini söyler; bu, iş yüküne bağlı genel bir
+  benchmark'tır. Kendi araç gecikmelerinle ölçmeden rakam olarak alma.
 - **Araçların güven sınıfı farklıdır.** 13-01 dersi her aracı ikiye ayırır: **saf (pure)**
-  araç okur, yan etkisizdir, spekülatif çağrılabilir; **sonuçlu (consequential)** araç durumu
-  değiştirir, para harcar, kullanıcı verisine dokunur. Kapı (onay, kayıt, kısıt) tam bu
+  araç okur, yan etkisizdir, gerekmese bile önceden (spekülatif) çağrılabilir;
+  **sonuçlu (consequential)** araç durumu değiştirir, para harcar, kullanıcı verisine dokunur. Kapı
+  (onay, kayıt, kısıt) tam bu
   ayrımın üzerine kurulur. Bu metnin geri kalanı sonuçlu araçlarla ilgilidir.
 
-## 2. Yeni RPC id idempotency değildir — anahtar, parmak izi, atomik sahiplenme
+## 2. Yeni RPC id idempotency değildir: anahtar, parmak izi, atomik sahiplenme
 JSON-RPC `id` alanının tek işi bir **mesajı** yanıtıyla eşleştirmektir. Bir **iş işlemini**
 tanımlamaz. İstemci `id: 41` ile bir ödeme gönderir, yanıtı kaybeder, `id: 42` ile yeniden dener:
 sunucu iki farklı mesaj görür ve uygulama düzeyinde bir anahtar olmadan bunların aynı ödeme
 olduğunu bilemez.
 
 **İdempotency anahtarı (idempotency key)** iş niyetini tanımlar. Sunucu üç şey saklar: anahtar,
-argümanların **parmak izi** (fingerprint: işlem adı + kiracı + normalleştirilmiş argümanların
-hash'i) ve kesinleşmiş sonuç. Kurallar:
+argümanların **parmak izi** (fingerprint: işlem adı + kiracı (tenant) + normalleştirilmiş
+argümanların hash'i, yani özet değeri) ve kesinleşmiş sonuç. Kurallar:
 
 - Aynı anahtar + aynı parmak izi → **kayıtlı sonucu döndür**, işlemi yeniden çalıştırma.
 - Aynı anahtar + **farklı** parmak izi → **reddet.** Aksi hâlde yanlışlıkla yeniden kullanılan bir
-  anahtar başka bir iş niyetine takma ad olur ve "tekrar" sandığın şey farklı bir işlemi yutar.
+  anahtar iki farklı iş niyetini aynı adla anar; "tekrar" sandığın şey aslında farklı bir işlemdir
+  ve sessizce yutulur.
 - Anahtar yok → bu çağrı otomatik yeniden denemeye **kapalıdır** (§3).
 
 **Anahtarı kim üretir?** Bu, ajana özgü bir tuzaktır. Anahtarı her çağrıda model üretirse,
@@ -144,9 +154,9 @@ anlatır. **Outbox deseni** bunun uygulama düzeyindeki hâlidir: dış etki ön
 sisteme **aynı anahtarla** iletir ve "gönderildi" diye işaretler. İşleyici çökerse satırı yeniden
 gönderir. Yani teslimat **en az bir kezdir** (at-least-once). Alıcı anahtarla tekrarı ayıkladığı
 için sonuç **etkin-tek-sefer** olur (exactly-once effective). Gerçek "tam bir kez" teslimat diye
-bir şey yoktur; olan, *en az bir kez + tekrar ayıklama*dır (bkz. **Diyagram 2**).
+bir şey yoktur; olan, *en az bir kez + tekrar ayıklama*dır (bkz. **Diyagram 1**).
 
-## Diyagram 2 — İdempotency anahtarı + outbox akışı
+## Diyagram 1: İdempotency anahtarı + outbox akışı
 Anahtar sahiplenme, iş değişikliği ve outbox satırı tek transaction'dadır. Dış etki ayrı bir
 işleyiciyle, aynı anahtarı taşıyarak gider. Altta üç tekrar senaryosu var.
 
@@ -196,23 +206,23 @@ işleyiciyle, aynı anahtarı taşıyarak gider. Altta üç tekrar senaryosu var
 
   <text x="24" y="336" text-anchor="start" font-size="10.5" font-weight="700" fill="#1C3247" font-family="system-ui">Tekrar gelince ne olur?</text>
   <text x="24" y="354" text-anchor="start" font-size="10" fill="#25804C" font-family="system-ui">• aynı anahtar + aynı parmak izi → kayıtlı sonucu döndür, yeniden çalıştırma</text>
-  <text x="24" y="372" text-anchor="start" font-size="10" fill="#C77A17" font-family="system-ui">• aynı anahtar + farklı parmak izi → REDDET (anahtar başka niyete takma ad olamaz)</text>
+  <text x="24" y="372" text-anchor="start" font-size="10" fill="#C77A17" font-family="system-ui">• aynı anahtar + farklı parmak izi → REDDET (bir anahtar iki niyeti temsil edemez)</text>
   <text x="24" y="390" text-anchor="start" font-size="10" fill="#BE4433" font-family="system-ui">• anahtarsız, yalnız yeni RPC id → iki kez çalışır (asıl hata budur)</text>
   <text x="24" y="414" text-anchor="start" font-size="10" fill="#5D7789" font-family="system-ui">YANLIŞ sıra: kontrol et → etkiyi yap → sonucu yaz. İki işçi de "anahtar yok" görür.</text>
 </svg>
 ```
 
-## 3. Yeniden deneme sınıfları — önce sınıflandır, sonra dene
-Yeniden deneme kodunu yazmadan önce her aracı üç sınıftan birine koy (bkz. **Diyagram 1**):
+## 3. Yeniden deneme sınıfları: önce sınıflandır, sonra dene
+Yeniden deneme kodunu yazmadan önce her aracı üç sınıftan birine koy (bkz. **Diyagram 2**):
 
 | Sınıf | Örnek | Kural |
 |---|---|---|
-| **Güvenli** | yan etkisiz, deterministik okuma (`hafta_detay`) | hata sınırı anlaşıldıktan sonra **yeni** RPC id ile yeniden dene |
+| **Güvenli** | yan etkisiz, deterministik okuma (`hafta_detay`) | hatanın nerede oluştuğu anlaşıldıktan sonra **yeni** RPC id ile yeniden dene |
 | **Koşullu** | kalıcı idempotency anahtarlı yazma | yalnız **aynı anahtar + aynı argümanlarla** yeniden dene |
 | **Güvensiz** | iş düzeyinde tekrar ayıklaması olmayan yazma | otomatik deneme **yok**; önce **mutabakat** (reconcile) |
 
 Mutabakat, "yan etki oldu mu?" sorusunu **yetkili kaynaktan durumu yeniden okuyarak**
-cevaplamaktır: kayıt var mı, bakiye değişti mi, e-posta gönderilenlerde mi? Cevaba göre ya hiçbir
+cevaplamaktır: kayıt var mı, bakiye değişti mi, e-posta gönderilenler kutusunda mı? Cevaba göre ya hiçbir
 şey yapmazsın ya da *bilerek* yeniden çalıştırırsın. [MCP adapter](mcp-adapter.md) §7'deki tablo
 hatanın **türünü** sınıflandırır (geçici, doğrulama, iş kuralı, yetki, belirsiz yazma); bu tablo
 ise aracın **yeniden denemeye ne kadar dayanıklı olduğunu** sınıflandırır. İkisi ayrı eksenlerdir:
@@ -222,10 +232,10 @@ ise aracın **yeniden denemeye ne kadar dayanıklı olduğunu** sınıflandırı
 ve bir **tavanla** sınırlanır. Her beklemeye rastgele bir pay eklenir: buna **jitter** denir. Jitter
 olmazsa, sunucu düştüğünde 10.000 istemci tam aynı saniyede yeniden bağlanır ve toparlanan sunucuyu
 yeniden düşürür (sürü etkisi, thundering herd). Ders 250 ms → 500 ms → 1 s … 8 s tavanı örneğini
-verir; rakamlar örnektir, değişmez kural **dağıtmaktır**.
+verir; rakamlar örnektir, değişmeyen kural denemeleri zamana **yaymaktır**.
 
 **Annotation'lar karar girdisi değildir.** MCP araç tanımında `readOnlyHint`, `destructiveHint`,
-`idempotentHint` gibi ipuçları (annotation) olabilir. Resmî belirtim (2026-07-28, Tools) açıkça
+`idempotentHint` gibi ipuçları (annotation) olabilir. Resmî spesifikasyon (2026-07-28, Tools) açıkça
 söyler: istemci bunları **güvenilir sunucudan gelmedikçe güvenilmez** saymalıdır. Bir aracın
 yeniden denemeye uygun olup olmadığına uygulama sözleşmesi ve sunucunun kodu karar verir. Üzerinde
 `idempotentHint: true` yazan bir araç, 2026-10-26'ya kadarki `gorev_isaretle` gibi bir toggle
@@ -235,7 +245,7 @@ olabilir (§8.1).
 `outputSchema`, `isError: true` döndüğünde de bir sözleşmedir. İstemci sonucu modele vermeden önce
 doğrular. Şemaya uymayan bir hata yanıtındaki `retryable: true` alanına güvenip yeniden deneme yapma.
 
-## Diyagram 1 — Yeniden deneme karar ağacı
+## Diyagram 2: Yeniden deneme karar ağacı
 Soru "hata geçici mi?" değil, "bu çağrıyı tekrarlamak dünyayı iki kez değiştirir mi?" sorusudur.
 
 ```svg
@@ -297,40 +307,41 @@ Soru "hata geçici mi?" değil, "bu çağrıyı tekrarlamak dünyayı iki kez de
 2. **Kesin üst sınır (maximum timeout):** istek başladığından beri geçen mutlak süre.
 
 İlerleme bildirimi (progress) boşta kalma saatini sıfırlayabilir, ama **kesin üst sınırı asla
-kaldıramaz**. Dersin örneği: boşta kalma 500 ms, üst sınır 2000 ms, ilerleme 400, 800 ve 1200
+uzatamaz**. Dersin örneği: boşta kalma 500 ms, üst sınır 2000 ms, ilerleme 400, 800 ve 1200
 ms'de. 1500 ms'de istek hâlâ canlıdır, çünkü son ilerleme yalnız 300 ms önce geldi. 2000 ms'de ise
 1999 ms'de yeni bir ilerleme gelmiş olsa bile iptal edilir (bkz. **Diyagram 3**'ün alt şeridi). İki
 ince nokta:
 
-- Sunucu bir ilerleme belirteci (progress token) alıp hiç ilerleme göndermeyebilir. Belirtecin
+- Sunucu bir ilerleme token'ı (progress token) alıp hiç ilerleme göndermeyebilir. Token'ın
   varlığını **sonsuz süre** diye okuma.
 - Bağlantıyı canlı tutmak için gönderilen boş SSE yorumu (`:` satırı, keepalive) ilerleme
-  **değildir**. Vekillerin bağlantıyı kapatmasını önler, ama işin anlamsal boşta kalma saatini
+  **değildir**. Proxy'lerin bağlantıyı kapatmasını önler, ama işin kendi boşta kalma saatini
   sıfırlamamalıdır.
 
 **İptal bir yarıştır.** İki sıra da geçerlidir. *İptal kazanırsa:* sunucu isteği iptal edildi diye
 işaretler, iş bitse bile yanıtı **bastırır**. *Tamamlanma kazanırsa:* yanıt gider, geç gelen iptal
 **yok sayılır**. İstemci de terk ettiği bir isteğin geç yanıtını yok sayar, çünkü ağ gecikmesi
-yüzünden iki taraf da öbürünün hangi olayı önce gördüğünü kanıtlayamaz. İptalin tel üzerindeki
-biçimi taşımaya göre değişir: stdio'da `notifications/cancelled` bildirimi gönderilir, Streamable
+yüzünden iki taraf da öbürünün hangi olayı önce gördüğünü kanıtlayamaz. İptalin ağ üzerinden nasıl
+iletildiği taşıma katmanına göre değişir: stdio'da `notifications/cancelled` bildirimi gönderilir, Streamable
 HTTP'de o isteğin yanıt akışı **kapatılır**. İki şeyi karıştırma: tek bir isteği iptal etmek
 başka, kalıcı bir görevi (`tasks/cancel`) iptal etmek başkadır. İkincisinin başarılı yanıtı yalnız
 "iptal niyeti alındı" demektir; işçi bir sonraki kontrol noktasına gelene kadar çalışmaya devam
 edebilir. Arayüzde "durduruldu" yazmadan önce görevin **son durumunu** sorgula.
 
 **Geri basınç (backpressure) doğruluğun parçasıdır.** Üretici ilerlemeyi tüketicinin
-okuyabileceğinden hızlı üretirse sınırsız kuyruk, yavaşlığı bellek tükenmesine çevirir. Kuyruğu
+okuyabileceğinden hızlı üretirse, sınırsız bir kuyruk yavaşlığı bellek tükenmesine çevirir. Kuyruğu
 sınırla ve neyin kaybolabileceğini **önceden yaz**: ilerleme değiştirilebilirdir (yenisi eskisinin
-yerini alır, birleştirilebilir, düşürülebilir); **son yanıt değiştirilemez**, asla düşürülmez.
-İlerleme düşürüldüyse akışa "yetkili kaynaktan yeniden okunmalı" işareti konur. Sessiz kayıp bir
+yerini alır, birleştirilebilir, atılabilir); **son yanıt değiştirilemez**, asla atılmaz.
+İlerleme atıldıysa akışa "yetkili kaynaktan yeniden okunmalı" işareti konur. Sessiz kayıp bir
 strateji değildir.
 
 **Yeniden bağlanmak = yeniden okumak.** MCP'nin 2026-07-28 revizyonu Streamable HTTP'den SSE akışını
-sürdürmeyi (`Last-Event-ID`) **kaldırdı**: kopan yanıt akışı, uçuştaki isteği kaybettirir ve
+sürdürmeyi (`Last-Event-ID`) **kaldırdı**: kopan yanıt akışı, uçuştaki (in-flight: başlamış ama
+bitmemiş) isteği kaybettirir ve
 istemci onu yeni bir RPC id ile yeni bir istek olarak göndermek **zorundadır** (bkz. [MCP adapter](mcp-adapter.md)
 §5 sürüm notu). Bu yüzden kopma sonrası sıra şudur: yeni istek aç, etkilenen durumu yetkili
-metotlardan yeniden oku, kararlı kimliklerle tekrarları ayıkla, yanıtı kaybolan güvensiz bir
-değişikliği **yeniden oynatma**. Yeniden bağlanma denemeleri de jitter'lı olur.
+metotlardan yeniden oku, değişmeyen kimliklerle tekrarları ayıkla, yanıtı kaybolan güvensiz bir
+değişikliği **yeniden çalıştırma**. Yeniden bağlanma denemeleri de jitter'lı olur.
 
 **Döngü tavanı ve devre kesici.** Ajan döngüsü, model araç çağırmayı bırakınca ya da harness bir
 **azami tur sayısına** ulaşınca biter. Tavanı olmayan döngü, "ajan gece boyunca API çağrısı
@@ -342,7 +353,7 @@ OpenAI Assistants 10, Cursor 25" der ve "400 dolarlık gece" anekdotunu anar; ik
 göstermez. Bu rakamları ürün varsayılanı diye alıntılama; kendi tavanını kendi görev uzunluğuna
 göre koy. Harcama tavanı ve kill switch için [ajan çalışma zamanı kontrolleri](ajan-calisma-zamani-kontrolleri.md).
 
-## 5. Dört durum ömrü — uzun ömürlü durum açık bir tutamaç altında
+## 5. Dört durum ömrü: uzun ömürlü durum için açıkça taşınan tutamaç
 MCP'nin 2026-07-28 revizyonu protokol düzeyindeki oturumu (`initialize` el sıkışması,
 `Mcp-Session-Id`) kaldırdı; her istek kendini tanıtır (bkz. [MCP adapter](mcp-adapter.md) §5).
 Bu **durumsuz protokol** demektir, **durumsuz uygulama** değil. Alışveriş sepeti, taslak, uzun
@@ -352,19 +363,19 @@ süren rapor hâlâ var. Soru şu: bu durum nerede yaşar? 13-13 dersi dört öm
 |---|---|---|
 | Protokol üst verisi | tek istek | isteğin `_meta` alanı, her çağrıda yeniden doğrulanır |
 | Taşıma işi | tek stdio isteği / tek HTTP yanıtı | sınırlı süreli, bellek içi koordinatör |
-| Çok turlu devam (MRTR) | bir yeniden deneme dizisi | bütünlüğü korunmuş `requestState` |
+| Çok turlu istek (MRTR: multi round-trip request) | bir yeniden deneme dizisi | bütünlüğü korunmuş `requestState` |
 | Kalıcı görev / taslak | istekler, replikalar, yeniden başlatmalar boyunca | paylaşılan depo, yetkili bir **tutamaçla** anahtarlı |
 
 Uzun ömürlü durum için kural: sunucu bir **tutamaç** (handle: `sepet_id`, `taskId`) üretir ve
 normal bir araç sonucu olarak döndürür; istemci sonraki çağrılarda onu açık argüman olarak taşır.
 Tutamaç **tahmin edilemez** olur, **sahibine bağlanır** (kimlik ve kiracı), **süresi dolar** ve her
-kullanımda **yeniden yetkilendirilir**. Resmî belirtimin Tools sayfası (2026-07-28, bağlayıcı olmayan
+kullanımda **yeniden yetkilendirilir**. Resmî spesifikasyonun Tools sayfası (2026-07-28, bağlayıcı olmayan
 "Stateful Tools" notu) aynı şeyi söyler: kimlik doğrulamalı sunucuda tutamaç *bir addır, yetki
 değildir*.
 
 **Yapışkan oturum neden çözüm değil?** Durumu bir replikanın belleğinde tutup yük dengeleyiciyi
 "aynı kullanıcı hep aynı sunucuya" diye ayarlamak (sticky routing) belirtiyi gizler. Yeniden
-başlatma, dağıtım ya da devir (failover) olduğunda sıradaki istek başka bir replikaya düşer ve kayıt
+başlatma, dağıtım ya da yedeğe geçiş (failover) olduğunda sıradaki istek başka bir replikaya düşer ve kayıt
 yoktur. Replika belleği önbellek olabilir, doğruluk için gereken **tek** kopya olamaz.
 
 **Tutamacı döndürmeden önce kaydet.** Sunucu, `tasks/get` o kimliği gerçekten bulabilene kadar
@@ -373,12 +384,12 @@ yanıtıyla karşılaşır. Bu, [DDIA özeti](hafta11-ddia-veri-yogun.md)'ndeki 
 (read-your-writes) garantisinin araç düzeyindeki hâlidir: eşzamansız replikasyonlu bir depoda okuma
 görünür olana kadar bekle ya da tutamacın okumasını liderden yap.
 
-**Görev ne zaman değer?** İş sıradan bir zaman aşımını aşabiliyorsa, yürütmeyi zaten bir kuyruk
+**Görev (task) yapısı ne zaman değer?** İş sıradan bir zaman aşımını aşabiliyorsa, yürütmeyi zaten bir kuyruk
 yönetiyorsa, istemcinin kendi yeniden başlatmasından sonra sonucu alması gerekiyorsa ya da iş
 ortasında kullanıcıdan girdi bekleniyorsa. Ucuz, deterministik bir okuma için tutamaç, kalıcılık,
-yoklama (polling) ve süre sonu **gerçek karmaşıklıktır**; ekleme. Not: belirtim değişiklik günlüğüne
-göre görevler (Tasks) çekirdekten çıkıp resmî bir uzantıya taşındı. Ders, uzantının belirtiminin hâlâ
-taslak yüzey olduğunu söyler; SDK'nın desteklediği sürümü sabitle.
+yoklama (polling) ve süre sonu eklemek **gerçek bir karmaşıklık** getirir; ekleme. Not: spesifikasyonun
+değişiklik günlüğüne göre görevler (Tasks) çekirdekten çıkıp resmî bir uzantıya taşındı. Ders, bu
+uzantının spesifikasyonunun hâlâ taslak olduğunu söyler; SDK'nın desteklediği sürümü sabitle.
 
 Bu depoda: sekiz MCP aracının hepsi **tek çağrılıktır**; tutamaç gerektiren bir akış yok.
 Sahiplik bağlaması ise zaten var: kullanıcıya bağlı her araç kullanıcı kimliğini (`kullaniciId`, ADR-0008) açıkça
@@ -400,7 +411,7 @@ Akışın adımları (bkz. **Diyagram 3**):
    durumda ne bozulur), **geri alma planı** ve **idempotency anahtarı**. Aynı öneri yeniden
    gönderilirse aynı kayıt döner.
 2. **Onayla (commit kararı).** Onaylayan **ajanın kendisi değildir**: bir insan ya da deterministik
-   bir politikadır. Yalnız "Onayla?" butonu sorgusuz onaya (rubber-stamp) döner; ders bunun yerine
+   bir politikadır. Tek başına bir "Onayla?" butonu sorgusuz onaya (rubber-stamp) dönüşür; ders bunun yerine
    onay butonunu açmadan önce cevaplanması gereken kısa bir **kontrol listesi** önerir ("hangi
    kaynağa dokunuyor?", "etki alanı kabul edilebilir mi?", "geri alma planı var mı?").
 3. **Ön koşulu kontrol et.** İdempotency çift çalışmayı önler, ama **dünyanın hâlâ onaylandığı gibi
@@ -433,7 +444,7 @@ araçla.** Öneri, onay ve doğrulama yeniden çalıştırılabilir okumalardır
 > mantıklı bir mühendislik önlemidir, bir düzenleyici zorunluluk ya da kanıtlanmış bir bulgu diye
 > sunma. "2026 uzlaşısı" ve "her SDK aynı şekli sunuyor" ifadeleri de dersin kendi çerçevelemesidir.
 
-## Diyagram 3 — Öner → onayla → uygula → doğrula ve uygulama adımının iki saati
+## Diyagram 3: Öner → onayla → uygula → doğrula ve uygulama adımının iki saati
 Üstte akış ve iki hata kolu; altta uygulama çağrısının boşta kalma ve kesin üst sınır saatleri
 (dersin örnek değerleri).
 
@@ -467,7 +478,7 @@ araçla.** Öneri, onay ve doğrulama yeniden çalıştırılabilir okumalardır
   <text x="437" y="56" text-anchor="middle" font-size="11" font-weight="700" fill="#186399" font-family="system-ui">4 UYGULA</text>
   <text x="437" y="72" text-anchor="middle" font-size="9" fill="#1C3247" font-family="system-ui">önce "uçuşta" yaz,</text>
   <text x="437" y="85" text-anchor="middle" font-size="9" fill="#1C3247" font-family="system-ui">anahtarla çalıştır;</text>
-  <text x="437" y="98" text-anchor="middle" font-size="9" fill="#1C3247" font-family="system-ui">tek denenebilir adım</text>
+  <text x="437" y="98" text-anchor="middle" font-size="9" fill="#1C3247" font-family="system-ui">denenebilen tek adım</text>
 
   <rect x="504" y="36" width="120" height="74" rx="9" fill="#E9F4EE" stroke="#25804C" stroke-width="1.4"/>
   <text x="564" y="56" text-anchor="middle" font-size="11" font-weight="700" fill="#25804C" font-family="system-ui">5 DOĞRULA</text>
@@ -533,16 +544,16 @@ araçla.** Öneri, onay ve doğrulama yeniden çalıştırılabilir okumalardır
 16-22 dersi, saatlerce süren ajan çalıştırmaları için **dayanıklı yürütmeyi** (durable execution)
 anlatır: her adımdan sonra durumu kaydeden bir motor. İşçi çökerse kira (lease) süresi dolar,
 başka bir işçi son kontrol noktasından devam eder. Bunun üç ön şartı vardır: durum
-**serileştirilebilir** olur (canlı veritabanı bağlantısı taşıyan bir kapanış/closure kaydedilemez),
-devam etme **deterministik** olur ve yan etkiler **idempotent** olur ya da bir tekrar ayıklama
-anahtarı taşır. Bu son şart bu metnin §2'sidir. Hangi motoru seçersen seç, idempotency işini o
+**serileştirilebilir** olur (canlı veritabanı bağlantısı tutan bir closure, yani kapanış fonksiyonu,
+kaydedilemez), devam etme **deterministik** olur ve yan etkiler **idempotent** olur ya da bir tekrar
+ayıklama anahtarı taşır. Bu son şart, bu metnin §2'sinde anlatılan konudur. Hangi motoru seçersen seç, idempotency işini o
 senin yerine yapmaz.
 
 Dersin en değerli kısmı karşı görüştür. Ashpreet Bedi'nin "Scaling Agentic Software" yazısına göre
-çoğu ekip yükü ölçmeden aşırı mühendislik yapar. Varsayılan şudur: tek bir web çatısı + PostgreSQL;
+çoğu ekip yükü ölçmeden aşırı mühendislik yapar. Varsayılan şudur: tek bir web framework'ü + PostgreSQL;
 her ajan çalıştırması bir satırdır, durum yerinde ve iyimser eşzamanlılıkla (optimistic
 concurrency) güncellenir; arka plan işleri basit bir işçiyle yürür; yeniden deneme politikası
-uygulama kodundadır. Bizim yığınımızda bunun karşılığı:
+uygulama kodundadır. Bizim teknoloji yığınımızda (stack) bunun karşılığı:
 
 - **İdempotency + iş + outbox tek transaction'da** (§2): Spring `@Transactional` + PostgreSQL.
 - **Outbox işleyici:** zamanlanmış bir görev (`@Scheduled`) satırları
@@ -570,11 +581,11 @@ dağıtımda uçuştaki çalıştırmaları öldürmemek için eski ve yeni sür
 
 ## 8. Laboratuvar: `gorev_isaretle` tekrar çağrılınca ne olur? (önce / sonra)
 Bu depodaki araç gerçekten var. ADR-0007'nin sekiz MCP aracından biridir (`mcp/OgretmenMcpAraclari`).
-Bu laboratuvarın iki yarısı var. **Önce:** 2026-10-26'ya kadar araç bir "çevirme" (toggle) idi; o
+Laboratuvar iki bölümden oluşuyor. **Önce:** 2026-10-26'ya kadar araç bir "çevirme" (toggle) idi; o
 kodu ve üç senaryosunu öğretici olduğu için aynen koruyoruz. **Sonra:** aynı gün ADR-0016 ile
 düzeltildi; düzeltmeyi ve düzeltme sırasında çıkan, mock'lu testin gizlediği ikinci hatayı okuyacaksın.
 
-### 8.1 Önce — 2026-10-26'ya kadar böyleydi
+### 8.1 Önce: 2026-10-26'ya kadar böyleydi
 Aracın açıklaması şuydu: *"Bir günlük görevin tamamlanma durumunu tersine çevirir (toggle) ve yeni
 durumu döndürür."* Araç üç tamsayı (`hafta`, `gun`, `gorev_index`) alıyor, kullanıcı kimliğini istek
 bağlamından (`McpKullaniciKimligi`) çözüyor ve `service/IlerlemeService.gorevToggle`'ı çağırıyordu.
@@ -605,19 +616,19 @@ alanı yok. Kod okunarak çıkarılan davranış şöyleydi:
 |---|---|---|
 | Yanıt kayboldu, istemci/model **sırayla** yeniden çağırdı | ikinci çağrı mevcut kaydı okur, `!true = false` yazar | görev **geri açılır**; araç `tamamlandi:false` döner |
 | Kayıt **varken** iki çağrı **eşzamanlı** | ikisi de aynı eski değeri okur, ikisi de aynı yeni değeri yazar | **kayıp güncelleme**: iki çevirme, net **bir** çevirme |
-| Kayıt **yokken** iki çağrı eşzamanlı (çift tık) | biri `true` ekler, öbürü tekil indekse çarpar; `catch` yeniden okuyup `false` yazmalıydı | kâğıt üstünde net **sıfır** çevirme — ama §8.3'e bak: bu `catch` gerçek veritabanında hiç çalışmıyordu |
+| Kayıt **yokken** iki çağrı eşzamanlı (çift tık) | biri `true` ekler, öbürü tekil indekse çarpar; `catch` yeniden okuyup `false` yazmalıydı | kâğıt üstünde net **sıfır** çevirme. Ama §8.3'e bak: bu `catch` gerçek veritabanında hiç çalışmıyordu |
 
-Okuma: aynı iki çağrı, **zamanlamaya göre** farklı sonuçlar verebiliyordu. İkinci satır,
+Tablonun özeti: aynı iki çağrı, **zamanlamaya göre** farklı sonuçlar verebiliyordu. İkinci satır,
 [DDIA özeti](hafta11-ddia-veri-yogun.md)'ndeki "oku–değiştir–yaz" kayıp güncellemesinin bizim
 kodumuzdaki birebir örneğiydi. Asıl ders ise birinci satırdadır: **toggle doğası gereği idempotent
 değildir.** "Çevir" komutunu iki kez çalıştırmak, bir kez çalıştırmakla aynı sonucu bırakmaz. §3'ün
 ağacında araç doğrudan **güvensiz** kutusuna düşüyordu. Model zaman aşımından sonra "işaretlenmedi
-galiba" deyip yeniden çağırırsa, öğrencinin tamamladığı görevi **geri açar** ve bunu
-`tamamlandi:false` diye dürüstçe raporlardı. Yani yalan söylemez, ama niyeti tersine çevirirdi.
+galiba" deyip yeniden çağırırsa, öğrencinin tamamladığı görevi **geri açardı** ve bunu
+`tamamlandi:false` diye dürüstçe raporlardı. Yani yalan söylemezdi, ama niyeti tersine çevirirdi.
 [MCP adapter](mcp-adapter.md) §7 bu riski "belirsiz yazma durumu" diye adlandırmıştı; borç listesi
-(`docs/tech-debt-tracker.md`) de açık kalem olarak tutuyordu.
+(`docs/tech-debt-tracker.md`) de bunu açık bir kalem olarak tutuyordu.
 
-### 8.2 Sonra — ADR-0016 karar 1: "çevir" yerine "ayarla"
+### 8.2 Sonra: ADR-0016 karar 1, "çevir" yerine "ayarla"
 Düzeltme üç katmanda yapıldı (ADR-0016, `docs/tech-debt-tracker.md` "Kapanan borçlar" #9):
 
 - **Servis:** `gorevToggle` **kaldırıldı**; yerine
@@ -626,7 +637,7 @@ Düzeltme üç katmanda yapıldı (ADR-0016, `docs/tech-debt-tracker.md` "Kapana
   yazma yapılmaz** (tamamlanma zamanı `tarih` tekrarla ezilmesin diye).
 - **Web:** `POST /api/gorev/toggle` **kaldırıldı**; yerine `POST /api/gorev/durum`
   `{hafta, gun, gorevIndex, tamamlandi}` geldi. `tamamlandi` zorunludur: istekte yoksa sessizce
-  `false`'a düşmesin diye kutulu `Boolean` tutulur ve eksikse **400** döner.
+  `false`'a düşmesin diye kutulu (boxed) `Boolean` tutulur ve eksikse **400** döner.
 - **MCP:** `gorev_isaretle` adı korundu; opsiyonel `hedef_durum` (boolean) parametresi eklendi,
   verilmezse `true`. Açıklama artık açıkça *"Araç idempotent: aynı çağrıyı tekrarlamak (ör. zaman
   aşımı sonrası) sonucu değiştirmez, işareti geri almaz"* diyor. Adın neden korunduğunu ve bunun §7.1
@@ -641,7 +652,7 @@ e-posta göndermek, yeni satır eklemek) için gerekir. Eski üç senaryo yeni k
 |---|---|
 | Yanıt kayboldu, aynı çağrı sırayla tekrarlandı | ikinci çağrı kaydı zaten hedefte bulur, yazmaz; yine `tamamlandi:true` döner |
 | Kayıt varken aynı hedefle iki eşzamanlı çağrı | ikisi de aynı değeri yazar ya da hiç yazmaz; kaybolan bir "niyet" yok |
-| Kayıt yokken eşzamanlı ilk çağrılar | kaybeden INSERT tekil indekse çarpar, bir kez yeniden okur, mevcut satırı bulur, en fazla UPDATE yapar — sonuç hedeftir |
+| Kayıt yokken eşzamanlı ilk çağrılar | kaybeden INSERT tekil indekse çarpar, bir kez yeniden okur, mevcut satırı bulur, en fazla UPDATE yapar; sonuç hedeftir |
 
 İki şeyi dürüstçe not et. (1) Eski metnin önerdiği **atomik upsert** (`INSERT … ON CONFLICT DO
 UPDATE` / H2 `MERGE`) yapılmadı; kod hâlâ oku–sonra–yaz, ama "ayarla" anlamında yarışın kaybedeni de
@@ -658,20 +669,20 @@ veritabanında hiç çalışmıyordu**: eşzamanlı ilk çağrının kaybedeni 5
 
 Bunu neden önceki testler görmedi? `IlerlemeServiceYarisTest` deposu (repository) mock'luydu ve
 mock'a `save()` çağrısında doğrudan `DuplicateKeyException` fırlatması söylenmişti. Test, gerçek
-çerçevenin **asla fırlatmadığı** bir istisnayı fırlatan bir dünyada yeşildi. Hatayı yeni
+framework'ün **asla fırlatmadığı** bir istisnayı fırlatan bir dünyada yeşildi. Hatayı yeni
 `IlerlemeServiceEszamanliTest` yakaladı: gerçek H2 + gerçek tekil indeks üzerinde 8 iş parçacığı
-aynı anda `gorevDurumuAyarla(..., true)` çağırır (test kasıtlı olarak işlemsizdir, her iş parçacığı
+aynı anda `gorevDurumuAyarla(..., true)` çağırır (test kasıtlı olarak transaction kullanmaz, her iş parçacığı
 kendi bağlantısında commit eder) ve hiçbirinin istisna fırlatmadığını, tek satır kaldığını, son
 durumun `true` olduğunu doğrular. Çare: servis artık istisnanın **neden zincirini** (`getCause()`)
 tarayıp içinde `DataIntegrityViolationException` arar; çakışma değilse istisnayı yeniden fırlatır
 (`cakismaDisiHataYenidenDenenmez` testi). Mock'lu test de gerçek sarmalı
 (`DbActionExecutionException` içinde `DuplicateKeyException`) fırlatacak biçimde güncellendi.
 
-> **Şerh — "kanıtı kanıtla".** Mock, senin çerçeve hakkındaki **varsayımını** test eder, çerçevenin
+> **Şerh: "kanıtı kanıtla".** Mock, senin framework hakkındaki **varsayımını** test eder, framework'ün
 > kendisini değil. "Yarışta yeniden oku" yolunun bir testi vardı, Javadoc'u vardı, borç listesinde
-> "kabul edilen artık risk" diye anılıyordu — ve hiç çalışmıyordu. Bir koruma yolunun var olduğunu
+> "kabul edilen artık risk" diye anılıyordu. Ama hiç çalışmıyordu. Bir koruma yolunun var olduğunu
 > iddia etmeden önce onu **gerçek bileşenle** en az bir kez tetikle: burada bu, gerçek veritabanı +
-> gerçek eşzamanlılık demekti. Eşzamanlılık ve istisna çevirisi, mock'ların en çok yalan söylediği
+> gerçek eşzamanlılık demekti. Eşzamanlılık ve istisna dönüştürme (exception translation), mock'ların en çok yalan söylediği
 > iki yerdir.
 
 **Kendin bul.** `git log -S gorevToggle --oneline` komutu bu adı ekleyen ya da silen commit'leri
@@ -681,22 +692,22 @@ kaldırıldığı commit'tir.
 `okuVeCevir`'in nasıl `okuVeAyarla`'ya, `catch (DataIntegrityViolationException …)`'ın nasıl
 `yarisCakismasi(e)` taramasına dönüştüğünü satır satır gör.
 
-### 8.4 Komşu araç: `statik_quiz_kaydet` — bilinçli kabul edilen risk
+### 8.4 Komşu araç: `statik_quiz_kaydet`, bilinçli kabul edilen risk
 Aynı soruyu komşu araca da sor. `statik_quiz_kaydet` her çağrıda yeni bir `quiz_sonuc` satırı ekler
 (`id` kimlik sütunu, iş anahtarı üzerinde tekillik yok). Yanıtı kaybolan bir çağrının yeniden
-denenmesi aynı sonucu **iki satır** yapar. Bu, "ayarla"ya çevrilemeyen bir eklemedir; teknik çare §2
-olurdu: istemcinin ürettiği bir deneme kimliği (anahtar) + parmak izi.
+denenmesi aynı sonucu **iki satır** yapar. Bu, "ayarla"ya çevrilemeyen bir eklemedir; teknik çare
+§2'deki yöntem olurdu: istemcinin ürettiği bir deneme kimliği (anahtar) + parmak izi.
 
 ADR-0016 karar 2 bunu **değiştirmedi** ve gerekçesini yazdı: `quiz_sonuc` bilinçli olarak
 yalnız-ekle bir deneme günlüğüdür (her deneme bir satır); çift satır yalnız MCP istemcisinin aynı
 çağrıyı tekrar göndermesiyle oluşur; MCP sunucuları 2026-10-21'de kapandı ve istemci yalnız yerel;
 etkisi istatistikte bir fazla denemedir. Önlemek bir idempotency anahtarı kolonu + araç sözleşmesi
-değişikliği ister — kazançtan pahalı. **Yeniden açma koşulu:** MCP sunucusu yeniden uzakta
+değişikliği ister; bu da kazançtan pahalıdır. **Yeniden açma koşulu:** MCP sunucusu yeniden uzakta
 (`mcp-http`) çalıştırılırsa ya da quiz denemesi bir değerlendirme/sıralamaya girerse.
 
 Buradaki ders, iki aracın aynı soruya **farklı cevap** almasıdır. Toggle bir öğrencinin bitirdiği
-işi geri açıyordu (görünür zarar, ucuz düzeltme) → düzeltildi. Quiz çift satırı istatistiği bir
-deneme şişirir (küçük zarar, pahalı düzeltme) → yazılı koşulla kabul edildi. Borç değil, **karar**:
+işi geri açıyordu (görünür zarar, ucuz düzeltme) → düzeltildi. Quiz'deki çift satır istatistiği bir
+deneme kadar şişirir (küçük zarar, pahalı düzeltme) → yazılı koşulla kabul edildi. Borç değil, **karar**:
 kabulün kendisi ve onu geri açacak koşul belgededir.
 
 ## Öz-sınav (kendini test et)
@@ -727,14 +738,14 @@ kabulün kendisi ve onu geri açacak koşul belgededir.
     bir ADR'ye gerekçe olarak yazabilir?
 12. Eski `gorevToggle`'ın "yarışta yeniden oku" `catch`'i neden gerçek veritabanında hiç
     çalışmıyordu? Mock'lu `IlerlemeServiceYarisTest` bunu neden yakalayamadı, hangi test yakaladı?
-13. `gorev_isaretle` düzeltildi ama `statik_quiz_kaydet` bilinçli olarak düzeltilmedi. ADR-0016'nın
-    bu iki karar arasındaki farkı gerekçesi nedir, ve hangi koşulda quiz kararı yeniden açılır?
+13. `gorev_isaretle` düzeltildi ama `statik_quiz_kaydet` bilinçli olarak düzeltilmedi. ADR-0016 bu
+    iki aracı neden farklı ele aldı, ve hangi koşulda quiz kararı yeniden açılır?
 
 ### Cevaplar
 1. `id` yalnız mesajı yanıtıyla eşler; her yeni istekte değişir. Sunucu 41 ile 42'nin **aynı iş
    niyeti** (aynı ödeme) olduğunu bilemez, ikisini de çalıştırır.
 2. Anahtar yanlışlıkla başka bir işlem için yeniden kullanılırsa, ikinci (farklı) işlem "tekrar"
-   sanılıp yutulur ve ilk işlemin sonucu döner. Parmak izi bu takma adı yakalayıp reddeder.
+   sanılıp yutulur ve ilk işlemin sonucu döner. Parmak izi bu karışıklığı yakalayıp reddeder.
 3. (a) İki işçi aynı anda "anahtar yok" görür, ikisi de etkiyi yapar; (b) etki yapıldıktan sonra,
    sonuç yazılmadan çökme olur, yeniden denemede anahtar yine yoktur. Tek transaction ikisini de
    **veritabanı içindeki** etki için çözer. E-posta transaction'ın dışındadır: outbox ya da alıcının
@@ -752,7 +763,7 @@ kabulün kendisi ve onu geri açacak koşul belgededir.
    geçen süreyi ölçer. İlerleme yalnız boşta kalma saatini sıfırlar. Keepalive yorumu hiçbirini
    sıfırlamamalıdır, çünkü yalnız taşıma içindir.
 8. 2026-07-28 revizyonunda protokol oturumu yok, ama uygulamanın sepeti/taslağı/görevi var. Yapışkan
-   oturum, devir ya da yeniden başlatmada başka replikaya düşen istekle birlikte kaybolur. Tutamaç
+   oturum, yedeğe geçiş ya da yeniden başlatmada başka replikaya düşen istekle birlikte kaybolur. Tutamaç
    paylaşılan depoda, sahibine bağlı ve süreli yaşar. Kaydetmeden döndürülen tutamaç, hemen ardından
    gelen okumada "bulunamadı" verir (kendi yazdığını okuma ihlali).
 9. Anahtar çift çalışmayı önler, ama onaydan sonra dünya değişmiş olabilir (bakiye 500'e düştü).
@@ -761,8 +772,8 @@ kabulün kendisi ve onu geri açacak koşul belgededir.
 10. Sırayla yeniden deneme görevi **geri açardı** (`false`). Eşzamanlı iki çağrı kayıp
     güncellemeyle tek bir çevirmeye inerdi. ADR-0016 hedef durumu açık argüman yaptı ("ayarla":
     `gorevDurumuAyarla(..., tamamlandi)`, `POST /api/gorev/durum`, MCP `hedef_durum`). "Şu duruma
-    getir" doğası gereği idempotent olduğu için anahtar gerekmedi. Atomik upsert yapılmadı; set
-    anlamında yarışın kaybedeni de aynı hedefi yazdığı için gerekmedi. Ad korundu — bunun bedeli ve
+    getir" doğası gereği idempotent olduğu için anahtar gerekmedi. Atomik upsert yapılmadı; "ayarla"
+    anlamında yarışın kaybedeni de aynı hedefi yazdığı için gerekmedi. Ad korundu; bunun bedeli ve
     gerekçesi [MCP adapter](mcp-adapter.md) §7'de.
 11. Madde 14'ün metni birincil kaynaktır, ama "sorgusuz onayı dışlar" okuması Microsoft
     toolkit'inin **yorumudur**. "20 / 25 tur" kaynaksız bir iddiadır. "~100 eşzamanlı" bir yazarın
@@ -770,8 +781,8 @@ kabulün kendisi ve onu geri açacak koşul belgededir.
     yorum "danışılan görüş", rakamlar ise "doğrulanacak hipotez" diye yazılır.
 12. Spring Data JDBC tekil indeks çakışmasını `DbActionExecutionException`'a sarar; bu
     `DataIntegrityViolationException` değildir, `catch` onu hiç yakalamaz ve istek 500 ile düşerdi.
-    Mock'lu test `save()`'e doğrudan `DuplicateKeyException` fırlattırıyordu — gerçek çerçevenin
-    asla fırlatmadığı bir istisna. Hatayı gerçek H2 + tekil indeks üzerinde 8 eşzamanlı çağrı yapan
+    Mock'lu test `save()`'e doğrudan `DuplicateKeyException` fırlattırıyordu; bu, gerçek framework'ün
+    asla fırlatmadığı bir istisnadır. Hatayı gerçek H2 + tekil indeks üzerinde 8 eşzamanlı çağrı yapan
     `IlerlemeServiceEszamanliTest` yakaladı. Çare: neden zincirini taramak. Ders: mock varsayımını
     test eder; koruma yolunu gerçek bileşenle en az bir kez tetikle.
 13. Toggle görünür zarar veriyordu (bitmiş görev geri açılır) ve düzeltmesi ucuzdu. Quiz çift satırı
@@ -780,14 +791,14 @@ kabulün kendisi ve onu geri açacak koşul belgededir.
     uzakta (`mcp-http`) çalışırsa ya da quiz denemesi bir değerlendirme/sıralamaya girerse.
 
 ## Kaynak ve lisans
-- **AI Engineering from Scratch** — Rohit Ghumare, github.com/rohitg00/ai-engineering-from-scratch,
+- **AI Engineering from Scratch**, Rohit Ghumare, github.com/rohitg00/ai-engineering-from-scratch,
   MIT Lisansı, "Copyright (c) 2026 Rohit Ghumare". Kullanılan dersler:
   - Faz 13 (Tools & Protocols): **29 MCP Reliability, Cancellation, and Flow Control** (ana kaynak),
     13 MCP Tasks Extension, 01 The Tool Interface, 03 Parallel and Streaming Tool Calls,
     28 MCP Tool Contracts and Content, 09 MCP Transports.
-  - Faz 16 (Multi-Agent & Swarms): 22 Production Scaling — Queues, Checkpoints, Durability.
+  - Faz 16 (Multi-Agent & Swarms): 22 Production Scaling: Queues, Checkpoints, Durability.
   - Faz 15 (Autonomous Systems): 15 Human-in-the-Loop: Propose-Then-Commit, 16 Checkpoints and Rollback.
-- **Model Context Protocol belirtimi, 2026-07-28 revizyonu** (modelcontextprotocol.io, 2026-10-25'te
+- **Model Context Protocol spesifikasyonu, 2026-07-28 revizyonu** (modelcontextprotocol.io, 2026-10-25'te
   okundu): değişiklik günlüğü (oturum ve `initialize` kaldırıldı, `Last-Event-ID` sürdürme kaldırıldı,
   görevler resmî uzantıya taşındı) ve Tools sayfası (annotation'ların güvenilmez sayılması, "Stateful
   Tools" tutamaç notu). Bu metindeki MCP sürüm bilgileri dersten değil, doğrudan bu sayfalardan alındı.

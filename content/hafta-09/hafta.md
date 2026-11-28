@@ -1,8 +1,8 @@
 ---
 hafta: 9
-baslik: "Hexagonal / Clean Mimari (Elle Kirlen)"
+baslik: "Hexagonal / Clean Mimari (Ellerini Kirlet)"
 hedef: "Get Your Hands Dirty on Clean Architecture ile port-adapter mimarisini Java'da uygula; ArchUnit ile mühürle."
-kaynak: "Kitap: Get Your Hands Dirty on Clean Architecture 2e (Hombergs) — tamamı + uygulama"
+kaynak: "Kitap: Get Your Hands Dirty on Clean Architecture 2e (Hombergs), tamamı + uygulama"
 ---
 
 ## Quiz
@@ -18,7 +18,7 @@ kaynak: "Kitap: Get Your Hands Dirty on Clean Architecture 2e (Hombergs) — tam
 - [ ] Katman başına ayrı model yazmayı zorunlu kılması
 - [x] İş mantığını veritabanı şemasına tabi kılması
 - [ ] Arayüz sayısını artırıp kodu şişirmesi
-> Açıklama: Katmanlı yığının en altı persistence'tır; her şey tablodan türetilince domain, şemanın kölesi olur ve iş kuralı sorgulara sızar. Diğer şıklar üslup şikâyetidir, kitabın itirazı değildir.
+> Açıklama: Katmanlı yığının en altı persistence'tır (veri saklama katmanı); her şey tablodan türetilince domain, şemanın kölesi olur ve iş kuralı sorgulara sızar. Diğer şıklar üslup şikâyetidir, kitabın itirazı değildir.
 
 ### S3: Incoming (giriş) port ile outgoing (çıkış) port arasındaki fark nedir?
 - [x] Incoming'i domain uygular, outgoing'i adapter uygular
@@ -31,12 +31,12 @@ kaynak: "Kitap: Get Your Hands Dirty on Clean Architecture 2e (Hombergs) — tam
 - [ ] Her katman için ayrı model yazmayı zorunlu kılar
 - [ ] Domain'i çerçeveden ve veritabanından yalıtır
 - [ ] Web katmanının domain'i çağırmasını engeller
-- [x] Tek model her katmana yayılır, sınırlar yapışır
-> Açıklama: No mapping en az kodu yazdırır ama aynı sınıf hem JSON hem tablo hem iş kuralı taşır; birinin ihtiyacı ötekini kirletir. Full mapping tam tersidir: en izole, en çok kod. Strateji seçimi bilinçli bir trade-off'tur, varsayılan değil.
+- [x] Tek model her katmana yayılır, sınırlar bulanıklaşır
+> Açıklama: No mapping en az kodu yazdırır ama aynı sınıf hem JSON hem tablo hem iş kuralı taşır; birinin ihtiyacı ötekini kirletir. Full mapping tam tersidir: en izole, en çok kod. Strateji seçimi varsayılan değil, bilinçli bir ödünleşimdir (trade-off).
 
-### S5: Hexagonal sınırları kalıcı kılmanın ajan-first yolu nedir?
+### S5: Hexagonal sınırları kalıcı kılmanın ajan öncelikli (agent-first) yolu nedir?
 - [ ] Kuralı ekip wiki sayfasında ayrıntılı belgelemek
 - [ ] Kod gözden geçirmede (review) her seferinde hatırlamak
 - [x] Kuralı CI'da bloklayıcı bir teste dönüştürmek
 - [ ] Ajana her istekte kuralı yeniden hatırlatmak
-> Açıklama: Belgelenen kural unutulur, hatırlanan kural kişiye bağlıdır. `MimariTestleri` gibi bloklayıcı bir ArchUnit testi ise her PR'da, insan ya da ajan ayrımı yapmadan aynı sınırı zorlar — bu bir fitness function'dır.
+> Açıklama: Belgelenen kural unutulur, hatırlanan kural kişiye bağlıdır. `MimariTestleri` gibi bloklayıcı bir ArchUnit testi ise her PR'da, insan ya da ajan ayrımı yapmadan aynı sınırı zorlar. Buna fitness function (uygunluk fonksiyonu) denir.

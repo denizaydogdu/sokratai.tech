@@ -2,16 +2,16 @@
 hafta: 7
 baslik: "AI Engineering I: Stack, Modeller, Prompt"
 hedef: "Chip Huyen'in kitabının ilk yarısı: AI stack, foundation model seçimi, prompt engineering disiplini."
-kaynak: "Kitap: AI Engineering (Huyen, O'Reilly 2025) — Bölüm 1–5 civarı"
+kaynak: "Kitap: AI Engineering (Huyen, O'Reilly 2025), Bölüm 1–5 civarı"
 ---
 
 ## Quiz
 ### S1: AI Engineering'i klasik ML Engineering'den ayıran temel fark nedir?
 - [ ] Veriyi temizleme adımının tümüyle ortadan kalkmış olması
-- [x] Hazır temel modeli adapte edip değerlendirmenin merkeze geçmesi
+- [x] Hazır temel modeli uyarlamanın ve ölçmenin işin merkezine geçmesi
 - [ ] Üretimde izleme ve ölçüm ihtiyacının büyük ölçüde azalması
 - [ ] AI mühendisliğinin çok daha derin matematik bilgisi gerektirmesi
-> Açıklama: Model artık senin ürettiğin değil, kiraladığın bir bileşen. İş, "en iyi modeli eğitmek"ten "hazır modeli işine uydurmak ve doğru ölçmek"e kaydı. Veri kalitesi ve izleme kaybolmaz — model kutunun içinde kaldığı için ölçüm daha da kritikleşir.
+> Açıklama: Model artık senin ürettiğin değil, kiraladığın bir bileşen. İş, "en iyi modeli eğitmek"ten "hazır modeli işine uydurmak ve doğru ölçmek"e kaydı. Veri kalitesi ve izleme ortadan kalkmaz. Tersine, modelin içini göremediğin için ölçüm daha da kritik hâle gelir.
 
 ### S2: Model seçiminde yayınlanmış benchmark sonuçlarına neden tam güvenilmez?
 - [ ] Benchmark sonuçları satıcılar tarafından tümüyle uydurulduğu için
@@ -32,11 +32,11 @@ kaynak: "Kitap: AI Engineering (Huyen, O'Reilly 2025) — Bölüm 1–5 civarı"
 - [ ] Arayüze "hatalı olabilir" uyarısı koymak sorumluluğu ortadan kaldırır
 - [ ] Özellik iptal edilir; bu alanda AI hiçbir biçimde kullanılamaz
 - [x] Riske orantılı savunma katmanı eklenir; kritik adımda insan onaylar
-> Açıklama: Savunma derinliği riske orantılanır. Düşük riskte hız kazanır; yüksek riskte kaynağa dayandırma, çıktının makineyle doğrulanması ve son adımda insan onayı devreye girer. Büyük model hata oranını düşürür ama sıfırlamaz; uyarı yazısı ise mühendislik değil, sorumluluk kaydırmadır.
+> Açıklama: Savunmanın kaç katmanlı olacağı riske göre belirlenir. Düşük riskte hız öne çıkar; yüksek riskte kaynağa dayandırma, çıktının makineyle doğrulanması ve son adımda insan onayı devreye girer. Büyük model hata oranını düşürür ama sıfırlamaz; uyarı yazısı ise mühendislik değil, sorumluluk kaydırmadır.
 
 ### S5: Bağlam penceresi (context window) dolduğunda ne olur?
 - [ ] Model kalan metni kendi diskine kaydeder ve sonra hatırlar
 - [x] Sığmayan eski kısım düşer; model onu artık göremez
 - [ ] Model otomatik olarak daha geniş pencereli sürüme yükseltilir
 - [ ] Ücretlendirme durur, çünkü fazla token okunmadan atılır
-> Açıklama: Bağlam penceresi, modelin tek seferde okuyabildiği token sınırıdır. Taşan kısım sessizce kırpılır ve model onu hiç görmemiş gibi davranır. Modelin istekler arasında kalıcı hafızası yoktur — her çağrı sıfırdan okur; bu yüzden uzun sohbetlerde önemli bilgiyi yeniden vermek gerekir.
+> Açıklama: Bağlam penceresi, modelin tek seferde okuyabildiği token sınırıdır. Taşan kısım sessizce kırpılır ve model onu hiç görmemiş gibi davranır. Modelin istekler arasında kalıcı hafızası yoktur: her çağrıda her şeyi sıfırdan okur. Bu yüzden uzun sohbetlerde önemli bilgiyi yeniden vermek gerekir.

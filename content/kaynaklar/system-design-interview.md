@@ -1,6 +1,6 @@
 ---
 baslik: "System Design Interview Hazırlığı"
-yazar: "Serpiştirme — Capstone yanı"
+yazar: "AI Öğretmen ek okuma metni: bitirme projesi (capstone) konusu"
 tarih: "2026-07-10"
 dil: "Türkçe kavram özeti (diyagramlı)"
 etiketler: 12
@@ -29,10 +29,10 @@ yarar.
 
 ## Neden bu özet
 Sistem tasarımı mülakatı (system design interview) tek bir "doğru cevabı" ölçmez;
-**kısıt altında trade-off (ödünleşim) gösterebilme** yetini ölçer. İyi aday, mükemmel
-mimariyi ezberden dökmez — belirsizliği soruyla daraltır, birkaç seçeneği tartar,
+**kısıtlar altında ödünleşimleri (trade-off) görüp anlatabilme** becerini ölçer. İyi aday
+mükemmel mimariyi ezberden dökmez. Belirsizliği sorularla daraltır, birkaç seçeneği tartar,
 birini gerekçesiyle seçer. Bu özet, o düşünme sürecini bir iskelet + üç diyagramla
-verir; capstone projeni tasarlarken de aynı adımlar işe yarar.
+verir; capstone (bitirme) projeni tasarlarken de aynı adımlar işe yarar.
 
 ## Türkçe çalışma metni
 
@@ -49,7 +49,7 @@ Panik yapmadan ilerlemenin yolu sabit bir sıra izlemektir. Her adım bir öncek
 2. **Kaba tahmin (back-of-the-envelope estimation).** Trafiği ve depolamayı kabaca
    hesapla: saniyedeki istek (QPS = queries per second), günlük yeni kayıt, 5 yıllık
    depolama. Amaç kesinlik değil, **büyüklük mertebesini** (order of magnitude)
-   bilmek — bu, sonraki kararları yönlendirir.
+   bilmek. Sonraki kararları bu mertebe yönlendirir.
 3. **Üst-seviye tasarım (high-level design).** Ana bileşenleri kutu-ok olarak çiz:
    istemci, API, uygulama katmanı, veri deposu. Önce basit tut.
 4. **Derinleş (deep dive).** Mülakatçının ilgilendiği bir parçayı aç: veri şeması,
@@ -64,15 +64,15 @@ Bu beş adımı akılda tutmanın kolay yolu, altı kelimelik bir kontrol listes
 
 Eşlemesi şudur: *gereksinim* 1. adım; *kapasite* 2. adım; *API* ve *veri* 3-4. adımın
 somut çıktılarıdır (kutu-ok çizimi API sözleşmesine ve veri modeline dönüşür); *ölçek*
-5. adım; *takas* ise ayrı bir adım değil, **her adımda söylemen gereken cümledir** — ve
-sonda özetlenir. Adı geçen altı şeyden birini hiç konuşmadıysan, tasarım eksiktir.
+5. adım; *takas* ise ayrı bir adım değil, **her adımda söylemen gereken cümledir**; sonda
+da özetlenir. Adı geçen altı şeyden birini hiç konuşmadıysan, tasarım eksiktir.
 
 ```svg
 <svg viewBox="0 0 680 150" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Sistem tasarımı mülakatının beş adımı: gereksinim, tahmin, üst-seviye tasarım, derinleş, darboğaz ve ölçek">
   <defs>
     <marker id="sdi-ok1" markerWidth="10" markerHeight="10" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#186399"/></marker>
   </defs>
-  <text x="340" y="24" text-anchor="middle" font-size="15" font-weight="700" fill="#1C3247" font-family="system-ui">Mülakatın beş adımı — sırayla ilerle</text>
+  <text x="340" y="24" text-anchor="middle" font-size="15" font-weight="700" fill="#1C3247" font-family="system-ui">Mülakatın beş adımı: sırayla ilerle</text>
   <rect x="8" y="52" width="118" height="60" rx="10" fill="#EAF1F7" stroke="#186399" stroke-width="1.5"/>
   <text x="67" y="78" text-anchor="middle" font-size="12" font-weight="700" fill="#186399" font-family="system-ui">1 Gereksinim</text>
   <text x="67" y="96" text-anchor="middle" font-size="10" fill="#5D7789" font-family="system-ui">fonk. + fonk-olmayan</text>
@@ -92,11 +92,11 @@ sonda özetlenir. Adı geçen altı şeyden birini hiç konuşmadıysan, tasarı
   <line x1="262" y1="82" x2="278" y2="82" stroke="#186399" stroke-width="1.8" marker-end="url(#sdi-ok1)"/>
   <line x1="398" y1="82" x2="414" y2="82" stroke="#186399" stroke-width="1.8" marker-end="url(#sdi-ok1)"/>
   <line x1="534" y1="82" x2="550" y2="82" stroke="#186399" stroke-width="1.8" marker-end="url(#sdi-ok1)"/>
-  <text x="340" y="134" text-anchor="middle" font-size="10.5" fill="#5D7789" font-family="system-ui">Her adım bir öncekinin üstüne biner — atlamadan ilerle</text>
+  <text x="340" y="134" text-anchor="middle" font-size="10.5" fill="#5D7789" font-family="system-ui">Her adım bir öncekinin üstüne biner; atlamadan ilerle</text>
 </svg>
 ```
 
-#### 1.1. Kapasite tahmini — çalışılmış örnek
+#### 1.1. Kapasite tahmini: çözümlü örnek
 "Kaba tahmin" korkutucu görünür ama üç bölme işleminden ibarettir. URL kısaltıcı örneğiyle:
 
 - **Varsayım (yüksek sesle söyle):** günde 10 milyon yeni link üretiliyor; her linke
@@ -105,17 +105,17 @@ sonda özetlenir. Adı geçen altı şeyden birini hiç konuşmadıysan, tasarı
 - **Okuma hızı:** tıklamalar 10 katı → ≈ **1.150 okuma/saniye**. Buradan çıkan tasarım
   sonucu: **sistem okuma ağırlıklı** (yaklaşık 1'e 10). Bu tek cümle, cache'i neden öne
   koyduğunu tek başına gerekçelendirir.
-- **Tepe yükü:** ortalama düz değildir; günün yoğun saatinde ortalamanın 2-3 katını bekle
-  → ~3.500 okuma/saniye tasarım hedefi.
+- **Tepe yükü:** trafik gün boyu eşit dağılmaz; günün yoğun saatinde ortalamanın 2-3 katını
+  bekle → ~3.500 okuma/saniye tasarım hedefi.
 - **Depolama:** kayıt başına ~500 bayt (kısa kod, uzun adres, sahip, tarih) × günde 10 M =
   ~5 GB/gün → yılda ~1,8 TB, 5 yılda ~9 TB. Sonuç: tek makineye sığmaz, **parçalama
-  (sharding) gündeme gelir** — bunu tahmin sayesinde biliyorsun, tahminde bulunmadan değil.
+  (sharding) gündeme gelir**. Bunu tahmin yaptığın için biliyorsun; tahmin yapmasan bilemezdin.
 
 Dikkat: burada amaç doğru sayıyı bulmak değil, **doğru büyüklük mertebesini** bulmaktır.
 "115 mi 120 mi" fark etmez; "115 mi 115.000 mi" her şeyi değiştirir. Varsayımlarını açıkça
-söyle — yanlış varsayım kabul edilebilir, gizli varsayım kabul edilemez.
+söyle: yanlış varsayım kabul edilebilir, gizli varsayım kabul edilemez.
 
-#### 1.2. API sözleşmesi — kutuların arasına ne yazıyor?
+#### 1.2. API sözleşmesi: kutular birbirine ne söylüyor?
 Kutu-ok çizimi tek başına eksiktir; kutuların birbirine ne söylediğini de yaz. İki-üç satır
 yeter:
 
@@ -124,23 +124,23 @@ yeter:
   hedef adres; bulunamazsa `404`
 
 Bu iki satır bile bir takas doğurur ve mülakatçı tam bunu bekler: **301** tarayıcıya
-"bunu ezberle" der — sonraki tıklamalar sunucuna hiç uğramaz, yükün düşer ama **tıklama
-sayacın tutmaz**. **302** her tıklamada sunucuya uğrar — istatistiğin doğru olur, yükün
+"bunu ezberle" der. Sonraki tıklamalar sunucuna hiç uğramaz; yükün düşer ama **tıklama
+sayacın tutmaz**. **302**'de her tıklama sunucuya uğrar: istatistiğin doğru olur ama yükün
 artar. Hangisini seçtiğini ve neden seçtiğini söylemek, tasarımın kendisinden daha
 değerlidir.
 
-#### 1.3. Veri modeli — neyi, nerede, hangi anahtarla saklıyorsun?
+#### 1.3. Veri modeli: neyi, nerede, hangi anahtarla saklıyorsun?
 Üçüncü somut çıktı veri modelidir. Yine birkaç satır yeter:
 
 - Tablo/koleksiyon: `link(kisa_kod PK, uzun_adres, sahip_id, olusturma_tarihi, son_kullanma)`
 - **Erişim deseni:** neredeyse tüm okumalar `kisa_kod` üzerinden tekil sorgudur → anahtar-değer
   erişimi baskın; karmaşık birleştirme (join) yok.
 - Bu desen, "SQL mi NoSQL mi?" sorusunun cevabını gerekçelendirir: ilişkisel bir veritabanı
-  da işi görür, ama tek-anahtarla okuma ağırlıklı bu profil anahtar-değer deposuna doğal
-  uyar. **Kararı desene bağla, modaya değil.**
+  da işi görür, ama tek anahtarla okunan, okuma ağırlıklı bu profil anahtar-değer deposuna
+  doğal olarak uyar. **Kararı desene bağla, modaya değil.**
 - **Parçalama anahtarı** (shard key) seçimi de burada konuşulur: `kisa_kod`'a göre bölmek
   yükü düzgün dağıtır; `sahip_id`'ye göre bölmek ise bir kullanıcının tüm linklerini bir
-  arada tutar ama popüler bir hesap tek parçayı ısıtır (**sıcak parça**, hot shard sorunu).
+  arada tutar ama popüler bir hesabın bütün yükü tek parçaya yığılır (**sıcak parça**, hot shard sorunu).
 
 #### 1.4. Takası cümleye dök
 Her büyük karardan sonra tek bir kalıba sadık kal:
@@ -149,7 +149,7 @@ Her büyük karardan sonra tek bir kalıba sadık kal:
 > ağır basıyor**."
 
 Örnek: "Okuma yolunda cache kullanıyorum; gecikmeyi ve veritabanı yükünü kazandım, verinin
-anlık tazeliğinden vazgeçtim — çünkü bir kısaltılmış link nadiren değişir." Bu cümleyi
+anlık tazeliğinden vazgeçtim, çünkü kısaltılmış bir link nadiren değişir." Bu cümleyi
 kurabiliyorsan kararı gerçekten vermişsindir; kuramıyorsan henüz bir tercih değil, bir
 alışkanlık uyguluyorsun.
 
@@ -160,21 +160,21 @@ darboğazı çözdüklerini bilmek yeter:
 - **Yük dengeleyici (load balancer):** gelen istekleri birden çok sunucuya dağıtır;
   tek sunucunun boğulmasını ve tek nokta arızasını (single point of failure) önler.
 - **Önbellek (cache):** sık okunan veriyi bellekte (RAM) tutar; veritabanı yükünü ve
-  gecikmeyi düşürür. Bedeli: bayat veri (stale data) riski — geçersizleştirme
+  gecikmeyi düşürür. Bedeli: bayat veri (stale data) riski; önbelleği geçersizleştirmek
   (cache invalidation) zor bir problemdir.
 - **CDN (içerik dağıtım ağı):** statik içeriği (resim, JS, CSS) kullanıcıya coğrafi
   olarak yakın kenar sunuculardan (edge) servis eder; gecikmeyi ve merkezi trafiği azaltır.
 - **Kuyruk (queue / message queue):** yazma ve işleme adımlarını birbirinden ayırır
   (decoupling); ani yük tepelerini tamponlar, işleri asenkron yapar (ör. e-posta gönderimi).
 - **Replika (replica):** verinin okuma amaçlı kopyaları; okuma trafiğini ölçekler,
-  yedeklilik (redundancy) sağlar. Genelde yazma tek düğüme (**primary** — yazmayı kabul eden
+  yedeklilik (redundancy) sağlar. Genelde yazma tek düğüme (**primary**: yazmayı kabul eden
   ana kopya), okuma replikalara gider. Bedeli: kopyaya ulaşmak zaman alır, bu yüzden
   replikadan okuyan kullanıcı bir an için **eski veriyi** görebilir (replikasyon gecikmesi).
 - **Shard (parçalama / sharding):** veriyi anahtara göre birden çok veritabanına böler
   (ör. kullanıcı kimliğine göre). Tek veritabanına sığmayan veri ve yazma yükünü ölçekler;
   bedeli: parçalar arası sorgu ve yeniden dengeleme (rebalancing) zorlaşır.
 
-Aşağıdaki örnek — bir URL kısaltıcı (URL shortener) — bu taşların çoğunu bir araya getirir.
+Aşağıdaki URL kısaltıcı (URL shortener) örneği bu taşların çoğunu bir araya getirir.
 Okuma yolu (tıklama → yönlendirme) yazma yolundan (yeni link üret) çok daha yoğundur;
 bu yüzden okumada cache öne çıkar.
 
@@ -185,7 +185,7 @@ bu yüzden okumada cache öne çıkar.
     <marker id="sdi-ok2r" markerWidth="10" markerHeight="10" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#25804C"/></marker>
     <marker id="sdi-ok2w" markerWidth="10" markerHeight="10" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#C77A17"/></marker>
   </defs>
-  <text x="340" y="24" text-anchor="middle" font-size="15" font-weight="700" fill="#1C3247" font-family="system-ui">Örnek: URL kısaltıcı — okuma/yazma yolu</text>
+  <text x="340" y="24" text-anchor="middle" font-size="15" font-weight="700" fill="#1C3247" font-family="system-ui">Örnek URL kısaltıcı: okuma/yazma yolu</text>
   <rect x="16" y="98" width="108" height="56" rx="10" fill="#EAF1F7" stroke="#186399" stroke-width="1.5"/>
   <text x="70" y="122" text-anchor="middle" font-size="12" font-weight="700" fill="#186399" font-family="system-ui">İstemci</text>
   <text x="70" y="140" text-anchor="middle" font-size="10" fill="#5D7789" font-family="system-ui">(client)</text>
@@ -207,13 +207,13 @@ bu yüzden okumada cache öne çıkar.
   <text x="474" y="88" text-anchor="middle" font-size="10.5" font-weight="600" fill="#25804C" font-family="system-ui">okuma →</text>
   <line x1="436" y1="140" x2="518" y2="172" stroke="#C77A17" stroke-width="1.8" marker-end="url(#sdi-ok2w)"/>
   <text x="474" y="168" text-anchor="middle" font-size="10.5" font-weight="600" fill="#C77A17" font-family="system-ui">yazma →</text>
-  <text x="340" y="232" text-anchor="middle" font-size="10.5" fill="#5D7789" font-family="system-ui">Okuma önce cache'e bakar (yoksa DB); yazma doğrudan DB'ye — okuma yükü yazmadan çok fazladır</text>
+  <text x="340" y="232" text-anchor="middle" font-size="10.5" fill="#5D7789" font-family="system-ui">Okuma önce cache'e bakar (yoksa DB); yazma doğrudan DB'ye. Okuma yükü yazmadan çok fazladır</text>
 </svg>
 ```
 
 ### 3. Ölçek merdiveni (scaling ladder)
-Ölçekleme tek hamlede olmaz; her basamak bir önceki darboğazı çözer ve yenisini açar.
-"Önce cache mi, önce shard mı?" sorusunun cevabı: **hangi darboğaz önce yanıyor?**
+Ölçekleme tek hamlede olmaz; her basamak bir önceki darboğazı çözer ve yenisini ortaya çıkarır.
+"Önce cache mi, önce shard mı?" sorusunun cevabı: **hangi darboğaz önce tıkanıyor?**
 
 - **Tek sunucu:** basit, ucuz. Darboğaz: trafik artınca CPU/bellek doluyor, tek arıza
   her şeyi düşürüyor.
@@ -231,7 +231,7 @@ bu yüzden okumada cache öne çıkar.
   <defs>
     <marker id="sdi-ok3" markerWidth="9" markerHeight="9" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#C77A17"/></marker>
   </defs>
-  <text x="340" y="24" text-anchor="middle" font-size="15" font-weight="700" fill="#1C3247" font-family="system-ui">Ölçek merdiveni — her basamak bir darboğazı çözer</text>
+  <text x="340" y="24" text-anchor="middle" font-size="15" font-weight="700" fill="#1C3247" font-family="system-ui">Ölçek merdiveni: her basamak bir darboğazı çözer</text>
   <rect x="16" y="208" width="120" height="52" rx="10" fill="#EAF1F7" stroke="#186399" stroke-width="1.5"/>
   <text x="76" y="230" text-anchor="middle" font-size="12" font-weight="700" fill="#186399" font-family="system-ui">Tek sunucu</text>
   <text x="76" y="248" text-anchor="middle" font-size="9.5" fill="#5D7789" font-family="system-ui">basit · tek arıza</text>
@@ -251,7 +251,7 @@ bu yüzden okumada cache öne çıkar.
   <line x1="268" y1="180" x2="278" y2="172" stroke="#C77A17" stroke-width="1.8" marker-end="url(#sdi-ok3)"/>
   <line x1="400" y1="140" x2="410" y2="132" stroke="#C77A17" stroke-width="1.8" marker-end="url(#sdi-ok3)"/>
   <line x1="532" y1="100" x2="542" y2="92" stroke="#C77A17" stroke-width="1.8" marker-end="url(#sdi-ok3)"/>
-  <text x="340" y="286" text-anchor="middle" font-size="10.5" fill="#5D7789" font-family="system-ui">Basamağı ancak alttaki darboğaz yandığında ekle — erken karmaşıklık maliyettir</text>
+  <text x="340" y="286" text-anchor="middle" font-size="10.5" fill="#5D7789" font-family="system-ui">Basamağı ancak alttaki darboğaz tıkanınca ekle; erken karmaşıklık maliyettir</text>
 </svg>
 ```
 
@@ -260,8 +260,8 @@ Mülakatı kaybettiren şey genelde bilgi eksikliği değil, süreç hatasıdır
 
 - **Netleştirmeden dalma:** soruyu duyar duymaz kutu çizmeye başlamak. Önce gereksinimi
   ve ölçeği sor; yanlış problemi mükemmel çözmek sıfır puandır.
-- **Sayı vermeme:** "çok trafik olur" demek yetmez. Kaba tahmin yap (QPS, depolama) —
-  sayılar kararlarını gerekçelendirir ve mühendislik olgunluğu gösterir.
+- **Sayı vermeme:** "çok trafik olur" demek yetmez. Kaba tahmin yap (QPS, depolama).
+  Sayılar kararlarını gerekçelendirir ve mühendislik olgunluğunu gösterir.
 - **Tek çözüme saplanma:** ilk aklına geleni savunmak. En az iki seçenek sun, trade-off'ları
   söyle (ör. SQL vs NoSQL, güçlü vs nihai tutarlılık) ve **neden** birini seçtiğini belirt.
 - **Sessiz düşünme:** mülakatçı kafandaki akıl yürütmeyi göremez; yüksek sesle düşün.

@@ -2,7 +2,7 @@
 hafta: 8
 baslik: "AI Engineering II: RAG, Fine-tune Kararı, Evaluation"
 hedef: "Kitabın ikinci yarısı: RAG mimarisi, ne zaman fine-tune, AI-as-judge ile değerlendirme, maliyet/gecikme."
-kaynak: "Kitap: AI Engineering (Huyen) — ikinci yarı"
+kaynak: "Kitap: AI Engineering (Huyen), ikinci yarı"
 ---
 
 ## Quiz
@@ -11,7 +11,7 @@ kaynak: "Kitap: AI Engineering (Huyen) — ikinci yarı"
 - [x] Tüm belgeleri yeni modelle baştan indekslemek gerekir
 - [ ] Eski ve yeni vektörleri aynı depoda yan yana tutmak gerekir
 - [ ] Yalnızca kaç sonuç döneceğini belirleyen k değeri ayarlanır
-> Açıklama: Vektörler yalnızca kendi modelinin uzayında anlamlıdır; iki farklı modelin ürettiği sayılar karşılaştırılamaz. Sorgu yeni modelle, belgeler eski modelle gömülü kalırsa benzerlik skoru anlamsızlaşır ve arama hata vermeden alakasız sonuç döndürür. Bu yüzden embedding modeli değişimi = tüm koleksiyonun yeniden indekslenmesi.
+> Açıklama: Vektörler yalnızca kendi modelinin uzayında anlamlıdır; iki farklı modelin ürettiği sayılar karşılaştırılamaz. Sorgu yeni modelle, belgeler eski modelle vektöre çevrilmiş kalırsa benzerlik skoru anlamsızlaşır ve arama hata vermeden alakasız sonuç döndürür. Bu yüzden embedding modelini değiştirmek, tüm koleksiyonu yeniden indekslemek demektir.
 
 ### S2: Fine-tuning öncelikle ne için uygundur?
 - [ ] Modele dünkü haber gibi güncel bilgiyi kalıcı olarak eklemek
@@ -20,12 +20,12 @@ kaynak: "Kitap: AI Engineering (Huyen) — ikinci yarı"
 - [ ] Modelin bağlam penceresini kalıcı olarak genişletmek
 > Açıklama: Bilgi için RAG, davranış ve biçim için fine-tune. Bilgiyi ağırlıklara gömmek bakımı zorlaştırır: kaynak değişince baştan eğitmen gerekir ve model kaynak gösteremez. Fine-tune uydurmayı azaltabilir ama bitirmez; bağlam penceresi ise modelin mimarisine bağlıdır, ince ayarla genişlemez.
 
-### S3: AI-as-judge yaklaşımının bilinen tuzağı hangisidir?
+### S3: AI-as-judge (modelin hakem olarak puanlaması) yaklaşımının bilinen tuzağı hangisidir?
 - [ ] Her çalıştırmada birebir aynı puanı verip hiç sapmaması
 - [ ] Yalnızca tek doğrulu, kapalı uçlu soruları puanlayabilmesi
 - [ ] Değerlendirme maliyetini insanlı incelemenin üstüne çıkarması
 - [x] Önce gelen cevabı ve kendi üslubuna benzeyeni kayırması
-> Açıklama: Yargılayan da bir modeldir; yanlılıkları vardır. En bilinen ikisi pozisyon yanlılığı (önce sunulan cevaba yüksek puan) ve kendine benzeyeni sevme. Azaltma yolu: net rubrik, her puana gerekçe zorunluluğu, üreten ile yargılayanın ayrı çağrılar olması ve aynı çifti sıra değiştirilerek ikinci kez sormak.
+> Açıklama: Yargılayan da bir modeldir; yanlılıkları vardır. En bilinen ikisi pozisyon yanlılığı (önce sunulan cevaba yüksek puan vermek) ve kendi üslubuna benzeyen cevabı kayırmak. Azaltma yolu: net rubrik, her puana gerekçe zorunluluğu, üreten ile yargılayanın ayrı çağrılar olması ve aynı çifti sıra değiştirilerek ikinci kez sormak.
 
 ### S4: Değerlendirmede "altın küme" (golden set) ne işe yarar?
 - [x] Prompt değişince aynı örneklerle önce/sonra karşılaştırma yapılır

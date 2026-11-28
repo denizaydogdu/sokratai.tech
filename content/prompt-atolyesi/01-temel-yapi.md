@@ -1,7 +1,7 @@
 ---
 slug: temel-yapi
 baslik: Temel Yapı
-aciklama: Bir prompt'un iskeleti — net görev, bağlam, rol, çıktı formatı, sınır ve örnek. Bu altı taş oturmadan gerisi havada kalır.
+aciklama: Bir prompt'un iskeleti: net görev, bağlam, rol, çıktı formatı, sınır ve örnek. Bu altı taş oturmadan gerisi havada kalır.
 ---
 
 ### Bu bölümde ne öğreneceksin?
@@ -11,12 +11,12 @@ Yapay zekâya iş yaptırmanın tek yolu, ne istediğini yazıyla anlatmaktır. 
 **Önce sözlük.** Aşağıdaki kelimeler bu atölyenin her yerinde geçiyor. Hiçbirini önceden bilmene gerek yok; hepsi burada tanımlı.
 
 - **Model** (İng. *model*): metin okuyup metin üreten yapay zekâ programı. Bir sonraki kelimeyi olasılık hesabıyla tahmin ederek yazar. Bu yüzden "olasılıksal"dır: aynı soruya her seferinde birebir aynı cevabı vermeyebilir.
-- **Prompt** (Türkçesi *istem*): modele yazdığın metnin tamamı — görev, açıklama, veri, hepsi birlikte. Bu atölyenin konusu bu metni iyi yazmaktır.
+- **Prompt** (Türkçesi *istem*): modele yazdığın metnin tamamı (görev, açıklama, veri, hepsi birlikte). Bu atölyenin konusu bu metni iyi yazmaktır.
 - **Token**: modelin metni işlerken kullandığı en küçük parça; kabaca bir kelimenin parçası. Türkçe bir kelime ortalama 2–3 token eder. Ücret ve hız token sayısıyla ölçülür.
-- **Bağlam penceresi** (İng. *context window*): modelin tek seferde görebildiği toplam token miktarı — yani aynı anda okuyabildiği metnin sınırı. Sınırın dışında kalan hiç görülmez.
-- **Ajan** (İng. *agent*): tek cevap verip susmak yerine, bir hedefe ulaşmak için kendi başına adım adım ilerleyen — dosya okuyan, komut çalıştıran, sonuca göre karar veren — yapay zekâ kurulumu. Kod asistanları böyle çalışır.
+- **Bağlam penceresi** (İng. *context window*): modelin tek seferde görebildiği toplam token miktarı, yani aynı anda okuyabildiği metnin sınırı. Sınırın dışında kalan kısmı model hiç görmez.
+- **Ajan** (İng. *agent*): tek cevap verip susmak yerine, bir hedefe ulaşmak için kendi başına adım adım ilerleyen (dosya okuyan, komut çalıştıran, sonuca göre karar veren) yapay zekâ sistemi. Kod asistanları böyle çalışır.
 - **Araç çağırma** (İng. *tool calling*): modelin, kendi başına yapamadığı bir işi (dosya okuma, hesap, veritabanı sorgusu) dışarıdaki bir programa yaptırıp sonucu geri alması.
-- **Sıcaklık** (İng. *temperature*): modelin ne kadar serbest yazacağını ayarlayan sayı. 0'a yakın değer daha kararlı ve tekrarlanabilir, yüksek değer daha çeşitli ama daha savruk çıktı verir. Bu bir prompt tekniği değil, kodda verilen bir ayardır; prompt yazarak değiştirilemez. (2026 notu: en yeni üst seviye modellerin bir kısmında bu ayar tümüyle kaldırıldı — davranışı artık yalnız prompt'la yönlendirirsin.)
+- **Sıcaklık** (İng. *temperature*): modelin ne kadar serbest yazacağını ayarlayan sayı. 0'a yakın değer daha kararlı ve tekrarlanabilir, yüksek değer daha çeşitli ama daha savruk çıktı verir. Bu bir prompt tekniği değil, kodda verilen bir ayardır; prompt yazarak değiştirilemez. (2026 notu: en yeni üst seviye modellerin bir kısmında bu ayar tümüyle kaldırıldı. Bu modellerde davranışı artık yalnız prompt'la yönlendirirsin.)
 - **Halüsinasyon** (İng. *hallucination*): modelin bilmediği bir şeyi "bilmiyorum" demek yerine kendinden emin biçimde uydurması.
 
 Bir uyarı: buradaki hiçbir kalıp "her zaman çalışan" bir formül değil. Her tekniğin ne zaman işe yaramadığını da yazdık.
@@ -24,7 +24,7 @@ Bir uyarı: buradaki hiçbir kalıp "her zaman çalışan" bir formül değil. H
 # net-gorev | Net görev verme | ai:false
 
 ## Görev
-Bir yapay zekâ ajanına (kendi başına adım adım iş yapabilen yapay zekâ kurulumu), elindeki bir Java metodunun ne işe yaradığını açıklatmak istiyorsun. Bunu isteyen bir prompt (modele yazdığın metnin tamamı) yaz — ama çıktının **kime**, **ne uzunlukta** ve **hangi amaçla** olduğunu belirt.
+Bir yapay zekâ ajanına (kendi başına adım adım iş yapabilen yapay zekâ sistemi), elindeki bir Java metodunun ne işe yaradığını açıklatmak istiyorsun. Bunu isteyen bir prompt (modele yazdığın metnin tamamı) yaz. Prompt'ta çıktının **kime** yönelik olduğunu, **ne uzunlukta** olacağını ve **hangi amaçla** kullanılacağını belirt.
 
 ## Kötü örnek
 `şunu açıkla: [kod]`
@@ -33,14 +33,14 @@ Bir yapay zekâ ajanına (kendi başına adım adım iş yapabilen yapay zekâ k
 "Açıkla" tek başına belirsizdir: kime açıklayacak (uzmana mı, yeni başlayana mı)? Ne kadar uzun? Ne için? Bu üç şeyi söyle.
 
 ## İdeal çözüm
-Aşağıdaki Java metodunun ne yaptığını, **yazılıma yeni başlamış** bir kişiye **tek cümlede**, jargon kullanmadan açıkla. Amaç: kod incelemesinde (İng. *code review* — bir değişikliğin başka bir geliştirici tarafından gözden geçirilmesi) hızlı bir özet.
+Aşağıdaki Java metodunun ne yaptığını, **yazılıma yeni başlamış** bir kişiye **tek cümlede**, jargon kullanmadan açıkla. Amaç: kod incelemesinde (İng. *code review*: bir değişikliğin başka bir geliştirici tarafından gözden geçirilmesi) hızlı bir özet.
 
 ```java
 [metodu buraya yapıştır]
 ```
 
 ## Neden
-"Şunu açıkla" prompt'u, modeli boşlukları kendi varsayımlarıyla doldurmaya iter — bazen üç paragraf teknik jargon döker, sen tek cümle isterken. İyi bir görev tanımı üç boşluğu kapatır: **hedef kitle** (yeni başlayan), **biçim/uzunluk** (tek cümle) ve **amaç** (code review özeti). Model artık tahmin etmez; hizalanır. Sınırı da bil: netlik, modelin *bilmediği* bir şeyi bilmesini sağlamaz. Kodun ne yaptığı verdiğin metinden çıkmıyorsa, en net görev tanımı bile uydurmayı engellemez — bunun ilacı bağlam ve "emin değilsen söyle" iznidir (bkz. 04. bölüm).
+"Şunu açıkla" prompt'u, modeli boşlukları kendi varsayımlarıyla doldurmaya iter. Sen tek cümle isterken model bazen üç paragraf teknik jargon döker. İyi bir görev tanımı üç boşluğu kapatır: **hedef kitle** (yeni başlayan), **biçim/uzunluk** (tek cümle) ve **amaç** (code review özeti). Model artık tahmin etmez, senin isteğine uyar. Sınırı da bil: netlik, modelin *bilmediği* bir şeyi bilmesini sağlamaz. Kodun ne yaptığı verdiğin metinden çıkmıyorsa, en net görev tanımı bile uydurmayı engellemez. Bunun ilacı bağlam ve "emin değilsen söyle" iznidir (bkz. 04. bölüm).
 
 # baglam | Bağlam verme | ai:false
 
@@ -59,7 +59,7 @@ Aşağıdaki hata mesajı, bir Spring Boot uygulamasının (Java ile web servisi
 Mevcut mesaj: `"Hata oluştu"`
 
 ## Neden
-Model, senin projenin dilini, kullanıcısını ve tonunu **bilmez** — sadece verdiğin metni bilir. Bağlamı prompt'a koymazsan, model "genel" bir cevap üretir ve o cevap senin bağlamına oturmaz. Bağlam, modeli senin dünyana çeken halattır: kim okuyacak, nerede görünecek, hangi kısıtlar var. Ama "daha çok bağlam daima daha iyi" değildir: alakasız bilgi yığmak modeli yanlış yöne çeker ve token yakar. Doğru ölçü, **işe yarayan kadarı** — nedenini 07. bölümde göreceksin.
+Model, senin projenin dilini, kullanıcısını ve tonunu **bilmez**; sadece verdiğin metni bilir. Bağlamı prompt'a koymazsan, model "genel" bir cevap üretir ve o cevap senin bağlamına oturmaz. Bağlam, modeli senin dünyana çeken halattır: kim okuyacak, nerede görünecek, hangi kısıtlar var. Ama "daha çok bağlam daima daha iyi" değildir: alakasız bilgi yığmak modeli yanlış yöne çeker ve token yakar. Doğru ölçü, **işe yarayan kadarı**. Nedenini 07. bölümde göreceksin.
 
 # rol | Rol / persona verme | ai:false
 
@@ -73,10 +73,10 @@ Bir tasarım kararını (bir API'yi REST mi gRPC mi yapmalı) tartışmak istiyo
 Aynı soruya "acemi bir öğrenci" ile "20 yıllık bir mimar" farklı cevap verir. Modele hangi gözle bakmasını istediğini söyle.
 
 ## İdeal çözüm
-**Kıdemli bir yazılım mimarı gibi davran.** İki servis arasındaki bir iç iletişim için REST mi yoksa gRPC mi seçmeliyim? Kararı **ödünleşmelerle** (performans, sözleşme netliği, araç desteği, ekip aşinalığı) gerekçelendir ve net bir öneriyle bitir. Bağlam: yüksek hacimli, düşük gecikme isteyen iki iç mikroservis.
+**Kıdemli bir yazılım mimarı gibi davran.** İki servis arasındaki bir iç iletişim için REST mi yoksa gRPC mi seçmeliyim? Kararı **ödünleşimlerle** (performans, sözleşme netliği, araç desteği, ekip aşinalığı) gerekçelendir ve net bir öneriyle bitir. Bağlam: yüksek hacimli, düşük gecikme isteyen iki iç mikroservis.
 
 ## Neden
-Rol (persona), modele bir **bakış açısı ve derinlik seviyesi** verir. "Kıdemli mimar gibi davran" demek, modelin ödünleşme diliyle konuşmasını, yüzeysel bir liste yerine gerekçeli bir karar üretmesini tetikler. Rol bir sihir değil, bir **çerçeveleme**dir: modelin hangi bilgi katmanını öne çıkaracağını yönlendirir. Sınırı net: rol vermek modele **yeni bilgi eklemez**. "Kıdemli mimar" dediğinde model daha çok şey bilmez, sadece bildiğini farklı seçer ve farklı anlatır. Ölçülebilir kriter yazmak (bkz. 02. bölüm, `rubrik`) çoğu işte rolden daha etkilidir; ikisini birlikte kullanmak en iyisidir.
+Rol (persona), modele bir **bakış açısı ve derinlik seviyesi** verir. "Kıdemli mimar gibi davran" demek, modelin ödünleşim (trade-off: bir şeyi kazanırken başka bir şeyden vazgeçmek) diliyle konuşmasını, yüzeysel bir liste yerine gerekçeli bir karar üretmesini tetikler. Rol bir sihir değil, bir **çerçeveleme**dir: modelin hangi bilgi katmanını öne çıkaracağını yönlendirir. Sınırı net: rol vermek modele **yeni bilgi eklemez**. "Kıdemli mimar" dediğinde model daha çok şey bilmez, sadece bildiğini farklı seçer ve farklı anlatır. Ölçülebilir kriter yazmak (bkz. 02. bölüm, `rubrik`) çoğu işte rolden daha etkilidir; ikisini birlikte kullanmak en iyisidir.
 
 # format | Çıktı formatını belirtme | ai:false
 
@@ -97,18 +97,18 @@ Aşağıdaki kodda en fazla 3 güvenlik riski bul. Her biri için **şu üç sü
 ```
 
 ## Neden
-Model ne isterse o biçimde cevap verir; biçimi sen söylemezsen model seçer — genelde uzun, dağınık düzyazı. Çıktı formatını dikte etmek iki işe yarar: cevabı **doğrudan kullanılabilir** kılar (kopyala-yapıştır, tabloya dök) ve modeli **disipline eder** (üç satırlık tablo istedin, roman yazamaz). "Tablo dışında açıklama yazma" gibi bir sınır, gevezeliği keser. Bedeli de var: zor bir muhakemeyi (akıl yürütmeyi) çok katı bir biçime sıkıştırmak, düşünme kalitesini düşürebilir — "format vergisi" denen bu tuzağı ve çözümünü 03. bölümde göreceksin.
+Model ne isterse o biçimde cevap verir; biçimi sen söylemezsen model seçer ve genelde uzun, dağınık bir düzyazı yazar. Çıktı formatını dikte etmek iki işe yarar: cevabı **doğrudan kullanılabilir** kılar (kopyala-yapıştır, tabloya dök) ve modeli **disipline eder** (üç satırlık tablo istedin, roman yazamaz). "Tablo dışında açıklama yazma" gibi bir sınır, gevezeliği keser. Bedeli de var: zor bir muhakemeyi (akıl yürütmeyi) çok katı bir biçime sıkıştırmak, düşünme kalitesini düşürebilir. "Format vergisi" denen bu tuzağı ve çözümünü 03. bölümde göreceksin.
 
-# negatif | "Ne yapma" — negatif kısıt | ai:false
+# negatif | "Ne yapma": negatif kısıt | ai:false
 
 ## Görev
-Bir ajandan bir fonksiyonu yeniden düzenlemesini (İng. *refactor* — davranışı değiştirmeden kodun iç yapısını iyileştirme) isteyeceksin, ama davranışını **değiştirmesini istemiyorsun**. Modele ne yapmayacağını da söyleyen bir prompt yaz.
+Bir ajandan bir fonksiyonu yeniden düzenlemesini (İng. *refactor*: davranışı değiştirmeden kodun iç yapısını iyileştirme) isteyeceksin, ama davranışını **değiştirmesini istemiyorsun**. Modele ne yapmayacağını da söyleyen bir prompt yaz.
 
 ## Kötü örnek
 `bu fonksiyonu iyileştir`
 
 ## İpucu
-"İyileştir" model için davetkârdır — imzayı değiştirir, yeni özellik ekler, kütüphane getirir. Sınırları açıkça çiz: neye dokunmasın?
+"İyileştir" model için açık bir davettir: imzayı değiştirir, yeni özellik ekler, kütüphane getirir. Sınırları açıkça çiz: neye dokunmasın?
 
 ## İdeal çözüm
 Aşağıdaki fonksiyonun **okunabilirliğini** artır (isimlendirme, erken dönüş, gereksiz iç içe geçmeyi azalt). **Şunları YAPMA:** genel imzayı (parametreler, dönüş tipi) değiştirme, yeni bağımlılık ekleme, davranışı değiştirme. Sadece iç yapıyı sadeleştir.
@@ -118,7 +118,7 @@ Aşağıdaki fonksiyonun **okunabilirliğini** artır (isimlendirme, erken dön�
 ```
 
 ## Neden
-Modeller yardımsever olmaya eğilimlidir — bu yüzden istemediğin "iyilikleri" de yaparlar: imzayı değiştirir, kütüphane önerir, kapsamı genişletir. Negatif kısıt (ne YAPMA) bu yardımseverliği frenler. Özellikle refactor, taşıma (migration) ve düzeltme gibi "sınırlı müdahale" işlerinde, neye dokunulmayacağını söylemek neye dokunulacağını söylemek kadar önemlidir. Sınırı da bil: yasak listesi uzadıkça etkisi azalır ve model neyi *yapacağını* yine tahmin eder. Kural şu: **kapsam ve güvenlik** için negatif kısıt gerekli; **biçim** için olumlu tarif ("akıcı paragraflarla yaz") daha güçlüdür (bkz. 03. bölüm, `yasak-degil-yap`).
+Modeller yardımsever olmaya eğilimlidir. Bu yüzden istemediğin "iyilikleri" de yaparlar: imzayı değiştirir, kütüphane önerir, kapsamı genişletir. Negatif kısıt (ne YAPMA) bu yardımseverliği frenler. Özellikle refactor, taşıma (migration) ve düzeltme gibi "sınırlı müdahale" işlerinde, neye dokunulmayacağını söylemek neye dokunulacağını söylemek kadar önemlidir. Sınırı da bil: yasak listesi uzadıkça etkisi azalır ve model neyi *yapacağını* yine tahmin eder. Kural şu: **kapsam ve güvenlik** için negatif kısıt gerekli; **biçim** için olumlu tarif ("akıcı paragraflarla yaz") daha güçlüdür (bkz. 03. bölüm, `yasak-degil-yap`).
 
 # few-shot | Örnekle öğretme (few-shot) | ai:false
 
@@ -143,7 +143,7 @@ Aşağıdaki değişiklik için bir commit mesajı yaz. Tarz **şu örneklerdeki
 Değişiklik: `[değişikliğin özeti]`
 
 ## Neden
-Bazı şeyleri tarif etmek, göstermekten zordur — tarz, ton, biçim gibi. "Tek satır, emir kipi, etiketli" desen bile model senin kafandaki "etiket"i tam kestiremez. Üç örnek gösterdiğin an desen kristalleşir: model örneklerdeki **ortak yapıyı** çıkarır ve tekrarlar. Buna **az örnekle öğretme** (İng. *few-shot*) denir; örneksiz, sadece talimatla istemeye de **örneksiz sorma** (İng. *zero-shot*) denir. Ne zaman işe yaramaz: "ne kadar çok örnek o kadar iyi" bir efsanedir. Birbiriyle çelişen ya da talimatla uyuşmayan örnekler yanlış deseni öğretir; kendi içinde muhakeme yapan yeni modellerde örnek yığmak çıktıyı bozabilir. Doğru sıra: **önce örneksiz dene, tutmazsa tek temiz örnek ekle** (bkz. 06. bölüm, `zero-shot-once`).
+Tarz, ton, biçim gibi bazı şeyleri tarif etmek göstermekten zordur. "Tek satır, emir kipi, etiketli" desen bile model senin kafandaki "etiket"i tam kestiremez. Üç örnek gösterdiğin anda desen netleşir: model örneklerdeki **ortak yapıyı** çıkarır ve tekrarlar. Buna **az örnekle öğretme** (İng. *few-shot*) denir; örneksiz, sadece talimatla istemeye de **örneksiz sorma** (İng. *zero-shot*) denir. Ne zaman işe yaramaz: "ne kadar çok örnek o kadar iyi" bir efsanedir. Birbiriyle çelişen ya da talimatla uyuşmayan örnekler yanlış deseni öğretir; kendi içinde muhakeme yapan yeni modellerde örnek yığmak çıktıyı bozabilir. Doğru sıra: **önce örneksiz dene, tutmazsa tek temiz örnek ekle** (bkz. 06. bölüm, `zero-shot-once`).
 
 # birlestir | Altı taşı birleştir | ai:true
 
@@ -151,10 +151,10 @@ Bazı şeyleri tarif etmek, göstermekten zordur — tarz, ton, biçim gibi. "Te
 Şimdi öğrendiğin altı öğeyi (net görev, bağlam, rol, format, negatif kısıt, örnek) **tek bir prompt'ta** birleştir. Senaryo: bir yapay zekâ ajanının, projenin `README.md` dosyasına "Kurulum" bölümü yazmasını istiyorsun. Elinden gelen en iyi, eksiksiz prompt'u yaz. Bu alıştırmayı AI Öğretmen değerlendirecek.
 
 ## İpucu
-İyi bir birleşik prompt genelde şu katmanları içerir: bir rol (opsiyonel), net görev, gerekli bağlam, çıktı formatı, sınırlar (ne yapma) ve gerekirse bir örnek. Hepsini tıkıştırma — senaryoya gerçekten gerekli olanları koy.
+İyi bir birleşik prompt genelde şu katmanları içerir: bir rol (opsiyonel), net görev, gerekli bağlam, çıktı formatı, sınırlar (ne yapma) ve gerekirse bir örnek. Hepsini tıkıştırma; yalnız senaryoya gerçekten gerekli olanları koy.
 
 ## İdeal çözüm
 **Deneyimli bir teknik yazar gibi davran.** Bu proje için `README.md` dosyasına bir **"Kurulum"** bölümü yaz. Bağlam: proje bir Spring Boot (Java 17) uygulaması, Maven Wrapper (`./mvnw`) ile derleniyor, çalışması için bir ortam değişkeni (API anahtarı) gerekiyor, yerelde 8090 portunda açılıyor. Çıktı: numaralı adımlar halinde, her adım tek bir komut ya da tek bir eylem olsun; komutları kod bloğunda ver. **Şunları YAPMA:** projeyi tanıtan pazarlama cümleleri ekleme, var olmayan adım uydurma. Tarz şu örnekteki gibi kısa ve emir kipinde olsun: "1. Depoyu klonla: `git clone ...`".
 
 ## Neden
-Gerçek işlerde teknikler tek tek değil, **birlikte** kullanılır. İyi bir prompt bir katmanlar bütünüdür: rol perspektifi ayarlar, görev hedefi verir, bağlam modeli senin dünyana çeker, format çıktıyı kullanılabilir kılar, negatif kısıt gevezeliği keser, örnek tarzı sabitler. Ustalık, hepsini koymakta değil — **senaryoya gerçekten gerekeni** seçip dengelemekte. Altı katmanı da her prompt'a doldurursan istek şişer, model önemliyi önemsizden ayıramaz ve sonuç kötüleşir. Kısa bir işte tek cümlelik net bir görev, altı katmanlı bir metinden iyidir.
+Gerçek işlerde teknikler tek tek değil, **birlikte** kullanılır. İyi bir prompt bir katmanlar bütünüdür: rol perspektifi ayarlar, görev hedefi verir, bağlam modeli senin dünyana çeker, format çıktıyı kullanılabilir kılar, negatif kısıt gevezeliği keser, örnek tarzı sabitler. Ustalık hepsini koymakta değil, **senaryoya gerçekten gerekeni** seçip dengelemekte. Altı katmanı da her prompt'a doldurursan istek şişer, model önemliyi önemsizden ayıramaz ve sonuç kötüleşir. Kısa bir işte tek cümlelik net bir görev, altı katmanlı bir metinden iyidir.

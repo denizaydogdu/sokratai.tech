@@ -1,6 +1,6 @@
 ---
-baslik: "Ajan Mimarisi Desenleri — İş Akışı mı Ajan mı, Döngü, Topoloji ve Çoklu Ajan Hataları"
-yazar: "AI Öğretmen çalışma metni — AI Engineering from Scratch (Rohit Ghumare, MIT) dersleri: 14-01, 14-05, 14-06, 14-12, 14-13, 14-26, 14-28, 14-29, 14-30 (+ 14-15, 14-16, 14-20, 14-34'ten birer kural); 16-01, 16-04, 16-05, 16-06, 16-08, 16-09, 16-13, 16-15, 16-16, 16-23 + bu deponun kendi vakası"
+baslik: "Ajan Mimarisi Desenleri: İş Akışı mı Ajan mı, Döngü, Topoloji ve Çoklu Ajan Hataları"
+yazar: "AI Öğretmen çalışma metni; kaynağı AI Engineering from Scratch (Rohit Ghumare, MIT) dersleri: 14-01, 14-05, 14-06, 14-12, 14-13, 14-26, 14-28, 14-29, 14-30 (+ 14-15, 14-16, 14-20, 14-34'ten birer kural); 16-01, 16-04, 16-05, 16-06, 16-08, 16-09, 16-13, 16-15, 16-16, 16-23 + bu deponun kendi vakası"
 tarih: "2026-10-25"
 url: "https://github.com/rohitg00/ai-engineering-from-scratch"
 dil: "Türkçe kavram özeti (diyagramlı)"
@@ -19,7 +19,7 @@ Bir LLM özelliği tasarlarken ilk mimari soru "hangi framework?" değildir. İl
    ya da denetçi grafiği okumak istiyorsa. Ajan ancak bir sonraki adım bir öncekinin sonucuna
    bağlıysa hak edilir.
 2. **Ajan döngüsünün tek bir durma koşulu yoktur.** Model "bitti" der ya da araç çağırmayı bırakır;
-   adım bütçesi, token/süre bütçesi biter; bir korkuluk (guardrail) devreye girer. Bunların her biri
+   adım bütçesi, token/süre bütçesi biter; bir guardrail (koruma kuralı) devreye girer. Bunların her biri
    ayrı bir durma koşuludur. Araç hatası döngüyü çökertmez; modele **gözlem** olarak geri döner.
    Her araç çağrısı yürütülmeden önce şemaya göre doğrulanır.
 3. **Yan etkiler (yazma, ödeme, e-posta) deterministik kod adımlarında yaşar**, ajanın serbest araç
@@ -28,7 +28,7 @@ Bir LLM özelliği tasarlarken ilk mimari soru "hangi framework?" değildir. İl
    değerlendirirken de transkripte (konuşma dökümüne) değil son duruma bakılır.
 5. **Tekli ajandan çoklu ajana** ancak tek bağlam ya da tek rol tıkandığında geçilir. Sıra şöyledir:
    tekli ajan + iş akışı → supervisor (2–4 uzman) → sürü (swarm) → hiyerarşi. Her devirde (handoff)
-   bir hop sayacı tutulur.
+   bir hop sayacı (devir sayısını tutan sayaç) tutulur.
 6. Çoklu ajan hatalarının en büyük payı **tanım (spec)** eksiğinden gelir (MAST taksonomisi).
    **Eleştirmen (LLM) ≠ doğrulayıcı (kod).** **Aynı modelin N kopyası bağımsız oy değildir.**
 
@@ -49,10 +49,10 @@ Ayrıntısı kardeş metinlerde olan konular burada tekrar edilmez:
 [`ajan-calisma-zamani-kontrolleri.md`](ajan-calisma-zamani-kontrolleri.md) (harcama tavanı, kill
 switch, dayanıklı yürütme), [`llm-uretim-yolu.md`](llm-uretim-yolu.md) (canlıda LLM),
 [`mcp-adapter.md`](mcp-adapter.md) §7 (araç açıklaması, hata sözleşmesi),
-[`evals-llm-observability.md`](evals-llm-observability.md) (EDD, CI kapısı). Hafta 10'da ise "ajan
-kararını kim verir" tartışmasına (`content/hafta-10/gun-5.md`) bir yapı sözlüğü ekler.
+[`evals-llm-observability.md`](evals-llm-observability.md) (EDD, CI kapısı). Bu metin ayrıca Hafta 10'daki
+"ajan kararını kim verir" tartışmasına (`content/hafta-10/gun-5.md`) bir yapı sözlüğü ekler.
 
-## 1. İş akışı mı ajan mı — grafı kim sahipleniyor?
+## 1. İş akışı mı ajan mı: grafı kim sahipleniyor?
 Anthropic'ten Erik Schluntz ve Barry Zhang'ın "Building Effective Agents" yazısı (19 Aralık 2024) iki kavramı
 ayırır. **İş akışında** LLM çağrıları ve araçlar, önceden yazılmış kod yolları üzerinden bağlanır;
 grafiği mühendis çizer. **Ajanda** LLM araçlarını ve sonraki adımını kendisi seçer; grafiği model
@@ -66,22 +66,22 @@ sıraladığıdır.
 | **Yönlendirme** | Sınıflandırıcı girdiyi uygun işleyiciye gönderir | Kategorileri farklı girdiler (iade / hata / satış) | Düşük güvende insana devretme eşiği gerekir |
 | **Paralelleştirme** | N çağrı aynı anda: **bölümleme** ya da **oylama** | Bağımsız parçalar ya da çoklu görüş | N kopya bağımsız oy değildir (§6.5) |
 | **Orkestratör–işçi** | LLM alt işleri çalışma anında seçer, dağıtır, sentezler | Alt işler önceden belli değil ama döngü sınırlı | Bütçesiz kalırsa artık ajandır |
-| **Değerlendirici–iyileştirici** | Biri önerir, öteki değerlendirir; geçene kadar tekrar | Ölçütü net, yinelemeyle iyileşen iş | Aynı model değerlendirirse onaylayıcıya döner (§2.2) |
+| **Değerlendirici–iyileştirici** | Biri önerir, öteki değerlendirir; geçene kadar tekrar | Ölçütü net, yinelemeyle iyileşen iş | Aynı model değerlendirirse körü körüne onaylayıcıya döner (§2.2) |
 
 İş akışı üç yerde kazanır. Adımları sayabiliyorsan saymalısın. Bütçe sınırlıysa iş akışının adım
 sayısı sabittir; ajanınki kontrolden çıkabilir. Uyum (compliance) gerekiyorsa denetçi grafiği okumak
 ister; onu yürütme kayıtlarından tahmin etmek zorunda kalmamalı. Ajan da üç yerde kazanır: sonraki
 adımın son sonuca bağlı olduğu açık uçlu araştırmada, adım sayısı bilinmeyen uzun işlerde ve doğru
-iş akışını henüz bilmediğin yeni bir alanda. Framework kararı en sona kalır. Desen başına ~10–15
-satır doğrudan API kodu yazılabilir; framework yalnız gerçek bir ihtiyaç (ör. dayanıklı durum, §4)
+iş akışını henüz bilmediğin yeni bir alanda. Framework kararı en sona kalır. Her desen ~10–15
+satırlık doğrudan API koduyla yazılabilir; framework yalnız gerçek bir ihtiyaç (ör. dayanıklı durum, §4)
 varsa hak edilir.
 
 > *Şerh:* 14-01 dersi "2026'daki her ajan 2022 ReAct döngüsünün bir varyantıdır" diyor. Döngünün
 > iskeleti (gözle → düşün → eyle) gerçekten ortak, ama "her" kelimesi ölçülmüş değil. Döngüyü
-> ayrıştıran plan-sonra-yürüt (plan-then-execute) tasarımları da var. Sistemden sisteme değişen şey
+> planlama ve yürütme diye ikiye ayıran plan-sonra-yürüt (plan-then-execute) tasarımları da var. Sistemden sisteme değişen şey
 > döngünün kendisi değil, **etrafındaki sözleşmelerdir**: durma, doğrulama, durum.
 
-## Diyagram 1 — İş akışı ↔ ajan spektrumu ve beş desen
+## Diyagram 1: İş akışı ↔ ajan spektrumu ve beş desen
 Soldan sağa gittikçe grafın sahipliği koddan modele geçer. Yeşil kutularda bütün kenarları kod çizer.
 Mavi kutularda model sınırlı bir alanda seçim yapar. Turuncu kutuda grafı tümüyle model çizer.
 
@@ -90,7 +90,7 @@ Mavi kutularda model sınırlı bir alanda seçim yapar. Turuncu kutuda grafı t
   <defs>
     <marker id="am-1a" markerWidth="10" markerHeight="10" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#5D7789"/></marker>
   </defs>
-  <text x="340" y="24" text-anchor="middle" font-size="15" font-weight="700" fill="#1C3247" font-family="system-ui">İş akışı ↔ ajan — grafı kim sahipleniyor?</text>
+  <text x="340" y="24" text-anchor="middle" font-size="15" font-weight="700" fill="#1C3247" font-family="system-ui">İş akışı ↔ ajan: grafı kim sahipleniyor?</text>
   <text x="340" y="43" text-anchor="middle" font-size="11.5" fill="#5D7789" font-family="system-ui">Anthropic'in beş deseni, sahiplik ekseninde</text>
 
   <line x1="40" y1="66" x2="636" y2="66" stroke="#5D7789" stroke-width="1.6" marker-end="url(#am-1a)"/>
@@ -106,7 +106,7 @@ Mavi kutularda model sınırlı bir alanda seçim yapar. Turuncu kutuda grafı t
   <rect x="242" y="94" width="196" height="80" rx="10" fill="#E9F4EE" stroke="#25804C" stroke-width="1.6"/>
   <text x="340" y="114" text-anchor="middle" font-size="11" font-weight="700" fill="#25804C" font-family="system-ui">1 · Zincirleme</text>
   <text x="340" y="133" text-anchor="middle" font-size="9.5" fill="#1C3247" font-family="system-ui">çağrı → [kod kapısı] → çağrı</text>
-  <text x="340" y="150" text-anchor="middle" font-size="9" fill="#5D7789" font-family="system-ui">doğrusal ayrışan iş</text>
+  <text x="340" y="150" text-anchor="middle" font-size="9" fill="#5D7789" font-family="system-ui">doğrusal adımlı iş</text>
   <text x="340" y="163" text-anchor="middle" font-size="9" fill="#5D7789" font-family="system-ui">kapı yoksa hata sessizce akar</text>
 
   <rect x="454" y="94" width="196" height="80" rx="10" fill="#E9F4EE" stroke="#25804C" stroke-width="1.6"/>
@@ -125,7 +125,7 @@ Mavi kutularda model sınırlı bir alanda seçim yapar. Turuncu kutuda grafı t
   <text x="340" y="210" text-anchor="middle" font-size="11" font-weight="700" fill="#186399" font-family="system-ui">4 · Orkestratör–işçi</text>
   <text x="340" y="229" text-anchor="middle" font-size="9.5" fill="#1C3247" font-family="system-ui">LLM alt işleri seçer → işçiler</text>
   <text x="340" y="246" text-anchor="middle" font-size="9" fill="#5D7789" font-family="system-ui">alt işler önceden belli değil</text>
-  <text x="340" y="259" text-anchor="middle" font-size="9" fill="#5D7789" font-family="system-ui">döngü SINIRLI — bütçe şart</text>
+  <text x="340" y="259" text-anchor="middle" font-size="9" fill="#5D7789" font-family="system-ui">döngü SINIRLI, bütçe şart</text>
 
   <rect x="454" y="190" width="196" height="80" rx="10" fill="#EAF1F7" stroke="#186399" stroke-width="1.6"/>
   <text x="552" y="210" text-anchor="middle" font-size="11" font-weight="700" fill="#186399" font-family="system-ui">5 · Değerlendirici–iyileştirici</text>
@@ -134,18 +134,18 @@ Mavi kutularda model sınırlı bir alanda seçim yapar. Turuncu kutuda grafı t
   <text x="552" y="259" text-anchor="middle" font-size="9" fill="#5D7789" font-family="system-ui">mümkünse değerlendirici = KOD</text>
 
   <rect x="30" y="286" width="620" height="56" rx="10" fill="#FBF0DE" stroke="#C77A17" stroke-width="1.6"/>
-  <text x="340" y="307" text-anchor="middle" font-size="11.5" font-weight="700" fill="#C77A17" font-family="system-ui">AJAN — sonraki adımı model seçer, adım sayısı bilinmez</text>
+  <text x="340" y="307" text-anchor="middle" font-size="11.5" font-weight="700" fill="#C77A17" font-family="system-ui">AJAN: sonraki adımı model seçer, adım sayısı bilinmez</text>
   <text x="340" y="326" text-anchor="middle" font-size="9.5" fill="#5D7789" font-family="system-ui">yalnız adımlar önceden sayılamıyorsa · bedeli: bütçe, durma koşulu, son-durum doğrulaması (Diyagram 2)</text>
 
   <rect x="30" y="354" width="408" height="22" rx="6" fill="#FFFFFF" stroke="#25804C" stroke-width="1.2" stroke-dasharray="4 3"/>
   <text x="234" y="369" text-anchor="middle" font-size="9.5" font-weight="700" fill="#25804C" font-family="system-ui">AI Öğretmen burada: 0 + 1 + kod kapısı, tek düzeltme turu (§8)</text>
 
   <rect x="30" y="382" width="620" height="22" rx="6" fill="#1C3247"/>
-  <text x="340" y="397" text-anchor="middle" font-size="10" font-weight="700" fill="#FFFFFF" font-family="system-ui">Kural: en soldan başla — sağa ancak ölçülmüş bir ihtiyaç iter</text>
+  <text x="340" y="397" text-anchor="middle" font-size="10" font-weight="700" fill="#FFFFFF" font-family="system-ui">Kural: en soldan başla; sağa ancak ölçülmüş bir ihtiyaç iter</text>
 </svg>
 ```
 
-## 2. Ajan döngüsü — durma koşulları ve araç çağrısı sözleşmesi
+## 2. Ajan döngüsü: durma koşulları ve araç çağrısı sözleşmesi
 Ajanın çekirdeği ReAct döngüsüdür (Yao vd., ICLR 2023): model düşünür, araç seçer, sonucu okur,
 yeniden düşünür. Bir sohbet botunu ajana çeviren beş parça vardır: büyüyen bir **mesaj tamponu**,
 ada göre çağrılan bir **araç kaydı** (tool registry), bir **durma koşulu**, bir **tur bütçesi** ve
@@ -153,49 +153,50 @@ araç çıktısını modelin okuyacağı metne çeviren bir **gözlem biçimlend
 önemli olan üç kural şu:
 
 - **Durma koşulları ayrı ayrı tanımlanır.** Model `bitir` der, asistan turunda araç çağrısı olmaz,
-  azami tura ya da token'a ulaşılır, ya da korkuluk tetiklenir. Yalnız birine güvenen döngü ya erken
+  azami tura ya da token'a ulaşılır, ya da guardrail tetiklenir. Yalnız birine güvenen döngü ya erken
   durur ya hiç durmaz. "Araç çağrısı yoksa bitti" kuralı ucuzdur, ama model açıklama yazıp aracı
   unutursa döngü erken kapanır. Açık bir `bitir` aracı niyeti görünür kılar, ama **beyan kanıt
   değildir**. İki yolun arkasına da kodla yapılan bir **hedef kontrolü** koyarsın (§7.3).
 - **Tur bütçesi iş sınıfına göre seçilir.** "Bir sorunun cevabını bul" ile "bir ortamı yapılandır"
   aynı tavanı almaz.
-- **Her hata bir gözlemdir.** Yığındaki her 400 hatası modele okunabilir bir metin olarak döner,
-  döngüyü çökertmez.
+- **Her hata bir gözlemdir.** Araçlardan gelen her 400 hatası modele okunabilir bir metin olarak
+  iletilir, döngüyü çökertmez.
 
-### 2.1 Araç çağrısı sözleşmesi — hiçbir çağrıya güvenme
+### 2.1 Araç çağrısı sözleşmesi: hiçbir çağrıya güvenme
 Çalışma zamanı (runtime) her araç çağrısını yürütmeden önce doğrular (14-06). Şema tamsayı beklerken
 `"5"` geldiyse ve anlamı belirsiz değilse **çevirir** (type coercion). Belirsizse reddeder. Enum
 dışı değer (şemada `acik | kapali` varken `"devam_ediyor"`), eksik zorunlu alan ya da bozuk biçim
 (tarih ve e-posta regex ile değil, gerçek ayrıştırıcıyla denetlenir) **yapılandırılmış bir hata
-gözlemiyle** reddedilir. Gözlem neyin yanlış olduğunu ve ne beklendiğini söyler ki model doğru
-biçimle yeniden deneyebilsin. Paralel çağrılarda her sonuç kendi korelasyon kimliğiyle (`tool_use_id`)
+gözlemiyle** reddedilir. Gözlem neyin yanlış olduğunu ve ne beklendiğini söyler; böylece model doğru
+biçimle yeniden deneyebilir. Paralel çağrılarda her sonuç kendi korelasyon kimliğiyle (`tool_use_id`)
 eşlenir. Araçlar dar tutulur: genel bir `kabuk_calistir(komut)` tehlike işaretidir, `git_durumu()`
 daha güvenlidir. Araç çıktısı da **güvenilmeyen girdidir**; ayrıntısı
 [`llm-uygulama-guvenligi.md`](llm-uygulama-guvenligi.md)'nde.
 
-### 2.2 Değerlendirici döngüsü — Self-Refine ve CRITIC
+### 2.2 Değerlendirici döngüsü: Self-Refine ve CRITIC
 Değerlendirici–iyileştiricinin iki akademik atası var (14-05). **Self-Refine** (Madaan vd., NeurIPS
 2023) tek modele üret → eleştir → düzelt rollerini verir. **CRITIC** (Gou vd.) eleştiriyi **dış bir
 araca dayandırır**: arama, kod yorumlayıcı, test, tip denetleyici. Ürün döngüsü için çıkan kurallar:
 değerlendiriciyi mümkünse dış kanıta bağla, çünkü halüsinasyon onu üreten modele ikna edici görünür.
-Aynı model aynı üslupla hem üretip hem eleştirirse "bence iyi" noktasında buluşur (rubber-stamp);
+Aynı model aynı üslupla hem üretip hem eleştirirse "bence iyi" noktasında buluşur (rubber-stamp:
+bakmadan onay basan damga);
 değerlendiricinin prompt'u yapısal olarak farklı olmalı ya da ayrı bir model kullanılmalı. Bu, Hafta
 8, Gün 3'teki "kendine benzeyeni sevme" yanlılığının döngüdeki hâlidir. Durma politikası şöyle:
-doğrulayıcı geçerse dur; ya da model "sorun yok" der ve en az 2 tur geçtiyse dur; ya da azami tura
+çıktı doğrulayıcıdan geçerse dur; ya da model "sorun yok" der ve en az 2 tur geçtiyse dur; ya da azami tura
 ulaşınca dur. **1–3 tur** ayır, sonrası insana gider.
 
-## Diyagram 2 — Ajan döngüsü, durma ve doğrulama noktalarıyla
+## Diyagram 2: Ajan döngüsü, durma ve doğrulama noktalarıyla
 Döngünün **dört yerinde** kod karar verir, model değil: araç çağrısı doğrulaması, bütçe kapısı,
 hedef kontrolü ve yan etki sınırı. Kırmızı oklar başarısız durumların **gözlem olarak** modele
 döndüğünü gösterir.
 
 ```svg
-<svg viewBox="0 0 680 452" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Ajan döngüsü ve durma ile doğrulama noktaları: görev ve bağlam model adımına girer; model ya bitir der ya da araç çağırır; bitir derse hedef kontrolü yani kodla son durumun yeniden yoklanması yapılır, geçerse bitti, kalırsa doğrulanmadı gözlemi olarak modele döner; araç çağırırsa önce şema, enum, zorunlu alan ve izin doğrulaması yapılır, geçersizse yapılandırılmış hata gözlemi döner, geçerliyse dar araç zaman aşımı ve korelasyon kimliğiyle yürütülür; yan etkili işlem bu döngüde değil deterministik adımda yapılır; sonuç ya da hata gözlem olarak biçimlendirilir ve bütçe kapısına gider; adım, token, süre ve korkuluk bütçesi varsa modele döner, aşıldıysa durulur ve insana devredilir; durma koşulu tek değildir">
+<svg viewBox="0 0 680 452" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Ajan döngüsü ve durma ile doğrulama noktaları: görev ve bağlam model adımına girer; model ya bitir der ya da araç çağırır; bitir derse hedef kontrolü yani kodla son durumun yeniden yoklanması yapılır, geçerse bitti, kalırsa doğrulanmadı gözlemi olarak modele döner; araç çağırırsa önce şema, enum, zorunlu alan ve izin doğrulaması yapılır, geçersizse yapılandırılmış hata gözlemi döner, geçerliyse dar araç zaman aşımı ve korelasyon kimliğiyle yürütülür; yan etkili işlem bu döngüde değil deterministik adımda yapılır; sonuç ya da hata gözlem olarak biçimlendirilir ve bütçe kapısına gider; adım, token, süre ve guardrail bütçesi varsa modele döner, aşıldıysa durulur ve insana devredilir; durma koşulu tek değildir">
   <defs>
     <marker id="am-2a" markerWidth="10" markerHeight="10" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#5D7789"/></marker>
     <marker id="am-2b" markerWidth="10" markerHeight="10" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#B3402F"/></marker>
   </defs>
-  <text x="340" y="22" text-anchor="middle" font-size="15" font-weight="700" fill="#1C3247" font-family="system-ui">Ajan döngüsü — kodun karar verdiği dört nokta</text>
+  <text x="340" y="22" text-anchor="middle" font-size="15" font-weight="700" fill="#1C3247" font-family="system-ui">Ajan döngüsü: kodun karar verdiği dört nokta</text>
 
   <rect x="30" y="64" width="180" height="44" rx="10" fill="#FFFFFF" stroke="#5D7789" stroke-width="1.4"/>
   <text x="120" y="83" text-anchor="middle" font-size="11" font-weight="700" fill="#1C3247" font-family="system-ui">GÖREV + BAĞLAM</text>
@@ -218,7 +219,7 @@ döndüğünü gösterir.
 
   <rect x="30" y="160" width="180" height="48" rx="10" fill="#EAF1F7" stroke="#186399" stroke-width="1.6"/>
   <text x="120" y="179" text-anchor="middle" font-size="10.5" font-weight="700" fill="#186399" font-family="system-ui">BÜTÇE KAPISI (kod)</text>
-  <text x="120" y="195" text-anchor="middle" font-size="8.5" fill="#5D7789" font-family="system-ui">adım · token · süre · korkuluk</text>
+  <text x="120" y="195" text-anchor="middle" font-size="8.5" fill="#5D7789" font-family="system-ui">adım · token · süre · guardrail</text>
 
   <rect x="250" y="160" width="180" height="48" rx="10" fill="#EAF1F7" stroke="#186399" stroke-width="1.6"/>
   <text x="340" y="179" text-anchor="middle" font-size="10.5" font-weight="700" fill="#186399" font-family="system-ui">ÇAĞRI DOĞRULAMA (kod)</text>
@@ -252,7 +253,7 @@ döndüğünü gösterir.
 
   <rect x="250" y="352" width="180" height="48" rx="10" fill="#FFFFFF" stroke="#5D7789" stroke-width="1.4"/>
   <text x="340" y="371" text-anchor="middle" font-size="10.5" font-weight="700" fill="#1C3247" font-family="system-ui">GÖZLEM</text>
-  <text x="340" y="387" text-anchor="middle" font-size="8.5" fill="#5D7789" font-family="system-ui">sonuç ya da hata — çökme değil</text>
+  <text x="340" y="387" text-anchor="middle" font-size="8.5" fill="#5D7789" font-family="system-ui">sonuç ya da hata, çökme değil</text>
   <line x1="340" y1="304" x2="340" y2="350" stroke="#5D7789" stroke-width="1.5" marker-end="url(#am-2a)"/>
 
   <path d="M430,184 L450,184 L450,376 L432,376" fill="none" stroke="#B3402F" stroke-width="1.4" marker-end="url(#am-2b)"/>
@@ -263,7 +264,7 @@ döndüğünü gösterir.
   <text x="236" y="134" font-size="8" fill="#5D7789" font-family="system-ui">bütçe var</text>
 
   <rect x="30" y="418" width="620" height="26" rx="7" fill="#1C3247"/>
-  <text x="340" y="435" text-anchor="middle" font-size="10" font-weight="700" fill="#FFFFFF" font-family="system-ui">Durma koşulu tek değildir: bitti beyanı + hedef kontrolü + bütçe + korkuluk</text>
+  <text x="340" y="435" text-anchor="middle" font-size="10" font-weight="700" fill="#FFFFFF" font-family="system-ui">Durma koşulu tek değildir: bitti beyanı + hedef kontrolü + bütçe + guardrail</text>
 </svg>
 ```
 
@@ -285,10 +286,10 @@ Ajanın özel karalama alanı (private scratchpad) karşı tarafa giden kanaldan
 *Şerh:* Ders bu ayrımın anlaşma oranını ~%27'den ~%89'a çıkardığını bir makaleye (arXiv:2402.15813)
 dayandırıyor. Bu, dar parametreli bir pazarlık deneyidir. Taşınabilir olan ilkedir, rakam değil.
 
-Korkuluk yerleşiminde bir ödünleşim var (14-16). Korkuluk ana çağrıyla **paralel** çalışırsa gecikme
-azalır, ama tetiklendiğinde ana çağrının token'ı boşa gider. **Engelleyici (blocking)** çalışırsa
-gecikme artar, israf olmaz. Yan etkili bir adımın önündeki korkuluk her zaman engelleyicidir;
-paralel korkuluk tetiklendiğinde işlem çoktan yapılmış olabilir.
+Guardrail'in yerleşiminde bir ödünleşim (trade-off) var (14-16). Guardrail ana çağrıyla **paralel**
+çalışırsa gecikme azalır, ama tetiklendiğinde ana çağrının token'ı boşa gider. **Engelleyici (blocking)**
+çalışırsa gecikme artar, israf olmaz. Yan etkili bir adımın önündeki guardrail her zaman engelleyicidir;
+paralel guardrail tetiklendiğinde işlem çoktan yapılmış olabilir.
 
 ## 4. Önce çalışma zamanı şekli, sonra framework
 Framework seçmeden önce işin çalışma zamanı şeklini (runtime shape) seç (14-29):
@@ -307,10 +308,10 @@ kaybolur) ve izi dışa aktarılmayan arka plan işi. Dayanıklı yürütmenin i
 bağımsızdır (14-13). **(a)** Kontrol noktası (checkpoint) **tüm durumu** yazar; yalnız konuşma
 turlarını yazarsan araç durumu ve hafıza yazmaları kurtarılamaz. **(b)** Saat, rastgele tohum ve dış
 API cevabı gibi deterministik olmayan girdiler kaydedilir; yoksa yeniden başlatılan adım farklı
-sonuç üretir. Her kenarı koşullu bir graf, akıl yürütülemeyen bir durum makinesidir; doğrusal zincir
-tercih edilir. Ayrıntı [`ajan-calisma-zamani-kontrolleri.md`](ajan-calisma-zamani-kontrolleri.md)'nde.
+sonuç üretir. Her kenarı koşullu olan bir graf, üzerinde akıl yürütülemeyen bir durum makinesine
+döner; doğrusal zincir tercih edilir. Ayrıntı [`ajan-calisma-zamani-kontrolleri.md`](ajan-calisma-zamani-kontrolleri.md)'nde.
 
-## 5. Tekli ajandan çoklu ajana — ne zaman ve hangi parçalarla
+## 5. Tekli ajandan çoklu ajana: ne zaman ve hangi parçalarla
 Tekli ajan üç yerde kırılır (16-01): **bağlam doygunluğu** (araç sonuçları birikir, erken turdaki
 ayrıntı kaybolur), **rol karışıklığı** ("sen araştırmacı, kodcu ve inceleyicisin" diyen prompt her
 işi yarım yapar) ve **sıralı darboğaz**. Çoklu ajanın bedeli de aynı derste yazıyor ve akılda
@@ -324,7 +325,7 @@ ve maliyet ajan sayısıyla çarpılır.
 > yaklaşımı) aynı tabloda rekabetçi sonuçlar almıştır. Lider tablosu kirlenmesi (contamination) için
 > Hafta 7 quizinin S2 sorusuna bak.
 
-16-04 dersi bütün çoklu ajan framework'lerini **dört ilkele** (primitive) indirger:
+16-04 dersi bütün çoklu ajan framework'lerini **dört temel yapı taşına** (primitive) indirger:
 1. **Ajan:** sistem prompt'u + araç listesi + model. **Durumsuzdur** (stateless).
 2. **Devir (handoff):** denetimin başka ajana geçmesi. Aracın sonraki ajanı döndürmesi, bir graf
    kenarı ya da konuşmacı seçimi biçiminde olur.
@@ -332,17 +333,18 @@ ve maliyet ajan sayısıyla çarpılır.
 4. **Orkestratör:** sırada kimin konuşacağına karar veren. **Statik** graf (denetlenebilir, yeniden
    oynatılabilir), **LLM seçimli** (uyarlanabilir), **devir güdümlü** ya da **kuyruk güdümlü** olabilir.
 
-Kilit gözlem şu: **dört ilkelden yalnız paylaşılan durum durum taşır.** Hafıza zehirlenmesi, mesaj
-sırası, sürümleme ve yazma çekişmesi gibi ilginç hataların hepsi orada yaşar. Yeni bir framework
-geldiğinde değişiklik günlüğünü değil, dört ilkele eşlemesini okursun.
+Kilit gözlem şu: **dört yapı taşından durum bilgisi taşıyan tek parça paylaşılan durumdur.** Hafıza
+zehirlenmesi, mesaj sırası, sürümleme ve yazma çekişmesi gibi ilginç hataların hepsi orada yaşar. Yeni
+bir framework çıktığında değişiklik günlüğünü (changelog) değil, onun dört yapı taşına nasıl karşılık
+geldiğini okursun.
 
-## 6. Topolojiler — supervisor, hiyerarşi, sürü, kara tahta, oylama
+## 6. Topolojiler: supervisor, hiyerarşi, sürü, kara tahta, oylama
 ### 6.1 Supervisor (orkestratör–işçi)
 Lider ajan planlar, alt soruları işçilere dağıtır, işçi özetlerini sentezler; ham malzemeyi görmez
 (16-05). Kazancın üç mekanizması var: işçi başına **taze bağlam**, prompt ile uzmanlaşma ve
 paralellik. Kurallar şunlar. **Çabayı sorunun karmaşıklığına göre ölçekle**: basit soruya tek ajan
 yeter ve bu tahmini lider yapar. **Sentez çelişkisi yüzeye çıkarılır**: iki işçi çelişirse lider ya
-yeniden sorar ya da çelişkiyi açıkça yazar; en kötü hata tarafı sessizce seçmektir. İşçiye zaman
+yeniden sorar ya da çelişkiyi açıkça yazar; en kötü hata taraflardan birini sessizce seçmektir. İşçiye zaman
 aşımı ve token tavanı konur. Adımlar sıralı bağımlıysa (pipeline), soru basitse ya da sıkı denetim ve
 yeniden oynatma gerekiyorsa (statik graf) supervisor yanlış seçimdir.
 
@@ -363,21 +365,22 @@ atama:** hedef yanlış ayrıştırılır, alt yönetici verileni sadakatle yapa
 yukarıda görünür. **Anlam kayması:** alt yönetici "X **doğrulanamadı**" der, üst yönetici "X **teyit
 edilmedi**" diye özetler, bir sonraki katta bu "X yanlış" olur. **Uzlaşma döngüsü:** anlaşamayan alt
 yöneticilere iş yeniden dağıtılır, biraz farklı cevaplar gelir, döngü sürer. Önlemler: derinlik ≤ 2,
-uzlaşma için tur bütçesi (genelde 2), her sentezde dayandığı yaprak çıktılara **köken** (provenance).
+uzlaşma için tur bütçesi (genelde 2), her sentezde dayandığı yaprak (en alt düzey) çıktılara uzanan
+**köken** bilgisi (provenance).
 Karar sorusu şudur: **gerçekten bağımsız alt ekipler mi var, yoksa ağaç kılığına girmiş doğrusal bir
-akış mı?** İkincisi sahte hiyerarşidir (14-28); bu, Conway yasasının ajan versiyonudur
-([`hafta06-mimari-stiller-c4.md`](hafta06-mimari-stiller-c4.md)). *Şerh:* "Derinlik 2 tavanı" ampirik
+akış mı?** İkincisi sahte hiyerarşidir (14-28); bu, Conway yasasının (sistem, onu kuran
+organizasyonun yapısını kopyalar) ajan versiyonudur ([`hafta06-mimari-stiller-c4.md`](hafta06-mimari-stiller-c4.md)). *Şerh:* "Derinlik 2 tavanı" ampirik
 diye sunuluyor ama ölçümüne kaynak gösterilmiyor; makul bir varsayılan olarak oku.
 
 ### 6.3 Sürü (swarm) / kuyruk
 Merkezi karar verici yoktur; işçiler ortak bir kuyruktan iş çeker (16-09). **Çok sayıda bağımsız,
-süresi değişken iş** varsa ve sıra değil toplam verim önemliyse uyar. **Sıralı iş akışında** ve
+süresi değişken iş** varsa ve sıra değil toplam verim önemliyse uygundur. **Sıralı iş akışında** ve
 **tek tutarlı plan isteyen işte** başarısız olur: bir araştırmacı sürüsü kopuk olgular üretir, rapor
 üretmez. Tipik arıza **açlıktır** (starvation): herkes hızlı işi çekerse uzun iş hiç alınmaz. Çare,
 bekleme süresiyle artan önceliktir (aging).
 
 ### 6.4 Kara tahta ve hafıza zehirlenmesi
-16-13 dersi referans hatayı tek senaryoyla anlatır. Getirme ajanı sayfada "%4.2 iyileşme" okur,
+16-13 dersi bu konudaki tipik hatayı tek bir senaryoyla anlatır. Arama (retrieval) ajanı sayfada "%4.2 iyileşme" okur,
 paylaşılan duruma "%42" yazar. Özetleyici "büyük %42 kazanç" diye aktarır, analist "benimseyin" der.
 **Hiçbir ajan çökmedi, hiçbir test kırılmadı; sistem "çalıştı".** Paylaşılan durum bir ajanın
 halüsinasyonunu olguya çevirdi. Üç yapısal önlem var:
@@ -391,7 +394,7 @@ halüsinasyonunu olguya çevirdi. Üç yapısal önlem var:
 Yazma çekişmesinin çareleri klasik veri sistemi çareleridir: tek yazıcı, sürüm numarasıyla iyimser
 eşzamanlılık ya da konu bölümleme ([`hafta11-ddia-veri-yogun.md`](hafta11-ddia-veri-yogun.md)).
 
-### 6.5 Oylama ve tartışma — N kopya bağımsız oy değildir
+### 6.5 Oylama ve tartışma: N kopya bağımsız oy değildir
 N örnek alıp çoğunluk oyuna başvurmak (öz-tutarlılık, self-consistency) en ucuz birleştirmedir. Ama
 **aynı modelin N kopyası aynı yanlılığı ve aynı halüsinasyonları paylaşır**; hatalar ilişkilidir
 (16-15, 16-23: tek kültür çöküşü, monoculture collapse). Beş kopyanın oybirliği, tek modelin beş kez
@@ -406,10 +409,10 @@ sabit sınır değil, "ajan eklemenin getirisi hızla düşer" uyarısı olarak 
 başla) → **(2)** supervisor (2–4 uzman) → **(3)** sürü (gecikme akıl yürütme netliğinden önemliyse)
 → **(4)** hiyerarşi (yalnız supervisor bağlamı uzmanların tanımını taşıyamıyorsa) → **(5)** tartışma
 (doğruluk maliyetten önemliyse). En sık ihlal **önce topoloji düşünmektir**: "çoklu ajan lazım"
-kararı, hangi sorunu çözeceği belirlenmeden verilir. Devir güdümlü sistemlerde A → B → A → B sekmesi
-olur; her devirde bir **hop sayacı** tutulur ve N devirden sonra devir reddedilir (14-16).
+kararı, hangi sorunu çözeceği belirlenmeden verilir. Devir güdümlü sistemlerde iş A → B → A → B diye
+gidip gelebilir; her devirde bir **hop sayacı** tutulur ve N devirden sonra devir reddedilir (14-16).
 
-## Diyagram 3 — Tekli → çoklu ajan: topoloji karar ağacı
+## Diyagram 3: Tekliden çoklu ajana geçişte topoloji karar ağacı
 Sorular yukarıdan aşağıya sorulur. Her "evet" seni daha basit bir sonuçta durdurur. Sağdaki kutudaki
 kurallar seçtiğin her topolojide geçerlidir.
 
@@ -418,7 +421,7 @@ kurallar seçtiğin her topolojide geçerlidir.
   <defs>
     <marker id="am-3a" markerWidth="10" markerHeight="10" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#5D7789"/></marker>
   </defs>
-  <text x="340" y="22" text-anchor="middle" font-size="15" font-weight="700" fill="#1C3247" font-family="system-ui">Tekli → çoklu ajan — topoloji karar ağacı</text>
+  <text x="340" y="22" text-anchor="middle" font-size="15" font-weight="700" fill="#1C3247" font-family="system-ui">Tekli → çoklu ajan: topoloji karar ağacı</text>
   <text x="340" y="40" text-anchor="middle" font-size="11" fill="#5D7789" font-family="system-ui">her "evet" seni daha basit bir sonuçta durdurur</text>
 
   <rect x="240" y="56" width="200" height="44" rx="10" fill="#FFFFFF" stroke="#1C3247" stroke-width="1.5"/>
@@ -489,15 +492,15 @@ kurallar seçtiğin her topolojide geçerlidir.
   <text x="482" y="250" font-size="9" fill="#1C3247" font-family="system-ui">· N kopya ≠ N bağımsız oy</text>
 
   <rect x="20" y="448" width="640" height="30" rx="7" fill="#1C3247"/>
-  <text x="340" y="467" text-anchor="middle" font-size="10" font-weight="700" fill="#FFFFFF" font-family="system-ui">Topolojiyi problem seçer, moda değil — önce "çoklu ajan hangi sorunu çözecek?"</text>
+  <text x="340" y="467" text-anchor="middle" font-size="10" font-weight="700" fill="#FFFFFF" font-family="system-ui">Topolojiyi problem seçer, moda değil. Önce: "çoklu ajan hangi sorunu çözecek?"</text>
 </svg>
 ```
 
 ## 7. Çoklu ajan hata taksonomisi ve doğrulama
-### 7.1 MAST — hataların payı ve "önce spec" iddiası
+### 7.1 MAST: hataların payı ve "önce spec" iddiası
 16-23 dersi referans taksonomi olarak **MAST**'ı verir: Cemri vd., "Why Do Multi-Agent LLM Systems
 Fail?", arXiv:2503.13657, NeurIPS 2025. Makalenin ilk sürümündeki adı MASFT'tir; 14-26 dersi onu bu
-adla anar. Dersin aktardığı dağılım, 7 açık kaynaklı çoklu ajan çerçevesinden 1642 yürütme kaydına
+adla anar. Dersin aktardığı dağılım, 7 açık kaynaklı çoklu ajan framework'ünden 1642 yürütme kaydına
 dayanıyor:
 
 | Kök kategori | Pay | Örnek | Önlem |
@@ -508,17 +511,17 @@ dayanıyor:
 
 Bu dağılım **Hafta 3, Gün 5'in tezini destekliyor.** Orada "sorun genelde ajan eksikliği değil,
 tarifin ya da planın zayıflığıdır; zayıf tarifle üç ajan, tek ajandan daha hızlı yanlış yapar"
-deniyor ve ajanlar arası yazılı **sprint sözleşmesi** olmadan döngünün kapanmayacağı söyleniyordu.
+deniyor ve ajanlar arası yazılı **sprint sözleşmesi** olmadan döngünün kapanmayacağı söyleniyor.
 MAST'ta en büyük pay tanım eksiğine, ikinci pay koordinasyona, yani sözleşmenin bozulmasına düşüyor.
 
 > *Şerh:* Rakamları kullanırken üç sınırı unutma. **(1)** %41.77 / %36.94 / %21.30 oranları makalenin
 > v2 sürümüne aittir ([arXiv:2503.13657v2](https://arxiv.org/abs/2503.13657v2)). Güncel v3 (Ekim
 > 2025, 1600+ kayıt) kategori toplamı vermez, ilk kategorinin adını "sistem tasarımı sorunları"
-> yapar; mod yüzdelerinin toplamı kabaca %44 / %32 / %24'tür — **sıralama aynı kalır**. **(2)** Kayıtlar 7 açık kaynaklı araştırma çerçevesinin
+> yapar; hata türlerinin yüzdeleri toplandığında kabaca %44 / %32 / %24 çıkar, yani **sıralama aynı kalır**. **(2)** Kayıtlar 7 açık kaynaklı araştırma framework'ünün
 > benchmark görevlerinden gelir, üretimden değil. Dersin "%41–86.7 başarısızlık" rakamı da bu
-> çerçevelere aittir; "çoklu ajan sistemlerinin yarısı batar" diye genellenemez. **(3)** MAST'ın
-> "tanım" kategorisi rol ve sistem tanımını da kapsar, bizim "spec"ten geniştir. Destek "önce spec"e
-> **yön** olarak geçerli; "spec yazınca hataların %42'si gider" diye okunamaz. Ayrıca 16-08 dersinin
+> framework'lere aittir; "çoklu ajan sistemlerinin yarısı batar" diye genellenemez. **(3)** MAST'ın
+> "tanım" kategorisi rol ve sistem tanımını da kapsar, bizim "spec"ten geniştir. Bu veri "önce spec"
+> ilkesini **yön** olarak destekler; "spec yazınca hataların %42'si gider" diye okunamaz. Ayrıca 16-08 dersinin
 > "her çoklu ajan hatası eksik doğrulamaya dayandırılabilir" cümlesi, aynı dersin verdiği %21.3 ile
 > çelişir.
 
@@ -536,11 +539,11 @@ onu uydurmak yerine ilgili role sorması talimat olarak verilir (ChatDev).
 *Şerh:* Dersteki "PwC doğruluğu %10'dan %70'e çıkardı" bir CrewAI vaka çalışmasıdır, satıcı
 kaynaklıdır; yöntemi ve temel çizgisi (baseline) yayımlanmamıştır. Alıntılanmaz.
 
-### 7.3 "Başardım" yanılsaması — transkripte değil son duruma bak
+### 7.3 "Başardım" yanılsaması: transkripte değil son duruma bak
 14-26 dersinin en pratik bulgusu şu: ajan "başaramadım" ile "bu iş imkânsız" farkını çoğu zaman
 göremez ve **400 hatası aldıktan sonra bile döngüyü kapatmak için başarı mesajı yazabilir.** Bir de
-zincirleme hata var: uydurulmuş tek bir ürün kodu dört alt API çağrısını tetikler, tek hata çok
-sistemli bir olaya dönüşür. Önlemler:
+zincirleme hata var: uydurulmuş tek bir ürün kodu, sonraki adımlarda dört API çağrısını tetikler ve
+tek hata birçok sistemi etkileyen bir olaya dönüşür. Önlemler:
 - **Son durumu yeniden yokla:** dosya gerçekten oluştu mu, kayıt veritabanında var mı? Kontrol ajanın
   beyanından bağımsız olarak kodla yapılır (Diyagram 2'deki hedef kontrolü).
 - **Değerlendirmeyi de son duruma göre yap.** Berkeley'nin araç çağırma lider tablosu (BFCL) v3'ten
@@ -549,13 +552,13 @@ sistemli bir olaya dönüşür. Önlemler:
 - **Yalnız çökmeleri işaretlemek yetmez;** ajan hatalarının çoğu geçerli görünen çıktı üretir.
 - **Yörünge uzunluğunu ölç:** 14-20 dersi, OSWorld-Human verisine göre en iyi ajanların gereken adımın
   1.4–2.7 katını kullandığını aktarıyor. Bu tek bir benchmark'ın rakamı; taşınabilir ders, altın
-  yörüngeye (gold trajectory) göre adım oranını izlemektir.
-- **Her korkuluk bir eval vakasına, her üretim hatası yeni bir vakaya karşılık gelir** (14-30).
-- **Yavaş hatayı vekil sinyallerle izle** (16-23): uyuşma oranı, yeniden deneme oranı, çıktı uzunluğu
+  yörüngeye (gold trajectory: işin bilinen doğru adım dizisi) göre adım oranını izlemektir.
+- **Her guardrail bir eval vakasına, her üretim hatası yeni bir vakaya karşılık gelir** (14-30).
+- **Yavaş yavaş gelişen hatayı dolaylı göstergelerle (proxy) izle** (16-23): uyuşma oranı, yeniden deneme oranı, çıktı uzunluğu
   dağılımı. Yeniden denemelerin zincirleme çoğalması (retry fırtınası) devre kesiciyle durdurulur
   ([`arac-cagrisi-guvenilirligi.md`](arac-cagrisi-guvenilirligi.md)).
 
-## 8. Bu depodan vaka — AI Öğretmen fiilen hangi desen?
+## 8. Bu depodan vaka: AI Öğretmen fiilen hangi desen?
 **AI Öğretmen bir ajan değil, bir iş akışıdır.** Koddan kanıtlar:
 
 - **Modele hiç araç verilmiyor.** `ai/OgretmenAiClient` arayüzünde yalnız `cagir(AiIstek)` ve
@@ -572,7 +575,7 @@ sistemli bir olaya dönüşür. Önlemler:
 
 Değerlendirme akışı **kod kapılı bir zincirdir**: bağlam (kod) → gönderim kaydı (`gonderimRepo.save`)
 → değerlendirme (`degerlendirme.st`,
-GUCLU) → kapı (`JsonCevapParser`) → gerekirse tek düzeltme turu → zarif düşüş
+GUCLU) → kapı (`JsonCevapParser`) → gerekirse tek düzeltme turu → zarif düşüş (graceful degradation)
 (`Degerlendirme.hamMetinden`) → değerlendirmeli kayıt (ikinci `gonderimRepo.save`) → hafıza güncelleme (`hafiza-guncelle.st`,
 HIZLI) → karakter sınırlı atomik dosya yazımı. Düzeltme turu, değerlendiricisi **kod** olan ve tek
 turla sınırlı bir değerlendirici–iyileştiricidir. Quiz üretiminde de dört seçeneği olmayan ya da
@@ -591,7 +594,7 @@ açısından öğretici bir boşluk vardı: iki **yazma aracı** ajanın serbest
 `gorev_isaretle` 2026-10-26'ya kadar görev durumunu **tersine çeviriyordu** (toggle); istemci çağrıyı
 yeniden denerse görev geri açılıyordu. ADR-0016 bunu düzeltti: araç artık "çevir" değil "şu değere
 ayarla" diyor (opsiyonel `hedef_durum`, varsayılan `true`; servis `IlerlemeService.gorevDurumuAyarla`),
-yani idempotent — tekrar denenen çağrı işareti geri almaz. `statik_quiz_kaydet` ise hâlâ her çağrıda
+yani idempotent: tekrar denenen çağrı işareti geri almaz. `statik_quiz_kaydet` ise hâlâ her çağrıda
 **yeni satır** ekliyor ve idempotency anahtarı yok; yeniden deneme çift kayıt üretir. ADR-0016 karar 2
 bunu **kabul edilen risk** olarak yazdı (yalnız-ekle deneme günlüğü, MCP sunucuları kapalı, etkisi bir
 fazla deneme) ve yeniden açma koşulunu koydu: MCP sunucusu yeniden uzakta çalışırsa ya da quiz denemesi
@@ -604,11 +607,12 @@ bir değerlendirmeye girerse. Ayrıntı: [Araç çağrısı güvenilirliği](ara
    açık bir `bitir` aracı bu riski neden tek başına kapatmaz?
 3. Model `durum: "devam_ediyor"` ile bir araç çağırdı, şemada yalnız `acik | kapali` var. Çalışma
    zamanı ne yapar? Model `"5"` gönderdiğinde ne yapar? İki durum neden farklı ele alınır?
-4. Ajan e-posta gönderebilmeli. Bu yeteneği mimaride **nereye** koyarsın? Korkuluğu paralel mi
+4. Ajan e-posta gönderebilmeli. Bu yeteneği mimaride **nereye** koyarsın? Guardrail'i paralel mi
    engelleyici mi çalıştırırsın, neden?
 5. Bir iş 4–6 dakika sürüyor ve adım sayısı belli değil. Hangi çalışma zamanı şeklini seçersin? DLQ
    olmazsa ne olur? Kontrol noktasında yalnız konuşma turlarını saklamak neden yetmez?
-6. Dört ilkeli say. "Yalnız paylaşılan durum durum taşır" gözlemi hataları nerede aramanı söyler?
+6. Dört yapı taşını say. "Durum bilgisini yalnız paylaşılan durum taşır" gözlemi hataları nerede
+   araman gerektiğini söyler?
 7. Hiyerarşik bir sistemde alt yönetici "doğrulanamadı" yazdı, en üstteki rapor "yanlış" diyor. Bu
    hatanın adı nedir? Hangi önlemler alınır, hangi karar sorusu hiyerarşiyi gereksiz kılabilir?
 8. Kara tahtadaki "%4.2 → %42" vakasında hiçbir test kırılmadı. Üç yapısal önlemi say. Doğrulayıcının
@@ -627,14 +631,14 @@ bir değerlendirmeye girerse. Ayrıntı: [Araç çağrısı güvenilirliği](ara
 1. **Grafı kim sahipleniyor?** Kod sahipleniyorsa iş akışı, model sahipleniyorsa ajan. Orkestratör–
    işçide alt işleri LLM seçer, ama döngü sınırlıdır ve çerçeveyi kod çizer. Orkestratör bütçesiz
    biçimde kendi sonraki adımına karar vermeye başlarsa ajana dönüşür.
-2. `bitir` beyanı, araç çağrısı olmaması, azami tur, azami token/süre, korkuluk. Model yalnız açıklama
+2. `bitir` beyanı, araç çağrısı olmaması, azami tur, azami token/süre, guardrail. Model yalnız açıklama
    yazıp aracı unutursa "araç yok = bitti" döngüyü erken kapatır. `bitir` niyeti görünür kılar ama
    beyan kanıt değildir; arkasında kodla yapılan bir hedef kontrolü gerekir.
 3. Enum ihlali yapılandırılmış bir hata gözlemiyle reddedilir ("izin verilen: acik, kapali"), döngü
    çökmez. `"5"`'in anlamı tek olduğu için sayıya çevrilir. Fark belirsizliktir: tek anlamlı değer
    çevrilir, başka anlama gelebilecek değer reddedilir.
 4. Deterministik bir kod adımına. Ajan taslak üretir, kod doğrular ve gönderir. Döngüde yazma aracı
-   kalacaksa idempotency anahtarı şarttır. Korkuluk engelleyici çalışır; paralel korkuluk
+   kalacaksa idempotency anahtarı şarttır. Guardrail engelleyici çalışır; paralel guardrail
    tetiklendiğinde e-posta çoktan gitmiş olabilir.
 5. Kuyruk/arka plan, gerekirse dayanıklı yürütme; ~30 sn'yi aşan iş istek–yanıta uymaz. DLQ yoksa
    başarısız işler sessizce kaybolur. Yalnız konuşma turları saklanırsa araç durumu ve hafıza
@@ -653,7 +657,7 @@ bir değerlendirmeye girerse. Ayrıntı: [Araç çağrısı güvenilirliği](ara
 10. En büyük pay (~%42–44, makale sürümüne göre) tanım sorunlarına, ikincisi koordinasyona düşüyor; bu, "sorun ajan eksikliği
     değil tarif zayıflığı" ve "yazılı sprint sözleşmesi" tezleriyle aynı yöne bakar. Sınırlar:
     rakamlar makalenin v2 sürümünden (v3'te oranlar az kayar, sıra aynı); kayıtlar 7 açık kaynaklı araştırma
-    çerçevesinden, üretimden değil; "tanım" kategorisi bizim "spec"ten geniştir.
+    framework'ünden, üretimden değil; "tanım" kategorisi bizim "spec"ten geniştir.
 11. %90.2: Anthropic'in şirket içi değerlendirmesi, satıcı birincil kaynak; taşınabilir ders
     mekanizmadır (daha çok token = taze bağlam), rakam değil. PwC: CrewAI vaka çalışması, yöntemsiz,
     alıntılanmaz. %88: kaynağı belirsiz dolaşım rakamı, alıntılanmaz.
@@ -668,7 +672,7 @@ bir değerlendirmeye girerse. Ayrıntı: [Araç çağrısı güvenilirliği](ara
 Bu metin bir çeviri değil, bir **sentezdir**: dersler okunup bu programın kitlesine (modeli eğiten
 değil, kullanan mimar) ve bu depoya bağlanarak Türkçe yeniden yazıldı; ders kodları kopyalanmadı.
 
-- **AI Engineering from Scratch** — Rohit Ghumare, github.com/rohitg00/ai-engineering-from-scratch,
+- **AI Engineering from Scratch**, Rohit Ghumare, github.com/rohitg00/ai-engineering-from-scratch,
   MIT Lisansı, "Copyright (c) 2026 Rohit Ghumare". Kullanılan dersler (`phases/…/docs/en.md`):
   - 14-agent-engineering: 01 the-agent-loop, 05 self-refine-and-critic, 06
     tool-use-and-function-calling, **12 anthropic-workflow-patterns (ana ders)**, 13

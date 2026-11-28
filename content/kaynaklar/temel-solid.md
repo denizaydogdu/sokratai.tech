@@ -1,6 +1,6 @@
 ---
 baslik: "Temeller Tazeleme: SOLID Prensipleri"
-yazar: "Faz 0 — Mühendislik Temelleri"
+yazar: "Faz 0: Mühendislik Temelleri"
 tarih: "2026-07-10"
 dil: "Türkçe kavram özeti (diyagramlı)"
 etiketler: 5,6,9
@@ -9,7 +9,7 @@ etiketler: 5,6,9
 ### Bu metin ne anlatıyor?
 Bu metin, kod yazarken işleri hangi parçaya koyacağına karar vermenin beş temel kuralını
 anlatıyor. Bu beş kuralın İngilizce baş harfleri **SOLID** kelimesini verir. Hepsinin ortak
-derdi tek: yarın bir şey değiştiğinde programın her yerini elden geçirmek zorunda kalma.
+derdi aynı: yarın bir şey değiştiğinde programın her yerini elden geçirmek zorunda kalmamak.
 Her kural için önce kısa tanım, sonra günlük hayattan bir örnek, sonra "bu kural nerede
 abartıya kaçar" uyarısı bulacaksın.
 
@@ -40,45 +40,45 @@ Aşağıdaki kelimeler beş prensibin tamamında geçiyor; önce bunları oturta
 
 ## Beş prensip kısa kısa
 
-### SRP — Tek Sorumluluk (Single Responsibility)
+### SRP: Tek Sorumluluk (Single Responsibility)
 Bir sınıfın değişmesi için **tek bir nedeni** olmalı; yani tek bir **aktöre** hizmet etmeli.
 Buradaki aktör (actor), o koddan değişiklik talep edebilecek insan grubudur: muhasebe birimi,
 operasyon ekibi, pazarlama… Farklı aktörler farklı zamanlarda farklı şeyler ister; bu yüzden
-ikisine birden hizmet eden sınıf iki ayrı sebeple değişir. Günlük dille: bir kişi hem yemek pişirip hem muhasebe tutarsa, mutfak kuralı da vergi kuralı da
-onu değiştirir — ikisini ayır. **Fazla olduğu yer:** her metodu ayrı sınıfa bölmek anemik,
+ikisine birden hizmet eden sınıf iki ayrı sebeple değişir. Günlük dille: bir kişi hem yemek pişirip hem muhasebe tutarsa, mutfak kuralı değişince de vergi kuralı
+değişince de onun işi değişir. İkisini ayır. **Abartıldığında:** her metodu ayrı sınıfa bölmek içi boş (anemik),
 gezinmesi zor bir tasarım üretir; sorumluluk = "değişme nedeni"dir, "satır sayısı" değil.
 
-### OCP — Açık/Kapalı (Open/Closed)
+### OCP: Açık/Kapalı (Open/Closed)
 Modül **eklemeye açık, değiştirmeye kapalı** olmalı: yeni davranışı mevcut kodu bozmadan yeni kod
 ekleyerek getir. Günlük dille: yeni bir ödeme tipi eklerken çalışan `if/else` bloğunu her seferinde
-kesip biçmek yerine yeni bir strateji sınıfı ekle. **Fazla olduğu yer:** henüz gelmeyen değişiklik
-için soyut eklenti noktaları açmak (spekülatif genellik) — gerçek ikinci vaka gelince soyutla.
+kesip biçmek yerine yeni bir strateji sınıfı ekle. **Abartıldığında:** henüz gelmeyen bir değişiklik
+için soyut eklenti noktaları açarsın (spekülatif genellik). Soyutlamayı gerçek ikinci vaka gelince yap.
 
-### LSP — Liskov Yerine Geçme (Liskov Substitution)
+### LSP: Liskov Yerine Geçme (Liskov Substitution)
 Alt tür, üst türün yerine sürprizsiz geçebilmeli: sözleşmeyi (contract) daraltmamalı, beklenmedik
-istisna atmamalı. Klasik örnek: `Kare`'yi `Dikdörtgen`'den türetmek, `genişlik` set edince
-`yükseklik`in de değişmesiyle çağıranı şaşırtır. **Fazla olduğu yer:** her kalıtımı LSP korkusuyla
+hata (exception) fırlatmamalı. Klasik örnek: `Kare`'yi `Dikdörtgen`'den türetirsen `genişlik` değerini
+değiştirmek `yükseklik`i de değiştirir ve çağıran şaşırır. **Abartıldığında:** her kalıtımı LSP korkusuyla
 kompozisyona çevirmek; asıl soru davranışın gerçekten yerine geçip geçmediğidir.
 
-### ISP — Arayüz Ayrımı (Interface Segregation)
+### ISP: Arayüz Ayrımı (Interface Segregation)
 İstemciyi kullanmadığı metotlara bağımlı bırakma; **küçük ve odaklı arayüzler** birden çok işi olan
 dev arayüzlere yeğdir. Günlük dille: sadece yazıcıya ihtiyacı olan koda tarama+faks+yazma içeren bir
-"çok fonksiyonlu" arayüz dayatma. **Fazla olduğu yer:** her metot için tek metotlu arayüz üretmek
-gereksiz parçalanma yaratır; ölçüt istemcilerin gerçek kullanım kümeleridir.
+"çok fonksiyonlu" arayüz dayatma. **Abartıldığında:** her metot için tek metotlu arayüz üretmek
+gereksiz parçalanma yaratır; ölçü, istemcilerin gerçekte hangi metotları birlikte kullandığıdır.
 
-### DIP — Bağımlılığın Ters Çevrilmesi (Dependency Inversion)
-Üst düzey politika, alt düzey ayrıntıya değil; **her ikisi de soyutlamaya** bağlı olmalı — ve
-soyutlama ayrıntıya değil, ayrıntı soyutlamaya bağlanmalı. Günlük dille: sipariş servisi doğrudan
+### DIP: Bağımlılığın Ters Çevrilmesi (Dependency Inversion)
+Üst düzey politika alt düzey ayrıntıya bağlı olmamalı; **her ikisi de soyutlamaya** bağlı olmalı.
+Ayrıca soyutlama ayrıntıya değil, ayrıntı soyutlamaya bağlanmalı. Günlük dille: sipariş servisi doğrudan
 `PostgresRepo`'yu değil `SiparisDeposu` arayüzünü tanısın; veritabanı bir ayrıntı olsun.
-**Fazla olduğu yer:** tek gerçeklemesi olan ve hiç değişmeyecek şeye arayüz koyup her yeri
-dolaylılaştırmak okunabilirliği düşürür.
+**Abartıldığında:** tek gerçeklemesi olan ve hiç değişmeyecek şeye arayüz koyup her çağrıyı
+dolaylı hâle getirmek okunabilirliği düşürür.
 
-**DIP ≠ DI — karıştırmayın.** DIP bir *tasarım prensibidir*: "bağımlılık oku somut sınıfa değil
-soyutlamaya baksın" der. **Bağımlılık Enjeksiyonu (Dependency Injection, DI)** ise bir
+**DIP ≠ DI, karıştırma.** DIP bir *tasarım prensibidir*: "bağımlılık oku somut sınıfı değil
+soyutlamayı göstersin" der. **Bağımlılık Enjeksiyonu (Dependency Injection, DI)** ise bir
 *tekniktir*: bir nesnenin ihtiyaç duyduğu parçayı kendi içinde `new` ile yaratması yerine, o
-parçayı dışarıdan (çoğunlukla yapıcı metottan) alması. İkisi aynı şey değildir: somut bir
+parçayı dışarıdan alması; çoğunlukla yapıcı metot (constructor) üzerinden. İkisi aynı şey değildir: somut bir
 `PostgresRepo`'yu yapıcı metottan geçirirsen DI yapmış ama yine somut sınıfa bağımlı kalmış
-olursun — DIP yoktur. Tersi de mümkündür: DI çatısı hiç kullanmadan, elle bağlayarak da
+olursun; ortada DIP yoktur. Tersi de mümkündür: hiçbir DI çatısı (framework) kullanmadan, elle bağlayarak da
 soyutlamaya bağımlı kalabilirsin. Kısacası DI, DIP'i uygulamayı kolaylaştıran araçlardan
 biridir; DIP'in kendisi değildir.
 
@@ -139,21 +139,21 @@ Hem üst hem alt modül aynı soyutlamaya bakar; okların yönü soyutlamaya do�
   <text x="320" y="196" text-anchor="middle" font-size="10.5" fill="#5D7789" font-family="system-ui">«arayüz» SiparisDeposu</text>
   <line x1="150" y1="118" x2="270" y2="148" stroke="#186399" stroke-width="1.8" marker-end="url(#solid-dip-ok)"/>
   <line x1="490" y1="118" x2="370" y2="148" stroke="#186399" stroke-width="1.8" marker-end="url(#solid-dip-ok)"/>
-  <text x="320" y="140" text-anchor="middle" font-size="10.5" font-weight="600" fill="#5D7789" font-family="system-ui">ikisi de aynı soyutlamaya bağımlı — oklar yukarıdan soyutlamaya bakar</text>
+  <text x="320" y="140" text-anchor="middle" font-size="10.5" font-weight="600" fill="#5D7789" font-family="system-ui">ikisi de aynı soyutlamaya bağımlı · oklar yukarıdan soyutlamaya bakar</text>
 </svg>
 ```
 
 ### 3. SRP ihlali → ayrıştırma
-Solda üç sorumluluğu tek sınıfta taşıyan "tanrı sınıf"; sağda her sorumluluk kendi sınıfında.
-Aynı davranış, tek değişme nedeni kuralına uygun hale gelir (before → after).
+Solda üç sorumluluğu tek sınıfta taşıyan "tanrı sınıf" (god class); sağda her sorumluluk kendi sınıfında.
+Davranış aynı kalır ama tasarım "tek değişme nedeni" kuralına uygun hâle gelir (önce → sonra).
 
 ```svg
 <svg viewBox="0 0 640 250" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="SRP ihlali ayrıştırması: solda üç sorumluluklu tek sınıf, sağda üç ayrı sınıf">
   <defs>
     <marker id="solid-srp-ok" markerWidth="12" markerHeight="12" refX="8" refY="3.5" orient="auto"><path d="M0,0 L8,3.5 L0,7 Z" fill="#C77A17"/></marker>
   </defs>
-  <text x="150" y="24" text-anchor="middle" font-size="13.5" font-weight="700" fill="#1C3247" font-family="system-ui">ÖNCE — ihlal</text>
-  <text x="500" y="24" text-anchor="middle" font-size="13.5" font-weight="700" fill="#1C3247" font-family="system-ui">SONRA — ayrıştırılmış</text>
+  <text x="150" y="24" text-anchor="middle" font-size="13.5" font-weight="700" fill="#1C3247" font-family="system-ui">ÖNCE · ihlal</text>
+  <text x="500" y="24" text-anchor="middle" font-size="13.5" font-weight="700" fill="#1C3247" font-family="system-ui">SONRA · ayrıştırılmış</text>
   <rect x="42" y="52" width="216" height="150" rx="12" fill="#FBF0DE" stroke="#C77A17" stroke-width="1.8"/>
   <text x="150" y="78" text-anchor="middle" font-size="13" font-weight="700" fill="#C77A17" font-family="system-ui">Rapor</text>
   <line x1="62" y1="90" x2="238" y2="90" stroke="#C77A17" stroke-width="1"/>
@@ -177,7 +177,7 @@ Aynı davranış, tek değişme nedeni kuralına uygun hale gelir (before → af
 ## Öz-sınav (kendini test et)
 1. SRP'deki "sorumluluk" neden "satır sayısı" değil de "değişme nedeni / aktör" olarak tanımlanır?
 2. OCP'yi sağlamak isterken ne zaman spekülatif genelliğe (henüz gelmeyen değişiklik için soyutlama) kaçmış olursun?
-3. `Kare`'nin `Dikdörtgen`'den türetilmesi LSP'yi tam olarak nasıl ihlal eder — çağıranın hangi beklentisi kırılır?
+3. `Kare`'nin `Dikdörtgen`'den türetilmesi LSP'yi tam olarak nasıl ihlal eder? Çağıranın hangi beklentisi kırılır?
 4. DIP'te "soyutlama ayrıntıya değil, ayrıntı soyutlamaya bağlanmalı" ifadesindeki ok yönünün pratikte karşılığı nedir?
 5. Tek gerçeklemesi olan ve değişmeyecek bir tip için araya arayüz koymak hangi prensibin
    abartısıdır ve bunun maliyeti nedir?

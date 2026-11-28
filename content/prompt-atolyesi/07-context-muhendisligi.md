@@ -1,16 +1,16 @@
 ---
 slug: context-muhendisligi
 baslik: Bağlam Mühendisliği
-aciklama: Prompt'un ötesi. 2026'nın kayması: iyi tek bir cümle yazmak değil, modelin her çağrıda GÖRDÜĞÜ her şeyi — sistem talimatı, geçmiş, getirilen belge, araç tanımı, bellek — kasıtlı tasarlamak. Ajanlar prompt hatasından değil, bağlam/durum hatasından çöker.
+aciklama: Prompt'un ötesi. 2026'da odak kaydı: mesele iyi tek bir cümle yazmak değil, modelin her çağrıda GÖRDÜĞÜ her şeyi (sistem talimatı, geçmiş, getirilen belge, araç tanımı, bellek) bilinçli olarak tasarlamak. Ajanlar prompt hatasından değil, bağlam ya da durum hatasından çöker.
 ---
 
 ### Bu bölümde ne öğreneceksin?
 
-Şimdiye kadar **ne yazdığını** konuştuk. Bu bölümde **modelin ne gördüğünü** konuşacağız: sistem talimatı, konuşma geçmişi, getirilen belgeler, araç tanımları — hepsi birlikte. Bunları bilinçli seçmeye "bağlam mühendisliği" denir ve uzun süren ajan oturumlarında kaliteyi belirleyen asıl şey budur.
+Şimdiye kadar **ne yazdığını** konuştuk. Bu bölümde **modelin ne gördüğünü** konuşacağız: sistem talimatı, konuşma geçmişi, getirilen belgeler, araç tanımları, hepsi birlikte. Bunları bilinçli seçmeye "bağlam mühendisliği" denir ve uzun süren ajan oturumlarında kaliteyi belirleyen asıl şey budur.
 
 **Bu bölümün yeni terimleri:**
 
-- **Bağlam penceresi** (İng. *context window*) — hatırlatma: modelin tek seferde görebildiği toplam token miktarı. 2026'da bir milyon token'a kadar çıkabiliyor; ama "sığıyor" ile "iyi kullanılıyor" aynı şey değil.
+- **Bağlam penceresi** (İng. *context window*; hatırlatma): modelin tek seferde görebildiği toplam token miktarı. 2026'da bir milyon token'a kadar çıkabiliyor; ama "sığıyor" ile "iyi kullanılıyor" aynı şey değil.
 - **Token bütçesi**: bir çağrıda bağlam penceresine neyi koyup neyi koymayacağının bilinçli kararı. Her token para, gecikme ve dikkat demek.
 - **Sistem talimatı** (İng. *system prompt*): her çağrıda en başta duran, modelin rolünü ve sınırlarını belirleyen sabit metin.
 - **RAG** (İng. *retrieval-augmented generation*, getirmeli üretim): soruya cevap vermeden önce bir arama yapıp bulunan belge parçalarını prompt'a koyma yöntemi. Model böylece kendi bilmediği, sana ait bilgiyle konuşabilir.
@@ -27,15 +27,15 @@ Bir ajana uzun bir görev verirken, bağlam penceresine (modelin tek seferde gö
 `işte tüm proje [40 dosyanın tamamını yapıştır], şu hatayı düzelt`
 
 ## İpucu
-Bağlam penceresi sonsuz değil ve doldurmak bedava değil — hem maliyet hem "ortada kaybolma" artar. Modele HER ŞEYİ değil, işe YARAYANI ver.
+Bağlam penceresi sonsuz değil ve doldurmak bedava değil: doldurdukça hem maliyet hem "ortada kaybolma" riski artar. Modele HER ŞEYİ değil, işe YARAYANI ver.
 
 ## İdeal çözüm
-Şu hatayı düzelteceğiz: `[hata]`. Önce **hangi dosyalara ihtiyacın olduğunu söyle** — ben sadece onları vereceğim. Tahmininle başla: hata mesajındaki sınıf + onun doğrudan bağımlılıkları. Gereksiz dosyayı isteme; bağlamı dar ve ilgili tut.
+Şu hatayı düzelteceğiz: `[hata]`. Önce **hangi dosyalara ihtiyacın olduğunu söyle**; ben sadece onları vereceğim. Tahmininle başla: hata mesajındaki sınıf + onun doğrudan bağımlılıkları. Gereksiz dosyayı isteme; bağlamı dar ve ilgili tut.
 
 ## Neden
-Bağlam penceresine ne koyduğun bir **bütçe** kararıdır: her token maliyet demek, ve alakasız bilgi modeli hem yavaşlatır hem "ortada kaybolma" (uzun metnin ortasındaki bilginin gözden kaçması) ile doğru bilgiyi gölgeler. 2026'nın dersi: "daha çok bağlam = daha iyi" yanlış. İyi bağlam mühendisliği, modele **tam gerektiği kadar** ilgili bilgiyi verir — ne eksik (halüsinasyon), ne fazla (gürültü + maliyet). Modele "neye ihtiyacın var?" diye sormak, kör yapıştırmadan iyidir.
+Bağlam penceresine ne koyduğun bir **bütçe** kararıdır: her token maliyet demektir. Alakasız bilgi de modeli hem yavaşlatır hem de "ortada kaybolma" (uzun metnin ortasındaki bilginin gözden kaçması) yüzünden doğru bilgiyi gölgeler. 2026'nın dersi: "daha çok bağlam = daha iyi" yanlış. İyi bağlam mühendisliği, modele **tam gerektiği kadar** ilgili bilgiyi verir: ne eksik (halüsinasyon), ne fazla (gürültü + maliyet). Modele "neye ihtiyacın var?" diye sormak, kör yapıştırmadan iyidir.
 
-Şerh: bu yöntem bir tahmine dayanır ve tahmin yanlış olabilir. Model isteyeceği dosyayı bilmiyorsa dar bağlam, eksik bağlam olur ve hata kök nedeni gözden kaçar. Bu yüzden ajanlara arama araçları verilir: dosyayı önceden seçmek yerine, ajan gerektikçe kendi çeker.
+Şerh: bu yöntem bir tahmine dayanır ve tahmin yanlış olabilir. Model isteyeceği dosyayı bilmiyorsa dar bağlam, eksik bağlam olur ve hatanın kök nedeni gözden kaçar. Bu yüzden ajanlara arama araçları verilir: dosyayı önceden seçmek yerine, ajan gerektikçe kendi çeker.
 
 # bellek | Konuşma belleği ve durum | ai:false
 
@@ -43,19 +43,19 @@ Bağlam penceresine ne koyduğun bir **bütçe** kararıdır: her token maliyet 
 Çok adımlı bir ajan oturumunda, modelin **hangi geçmişi hatırlaması** gerektiğini yöneten bir yaklaşım yaz. Senaryo: 20 mesajlık bir hata ayıklama oturumundasın ve bağlam şişti.
 
 ## Kötü örnek
-(Tüm 20 mesajı her çağrıda olduğu gibi taşımak — ta ki pencere taşana kadar)
+(Tüm 20 mesajı, pencere taşana kadar her çağrıda olduğu gibi taşımak)
 
 ## İpucu
 Ajanlar sohbet botlarından farklı çöker: sorun genelde kötü prompt değil, **durum yönetimi**. Neyi hatırlamalı, neyi özetleyip atmalı?
 
 ## İdeal çözüm
-Bu hata ayıklama oturumunu sürdürüyoruz. Devam etmeden önce **şu ana kadarki bulguları tek bir özet nota sıkıştır** (denenen şeyler, elenen sebepler, şu anki hipotez) — sonra ayrıntılı geçmişi bırakıp bu özetle ilerleyeceğiz. Özeti ver.
+Bu hata ayıklama oturumunu sürdürüyoruz. Devam etmeden önce **şu ana kadarki bulguları tek bir özet nota sıkıştır** (denenen şeyler, elenen sebepler, şu anki hipotez). Sonra ayrıntılı geçmişi bırakıp bu özetle ilerleyeceğiz. Özeti ver.
 
 ## Neden
-Ajan mimarisinde en yaygın hata **durum (İng. *state*) yönetimi** hatasıdır — prompt hatası değil. Uzun bir oturumda tüm geçmişi taşımak pencereyi taşırır, maliyeti şişirir ve modeli eski/ilgisiz ayrıntıya boğar. Çözüm bir bellek stratejisidir: önemli olanı **özetleyip sakla** (denenen, elenen, mevcut hipotez), gerisini at. Buna **sıkıştırma** (compaction) denir; 2026'da birçok araç bunu otomatik yapıyor.
+Ajan mimarisinde en yaygın hata **durum (İng. *state*) yönetimi** hatasıdır, prompt hatası değil. Uzun bir oturumda tüm geçmişi taşımak pencereyi taşırır, maliyeti şişirir ve modeli eski/ilgisiz ayrıntıya boğar. Çözüm bir bellek stratejisidir: önemli olanı **özetleyip sakla** (denenen, elenen, mevcut hipotez), gerisini at. Buna **sıkıştırma** (compaction) denir; 2026'da birçok araç bunu otomatik yapıyor.
 
 İki yolu ayırt et:
-- **Sıkıştırma (compaction):** geçmişi özete indirir, iş kaldığı yerden sürer. Avantajı süreklilik; riski, özetin **yanlış şeyi** saklaması — atılan ayrıntı bir daha geri gelmez ve model kaybettiğini bilmez.
+- **Sıkıştırma (compaction):** geçmişi özete indirir, iş kaldığı yerden sürer. Avantajı süreklilik; riski, özetin **yanlış şeyi** saklamasıdır, çünkü atılan ayrıntı bir daha geri gelmez ve model neyi kaybettiğini bilmez.
 - **Sıfırlama (reset):** oturumu kapatıp temiz başlarsın; taşımak istediğini sen yazarsın. Avantajı en temiz bağlam; bedeli, taşımayı unuttuğun bilginin kaybolması.
 
 Kural: iş aynı işse ve süreklilik gerekiyorsa sıkıştır; konu değişiyorsa ya da oturum yanlış yola sapmışsa **sıfırla**. Kirlenmiş bir bağlamı sıkıştırmak, kiri özete taşımaktan başka işe yaramaz.
@@ -63,7 +63,7 @@ Kural: iş aynı işse ve süreklilik gerekiyorsa sıkıştır; konu değişiyor
 # retrieval-orkestrasyon | Neyi getir, neyi at | ai:false
 
 ## Görev
-Bir RAG (getirmeli üretim — soruya cevap vermeden önce arama yapıp bulunan parçaları prompt'a koyma) uygulamasında modele belge getirirken, **getirilen parçaların kalitesini** kontrol eden bir yaklaşım yaz. Senaryo: arama 10 belge parçası döndürdü, hepsi eşit alakalı değil.
+Bir RAG (getirmeli üretim: soruya cevap vermeden önce arama yapıp bulunan parçaları prompt'a koyma) uygulamasında modele belge getirirken, **getirilen parçaların kalitesini** kontrol eden bir yaklaşım yaz. Senaryo: arama 10 belge parçası döndürdü, hepsi eşit alakalı değil.
 
 ## Kötü örnek
 `işte arama sonucu 10 parça [hepsini yapıştır], soruyu yanıtla`
@@ -78,14 +78,14 @@ Soru: `[soru]`
 Parçalar: `[10 parça]`
 
 ## Neden
-Getirme (İng. *retrieval*) körlemesine güvenilecek bir kaynak değildir: arama alakasız ya da yanıltıcı parçalar döndürebilir ve bunları prompt'a gömmek **bağlam zehirlenmesine** yol açar — model yanlış bilgiye dayanır ve emin görünür. İyi bağlam mühendisliği, getirmeyi bir **orkestrasyon** olarak görür: getir, **filtrele / yeniden sırala** (İng. *rerank* — bulunan parçaları alaka düzeyine göre yeniden dizmek), yalnızca gerçekten yararlı olanı modele ver. "Getirdim" ile "kullanmalıyım" aynı şey değildir; aradaki eleme adımı kaliteyi belirler.
+Getirme (İng. *retrieval*) körlemesine güvenilecek bir kaynak değildir: arama alakasız ya da yanıltıcı parçalar döndürebilir ve bunları prompt'a gömmek **bağlam zehirlenmesine** yol açar. Model yanlış bilgiye dayanır ve yine de emin görünür. İyi bağlam mühendisliği, getirmeyi bir **orkestrasyon** olarak görür: getir, **filtrele / yeniden sırala** (İng. *rerank*: bulunan parçaları alaka düzeyine göre yeniden dizmek), yalnızca gerçekten yararlı olanı modele ver. "Getirdim" ile "kullanmalıyım" aynı şey değildir; aradaki eleme adımı kaliteyi belirler.
 
-Ödünleşme: eleme adımı da bir model çağrısıdır — maliyet ve gecikme ekler, ve kendisi de yanılıp doğru parçayı eleyebilir. Az sayıda, kaliteli sonuç dönen bir aramada eleme gereksizdir; asıl kazanç, aramanın gürültülü olduğu durumlardadır.
+Bunun da bir ödünleşimi (trade-off: bir şeyi kazanırken başka bir şeyden vazgeçmek) var: eleme adımı da bir model çağrısıdır. Maliyet ve gecikme ekler, üstelik kendisi de yanılıp doğru parçayı eleyebilir. Az sayıda, kaliteli sonuç dönen bir aramada eleme gereksizdir; asıl kazanç, aramanın gürültülü olduğu durumlardadır.
 
 # arac-tanimi | Araç tanımı tasarımı | ai:false
 
 ## Görev
-Bir ajana bir araç (İng. *tool/function* — modelin çağırabildiği dış işlev) verirken, ajanın onu **doğru zamanda, doğru şekilde** çağırması için o aracın tanımını (açıklamasını) iyi yazan bir örnek yaz.
+Bir ajana bir araç (İng. *tool/function*: modelin çağırabildiği dış işlev) verirken, ajanın onu **doğru zamanda, doğru şekilde** çağırması için o aracın tanımını (açıklamasını) iyi yazan bir örnek yaz.
 
 ## Kötü örnek
 `Araç: veritabani. Açıklama: veritabanı işlemleri yapar.`
@@ -102,7 +102,7 @@ adresi elindeyse kullan; isim/telefonla arama yapmaz. Bulunamazsa boş döner
 ```
 
 ## Neden
-Ajansal sistemlerde araç tanımı (İng. *tool description*) aslında bir **prompt'tur** — ajan hangi aracı, ne zaman, hangi parametreyle çağıracağını bu açıklamadan çıkarır. "Veritabanı işlemleri yapar" gibi muğlak bir açıklama, ajanı yanlış araç seçimine, eksik parametreye ve hata döngülerine sokar. İyi araç tanımı üç şeyi net söyler: **ne yapar**, **ne zaman kullanılmalı (ve kullanılmamalı)**, **parametreler ve sınır durumları**. Bağlam mühendisliğinin en gözden kaçan ama en etkili parçasıdır.
+Ajansal sistemlerde araç tanımı (İng. *tool description*) aslında bir **prompt'tur**: ajan hangi aracı, ne zaman, hangi parametreyle çağıracağını bu açıklamadan çıkarır. "Veritabanı işlemleri yapar" gibi muğlak bir açıklama, ajanı yanlış araç seçimine, eksik parametreye ve hata döngülerine sokar. İyi araç tanımı üç şeyi net söyler: **ne yapar**, **ne zaman kullanılmalı (ve kullanılmamalı)**, **parametreler ve sınır durumları**. Bağlam mühendisliğinin en gözden kaçan ama en etkili parçasıdır.
 
 Bir de sayı meselesi var: her araç tanımı bağlamda yer kaplar ve seçenekleri çoğaltır. Otuz aracı olan bir ajan, beş aracı olandan daha kararsızdır. Araç setini göreve göre dar tut; gerekmeyeni hiç verme.
 
@@ -112,7 +112,7 @@ Bir de sayı meselesi var: her araç tanımı bağlamda yer kaplar ve seçenekle
 Bir prompt'ta modele verdiğin bağlamdan **işe yaramayan kısmı temizleyen** bir örnek yaz. Senaryo: bir hata için ilgili kodu veriyorsun ama araya alakasız yorumlar, ölü kod, uzun log'lar karışmış.
 
 ## Kötü örnek
-`[500 satırlık dosya — 480 satırı hatayla ilgisiz]` şu hatayı düzelt
+`[500 satırlık dosya (480 satırı hatayla ilgisiz)]` şu hatayı düzelt
 
 ## İpucu
 İlgisiz bağlam sadece maliyet değil; modeli yanlış yöne çeker. İşe yarayan sinyali gürültüden ayır.
@@ -125,7 +125,7 @@ Bir prompt'ta modele verdiğin bağlamdan **işe yaramayan kısmı temizleyen** 
 ```
 
 ## Neden
-Modele verdiğin her şey onun dikkatini paylaşır — alakasız 480 satır, ilgili 20 satırı gölgeler ve modeli yan yollara çeker (ve token yakar). Bağlam mühendisliğinin karşı-sezgisel dersi: bazen **daha az bağlam daha iyi sonuç** verir. Sinyali gürültüden ayırıp yalnızca ilgili parçayı vermek, hem doğruluğu hem hızı artırır. "Her ihtimale karşı hepsini vereyim" refleksi, modeli boğar.
+Modele verdiğin her şey onun dikkatinden pay alır: alakasız 480 satır, ilgili 20 satırı gölgeler, modeli yan yollara çeker ve token yakar. Bağlam mühendisliğinin sezgiye ters düşen dersi: bazen **daha az bağlam daha iyi sonuç** verir. Sinyali gürültüden ayırıp yalnızca ilgili parçayı vermek, hem doğruluğu hem hızı artırır. "Her ihtimale karşı hepsini vereyim" refleksi, modeli boğar.
 
 Ama eleme **senin** yargına dayanır ve yanılabilirsin: hatanın gerçek nedeni, alakasız sandığın 480 satırın içindeyse dar bağlam seni yanlış cevaba götürür ve bunu fark etmezsin. Bu yüzden kısıtlı bağlamda ilerlerken modele "bu bağlam yetmiyorsa hangi bilgiyi istediğini söyle" iznini vermek iyi bir alışkanlıktır.
 
@@ -144,9 +144,9 @@ Biten bir işin ayrıntıları, yeni işe taşındığında gürültüdür ve mo
 İlk görevi bitirdik. **Yeni ve ayrı bir göreve geçiyoruz; önceki görevin ayrıntılarını unut.** Sadece taşınması gereken tek şey şu sonuç: `[önceki görevin tek satırlık çıktısı]`. Yeni görev: `[yeni görev]`. Temiz başla.
 
 ## Neden
-"Bağlam hijyeni", bir oturum boyunca bağlamı **kasıtlı temiz tutmaktır**. Biten bir alt-görevin tüm ayrıntısını yeni bir göreve taşımak, modeli iki iş arasında karıştırır (önceki görevin varsayımlarını yenisine sızdırır) ve pencereyi gereksiz doldurur. Disiplin: bir iş bitince yalnızca **taşınması gereken sonucu** al, gerisini bırak. Bu, uzun ajan oturumlarında kalitenin zamanla düşmesini (İng. *drift* — yavaş yavaş konudan sapma) önler.
+"Bağlam hijyeni", bir oturum boyunca bağlamı **bilinçli olarak temiz tutmaktır**. Biten bir alt-görevin tüm ayrıntısını yeni bir göreve taşımak, modeli iki iş arasında karıştırır (önceki görevin varsayımlarını yenisine sızdırır) ve pencereyi gereksiz doldurur. Disiplin: bir iş bitince yalnızca **taşınması gereken sonucu** al, gerisini bırak. Bu, uzun ajan oturumlarında modelin yavaş yavaş konudan sapmasını (İng. *drift*) ve kalitenin zamanla düşmesini önler.
 
-Önemli ayrıntı: prompt içinde "önceki görevi unut" demek, geçmişi **gerçekten silmez** — metin hâlâ bağlamdadır, model yalnızca onu görmezden gelmeye yönlendirilir. Gerçek temizlik için oturumu sıfırlaman (yeni oturum açman) gerekir. Konu tamamen değişiyorsa sıfırlama, unutma talimatından her zaman daha güvenilirdir.
+Önemli ayrıntı: prompt içinde "önceki görevi unut" demek, geçmişi **gerçekten silmez**. Metin hâlâ bağlamdadır; model yalnızca onu görmezden gelmeye yönlendirilir. Gerçek temizlik için oturumu sıfırlaman (yeni oturum açman) gerekir. Konu tamamen değişiyorsa sıfırlama, unutma talimatından her zaman daha güvenilirdir.
 
 # context-birlestir | Bağlam mühendisliğini birleştir | ai:true
 
@@ -154,12 +154,12 @@ Biten bir işin ayrıntıları, yeni işe taşındığında gürültüdür ve mo
 Öğrendiğin bağlam mühendisliği tekniklerini birleştir. Senaryo: bir RAG-tabanlı destek ajanı kuruyorsun; kullanıcı sorusu geliyor, sen belge getiriyorsun, ajanın bir de araç erişimi var. Modele verilecek bağlamı baştan sona tasarlayan bir yaklaşım yaz. Bu alıştırmayı AI Öğretmen değerlendirecek.
 
 ## İpucu
-Bağlam bütçesini düşün (ne kadar), getirmeyi orkestrayla (filtrele/rerank), araç tanımını net yaz, gürültüyü at, ve belleği/durumu yönet. Hepsini senaryoya göre dengele — tıkıştırma.
+Bağlam bütçesini düşün (ne kadar), getirme adımını yönet (filtrele/rerank), araç tanımını net yaz, gürültüyü at ve belleği/durumu yönet. Hepsini senaryoya göre dengele, tıkıştırma.
 
 ## İdeal çözüm
-Destek ajanının her çağrısında bağlamı şöyle kur: **(1) Sistem talimatı** — rol, sınırlar, "yalnızca getirilen belgeye dayan, uydurma". **(2) Getirme** — soruyla en alakalı 3 parçayı ver (10 getir, ilgisizi ele, en iyi 3'ü sırala); alakalı yoksa "belgede yok" de. **(3) Araç tanımları** — yalnızca bu görevde gereken araçlar, her biri ne zaman kullanılacağıyla. **(4) Bellek** — önceki turların tek satırlık özeti (tam geçmiş değil). **(5) Kullanıcı sorusu** — en sonda. Alakasız hiçbir şey ekleme.
+Destek ajanının her çağrısında bağlamı şöyle kur: **(1) Sistem talimatı**: rol, sınırlar, "yalnızca getirilen belgeye dayan, uydurma". **(2) Getirme**: soruyla en alakalı 3 parçayı ver (10 getir, ilgisizi ele, en iyi 3'ü sırala); alakalı yoksa "belgede yok" de. **(3) Araç tanımları**: yalnızca bu görevde gereken araçlar, her biri ne zaman kullanılacağıyla. **(4) Bellek**: önceki turların tek satırlık özeti (tam geçmiş değil). **(5) Kullanıcı sorusu**: en sonda. Alakasız hiçbir şey ekleme.
 
 ## Neden
-Bağlam mühendisliği, prompt yazmanın üstündeki katmandır: modelin bir çağrıda **gördüğü her şeyin** — sistem talimatı, getirilen belge, araç tanımı, bellek, kullanıcı girdisi — kasıtlı tasarımı. 2026'da ajanların çoğu kötü prompt'tan değil, **kötü bağlamdan** (şişmiş, gürültülü, yanlış durumla) çöker. İyi bağlam mühendisi her parçayı bilinçli seçer: tam gerektiği kadar, doğru sırada, temiz. Prompt teknikleri bu katmanın içindeki tek bir öğedir.
+Bağlam mühendisliği, prompt yazmanın üstündeki katmandır: modelin bir çağrıda **gördüğü her şeyin** (sistem talimatı, getirilen belge, araç tanımı, bellek, kullanıcı girdisi) bilinçli olarak tasarlanmasıdır. 2026'da ajanların çoğu kötü prompt'tan değil, **kötü bağlamdan** (şişmiş, gürültülü ya da yanlış durum bilgisi taşıyan bağlamdan) çöker. İyi bağlam mühendisi her parçayı bilinçli seçer: tam gerektiği kadar, doğru sırada, temiz. Prompt teknikleri bu katmanın içindeki tek bir öğedir.
 
-Son bir uyarı: bu tasarım tek seferlik bir iş değil. Kullanıcı soruları, belgeler ve araçlar değiştikçe bağlam kurgusu eskir. Bağlam mühendisliği, ölçüp düzeltmeye devam ettiğin sürece işe yarar — bir kez kurup unutulacak bir şablon değil.
+Son bir uyarı: bu tasarım tek seferlik bir iş değil. Kullanıcı soruları, belgeler ve araçlar değiştikçe bağlam kurgusu eskir. Bağlam mühendisliği, ölçüp düzeltmeye devam ettiğin sürece işe yarar; bir kez kurup unutulacak bir şablon değildir.

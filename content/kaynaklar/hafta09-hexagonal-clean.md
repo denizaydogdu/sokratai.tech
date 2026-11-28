@@ -1,6 +1,6 @@
 ---
 baslik: "Hafta 9 Görsel Özet: Altıgen (Hexagonal) ve Temiz (Clean) Mimari"
-yazar: "Get Your Hands Dirty on Clean Architecture 2e (Hombergs) — kavram özeti"
+yazar: "Get Your Hands Dirty on Clean Architecture 2e (Hombergs): kavram özeti"
 tarih: "2026-07-10"
 dil: "Türkçe kavram özeti (diyagramlı)"
 etiketler: 9
@@ -21,16 +21,16 @@ Aşağıdaki üç diyagram fikri kısaca gösterir; aradaki metin kavramları te
 ## Önce sorun: iş mantığı çerçeveye yapışırsa ne olur
 Tipik bir uygulamada iş kuralı, onu taşıyan teknolojiye yapışır: sipariş toplamı bir web
 denetleyicisinin (controller) içinde hesaplanır, indirim kuralı bir veritabanı sorgusuna
-gömülüdür. Üç sonucu olur. **Test yavaşlar** — tek kuralı sınamak için veritabanı ve sunucu
-ayağa kalkar. **Teknoloji değişimi iş kuralını riske atar** — çerçeveyi (framework)
-değiştirmek kuralları da elden geçirmek demektir. **Kural görünmez olur** — "bu sistemin
+gömülüdür. Üç sonucu olur. **Test yavaşlar**: tek kuralı sınamak için veritabanı ve sunucu
+ayağa kalkar. **Teknoloji değişimi iş kuralını riske atar**: çerçeveyi (framework)
+değiştirmek kuralları da elden geçirmek demektir. **Kural görünmez olur**: "bu sistemin
 kuralları neler?" sorusunun cevabı hiçbir yerde tek parça durmaz.
 
 Altıgen mimarinin tek amacı budur: **iş kuralını, onu taşıyan teknolojiden koparmak.**
 
 ## Port ve adaptör nedir
 - **Çekirdek (core / domain):** uygulamanın asıl işi. Ne veritabanı bilir, ne HTTP, ne de
-  hangi çerçeveyle koştuğunu. Saf Java sınıflarıdır.
+  hangi çerçeveyle çalıştığını. Saf Java sınıflarıdır.
 - **Port (port):** çekirdeğin sınırındaki bir **arayüzdür** (Java'da `interface`). Bir
   sözleşmedir: "şu iş yapılabilir" ya da "şu bilgiye ihtiyacım var" der; nasıl yapılacağını
   söylemez.
@@ -38,9 +38,9 @@ Altıgen mimarinin tek amacı budur: **iş kuralını, onu taşıyan teknolojide
   port için birden çok adaptör olabilir: PostgreSQL adaptörü, bellek içi test adaptörü.
 
 Benzetme: priz bir porttur, fiş bir adaptördür. Priz hangi cihazın takılacağını bilmez; cihaz
-prizin şekline uyar. Yön böylece tersine döner — **uyum sağlayan taraf her zaman dıştakidir.**
+prizin şekline uyar. Yön böylece tersine döner: **uyum sağlayan taraf her zaman dıştakidir.**
 
-## Diyagram 1 — Altıgen (Hexagonal / Ports & Adapters)
+## Diyagram 1: Altıgen (Hexagonal / Ports & Adapters)
 Çekirdek ortadadır; portlar (port) çekirdeğin sınırındaki arayüzlerdir; adaptörler (adapter)
 dıştadır. Giriş adaptörü giriş portunu çağırır, çekirdek de çıkış portu üzerinden çıkış
 adaptörüne ulaşır.
@@ -78,7 +78,7 @@ adaptörüne ulaşır.
 </svg>
 ```
 
-## Gelen ve giden port — asıl kural "portu kim tanımlar"
+## Gelen ve giden port: asıl kural "portu kim tanımlar"
 İki tür port vardır ve aralarındaki fark bu mimarinin kalbidir.
 
 **Gelen port (incoming / driving port).** Dışarıdan çekirdeğe gelen isteğin kapısıdır: "yeni
@@ -87,20 +87,21 @@ eder. Arayüzü çekirdek tanımlar, uygulamasını yine çekirdek yazar; web ad
 **çağırır**.
 
 **Giden port (outgoing / driven port).** Çekirdeğin dış dünyadan istediği şeydir: "şu hesabı
-yükle", "bu e-postayı gönder". Arayüzü **yine çekirdek tanımlar** — ama uygulamasını dıştaki
+yükle", "bu e-postayı gönder". Arayüzü **yine çekirdek tanımlar**, ama uygulamasını dıştaki
 adaptör yazar.
 
 Kritik nokta ikincisidir. Sezgi "veritabanı katmanı kendi arayüzünü yazar, çekirdek onu
 kullanır" der; hexagonal bunun tam tersini söyler. **Sözleşmenin sahibi ihtiyacı olandır,
 karşılayan değil.** Bunun adı **bağımlılığın tersine çevrilmesi (Dependency Inversion)**:
-`HesapYukle` arayüzü çekirdekte durur, `JpaHesapAdaptoru` onu dışarıda **uygular** — böylece
-derleme zamanı oku dışarıdan içeri bakar, çalışma zamanında ise çağrı içeriden dışarı gider.
+`HesapYukle` arayüzü çekirdekte durur, `JpaHesapAdaptoru` onu dışarıda **uygular**. Böylece
+derleme zamanındaki bağımlılık oku dışarıdan içeri bakar, çalışma zamanında ise çağrı içeriden
+dışarı gider.
 Ok yönü ile çağrı yönü aynı olmak zorunda değildir; işin bütün numarası budur.
 
 Pratik ölçüt: **çekirdek paketinde `import` satırlarına bak.** Orada bir çerçeve, bir sürücü
 ya da bir HTTP sınıfı adı görüyorsan kural çoktan kırılmıştır.
 
-## Diyagram 2 — Bağımlılık Kuralı (Dependency Rule)
+## Diyagram 2: Bağımlılık Kuralı (Dependency Rule)
 Bütün bağımlılık okları İÇE bakar: dış halkalar (adaptörler, uygulama) içteki alan
 çekirdeğine bağımlıdır, tersi asla olmaz. Çekirdek dış dünyayı tanımaz.
 
@@ -123,7 +124,7 @@ Bütün bağımlılık okları İÇE bakar: dış halkalar (adaptörler, uygulam
   <text x="130" y="150" text-anchor="middle" font-size="11" font-weight="600" fill="#4F46E5" font-family="system-ui">İÇE →</text>
   <text x="510" y="150" text-anchor="middle" font-size="11" font-weight="600" fill="#4F46E5" font-family="system-ui">← İÇE</text>
   <text x="320" y="288" text-anchor="middle" font-size="10.5" fill="#5D7789" font-family="system-ui">Çekirdek hiçbir dış katmana bağımlı değildir.</text>
-  <text x="320" y="304" text-anchor="middle" font-size="10.5" fill="#5D7789" font-family="system-ui">Dış katmanlar çekirdeğe bağımlıdır — oklar hep içe.</text>
+  <text x="320" y="304" text-anchor="middle" font-size="10.5" fill="#5D7789" font-family="system-ui">Dış katmanlar çekirdeğe bağımlıdır; oklar hep içe.</text>
 </svg>
 ```
 
@@ -139,13 +140,13 @@ Bütün bağımlılık okları İÇE bakar: dış halkalar (adaptörler, uygulam
 
 Katmanlıda veritabanı en alta konduğu için farkında olmadan sistemin temeli hâline gelir:
 tablolar önce tasarlanır, iş kuralları tabloların şekline uyar. Temiz mimaride en içte **en az
-değişen** şey durur — iş kuralı. Veritabanı, en çok değişen şeylerden biri olduğu için en dışa,
+değişen** şey durur: iş kuralı. Veritabanı, en çok değişen şeylerden biri olduğu için en dışa,
 adaptörlerin arasına düşer.
 
 **Sık yapılan hata:** paket adlarını `domain / application / adapter` yapıp işin bittiğini
 sanmak. İsimler mimari kurmaz; **oklar kurar.** Bir `domain` paketi çerçeve sınıflarını import
 ediyorsa, adı ne olursa olsun orası katmanlı bir uygulamadır. Bu yüzden kural göz kararıyla
-denetlenmez, testle mühürlenir — üçüncü diyagramın konusu budur.
+denetlenmez, testle mühürlenir. Üçüncü diyagramın konusu budur.
 
 ## Veriyi sınırdan geçirmek: eşleme (mapping) stratejileri
 Çekirdeğin modeli ile web/veritabanı modelleri farklıysa, sınırda bir çeviri gerekir. Dört
@@ -165,18 +166,18 @@ Kural: tek stratejiyi bütün projeye dayatma. **Her sınır geçişi için ayr�
 bir karar kaydına (ADR) yaz.
 
 ## Test edilebilirlik: mimarinin en somut getirisi
-Bu ayrımın en ölçülebilir faydası testtir, çünkü **sınır aynı zamanda bir dikiştir (seam)** —
+Bu ayrımın en ölçülebilir faydası testtir, çünkü **sınır aynı zamanda bir dikiştir (seam)**:
 gerçek uygulamayı çıkarıp sahtesini takabildiğin yer.
 
 - **Çekirdek testi:** hiçbir çerçeve, hiçbir veritabanı; saf birim testi (unit test),
   milisaniyeler sürer. Giden portların yerine sahte (mock/stub) nesne koyarsın; "kayıt
   bulunamadı", "ödeme reddedildi" gibi durumları kurmak bir satırdır.
-- **Adaptör testi:** dar dilim. Web adaptörü için yalnız web katmanı, kalıcılık adaptörü için
+- **Adaptör testi:** dar kapsamlı test (slice test). Web adaptörü için yalnız web katmanı, kalıcılık adaptörü için
   yalnız veritabanı katmanı ayağa kalkar.
 - **Uçtan uca test (end-to-end):** her şeyi birden çalıştırır; en yavaş ve en kırılgan
   olanıdır, bu yüzden **en az sayıda** yazılır.
 
-## Diyagram 3 — ArchUnit Mührü (katman yönü tek yön)
+## Diyagram 3: ArchUnit Mührü (katman yönü tek yön)
 Bu projede katman bağımlılığı tek yönlüdür: types → config → repo → service → ai → web.
 ArchUnit bu yönü zorlar; ters bağımlılık (örn. service → web) derlemede/testte kırmızı olur.
 
@@ -218,13 +219,13 @@ ArchUnit bu yönü zorlar; ters bağımlılık (örn. service → web) derlemede
 </svg>
 ```
 
-## Bedeli — ve ne zaman kullanmamalı
+## Bedeli ve ne zaman kullanılmamalı
 > **Şerh:** Bu mimariyi anlatan kitaplar ve konuşmalar onu genellikle bedelsiz bir "iyi
 > pratik" gibi sunar. Değildir. Port, adaptör ve eşleme sınıfları **sınıf sayısını ve dolaylı
 > çağrı sayısını belirgin biçimde artırır**; küçük ve kısa ömürlü bir CRUD servisinde bu net
 > bir kayıptır. Kazanç, iki koşul birlikte sağlandığında gelir: iş kuralları zenginse **ve**
-> sistemin ömrü uzunsa. "Her projede uygula" tavsiyesini, kendi projenin bu iki ölçütüne
-> vurmadan kabul etme.
+> sistemin ömrü uzunsa. "Her projede uygula" tavsiyesini, kendi projeni bu iki ölçütle
+> sınamadan kabul etme.
 
 Ayrıca en çok anılan gerekçe olan "veritabanını kolayca değiştirirsin" pratikte en az
 gerçekleşen faydadır. Gündelik getiri **hızlı test ve okunur iş kuralıdır**; gerekçeni buraya
@@ -239,14 +240,14 @@ dayandır.
 3. Elinde `domain`, `application`, `adapter` adlı üç paket var. Bu isimlendirme mimarinin
    temiz olduğunu kanıtlar mı? Kanıtlamıyorsa, kanıt olarak neye bakarsın?
 4. Katmanlı mimaride veritabanı en altta, temiz mimaride en dışta durur. Bu yer değişikliği
-   tasarım kararlarını pratikte nasıl değiştirir — bir örnekle anlat.
+   tasarım kararlarını pratikte nasıl değiştirir? Bir örnekle anlat.
 5. Dört eşleme stratejisinden hangisi çekirdeği en iyi korur, hangisi en ucuzdur? Bir projede
    ikisini birden kullanmak neden savunulabilir bir karardır?
 6. Bu mimarinin faturasını bir cümleyle yaz. Hangi iki koşul birlikte sağlanmadığında
    hexagonal uygulamak zarar yazar?
 
 ### Cevap anahtarı (önce kendin cevapla, sonra bak)
-1. Port bir arayüzdür: ne yapılacağını söyler, nasılını söylemez — sözleşmedir. Adaptör o
+1. Port bir arayüzdür: ne yapılacağını söyler, nasılını söylemez; yani bir sözleşmedir. Adaptör o
    sözleşmeyi belirli bir teknolojiyle gerçekleştirir. Aynı sözleşme farklı teknolojilerle
    karşılanabildiği için birden çok adaptör olur (gerçek veritabanı, bellek içi test kopyası).
 2. Arayüzü **çekirdek** tanımlar, dıştaki adaptör **uygular**. Bu, bağımlılığın tersine
@@ -257,8 +258,8 @@ dayandır.
    sürücü ya da HTTP sınıfı geçmemelidir. Gözle denetlenemez, ArchUnit'le mühürlenir.
 4. Katmanlıda tablolar önce tasarlanır, iş kuralı tablonun şekline uyar; temiz mimaride önce
    iş kuralı yazılır, tablo ona uyar. Örnek: indirim kuralını önce alan modelinde ifade
-   edersin, saklama şemasını sonra adaptörde çözersin — kural sütun tipine göre bükülmez.
+   edersin, saklama şemasını sonra adaptörde çözersin; kural sütun tipine göre bükülmez.
 5. En iyi koruyan tam eşleme, en ucuz olan eşleme yapmamaktır. Birlikte kullanmak
-   savunulabilir çünkü her sınır aynı riski taşımaz — yeter ki gerekçe ADR'ye yazılsın.
+   savunulabilir, çünkü her sınır aynı riski taşımaz. Yeter ki gerekçe ADR'ye yazılsın.
 6. Faturası artan sınıf ve dolaylı çağrı sayısıdır. İş kuralları zengin **değilse** ya da
    sistemin ömrü kısaysa bu maliyet karşılıksız kalır.

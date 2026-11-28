@@ -1,6 +1,6 @@
 ---
 baslik: "API Tasarımı: REST ve gRPC"
-yazar: "Serpiştirme — Mikroservis yanı"
+yazar: "AI Öğretmen ek okuma metni: mikroservis konusu"
 tarih: "2026-07-10"
 dil: "Türkçe kavram özeti (diyagramlı)"
 etiketler: 6
@@ -18,8 +18,8 @@ az sorun çıkardığını görmek.
   dışarıya açtığı kapı. "Bana şunu şu biçimde sor, sana şunu şu biçimde veririm" listesi.
 - **İstemci** (client): İsteği gönderen taraf (tarayıcı, telefon uygulaması, başka bir servis).
 - **Sunucu** (server): İsteği karşılayıp yanıt üreten taraf.
-- **Sözleşme** (contract): İki tarafın uyacağı yazılı kural — hangi çağrılar var, hangi
-  alanlar zorunlu, yanıt neye benzer.
+- **Sözleşme** (contract): İki tarafın uyacağı yazılı kurallar (hangi çağrılar var, hangi
+  alanlar zorunlu, yanıt neye benzer).
 - **Protokol** (protocol): Mesajların ağ üzerinde hangi kurallarla taşındığı. Burada geçen
   protokol HTTP'dir (web'in taşıma dili) ve iki sürümü konu olur: HTTP/1.1 ve HTTP/2.
 
@@ -33,15 +33,15 @@ farklı işlere iyi gelen iki araçtır.
 ## Türkçe çalışma metni
 
 ### 1. REST kaynak modeli
-REST'in kalbi şudur: sistemi **kaynaklar** (resource) olarak modelle — kullanıcı,
-sipariş, ödeme. Her kaynağın bir adresi (URL) vardır: `/kullanicilar/42`. Kaynağa
+REST'in kalbi şudur: sistemi **kaynaklar** (resource) olarak modelle (kullanıcı,
+sipariş, ödeme gibi). Her kaynağın bir adresi (URL) vardır: `/kullanicilar/42`. Kaynağa
 ne yapmak istediğini ise **HTTP fiili** söyler; kaynak isim, fiil eylemdir.
 
-- **GET** — oku (kaynağı hiç değiştirmez).
-- **POST** — yeni oluştur (koleksiyona ekler).
-- **PUT** — var olanı baştan yaz / güncelle (kaydın tamamını gönderirsin).
-- **PATCH** — var olanın yalnızca birkaç alanını güncelle (kaydın tamamını göndermezsin).
-- **DELETE** — sil.
+- **GET**: oku (kaynağı hiç değiştirmez).
+- **POST**: yeni oluştur (koleksiyona ekler).
+- **PUT**: var olanı baştan yaz / güncelle (kaydın tamamını gönderirsin).
+- **PATCH**: var olanın yalnızca birkaç alanını güncelle (kaydın tamamını göndermezsin).
+- **DELETE**: sil.
 
 Sunucu her isteğe bir **durum kodu** (status code) ile yanıt verir; bu, "ne oldu"yu
 tek bakışta anlatan ortak dildir: `200` tamam, `201` oluşturuldu, `204` başarılı ama
@@ -56,7 +56,7 @@ tipik durum kodlarını gösterir.
   <defs>
     <marker id="api-ok1" markerWidth="10" markerHeight="10" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#186399"/></marker>
   </defs>
-  <text x="320" y="24" text-anchor="middle" font-size="15" font-weight="700" fill="#1C3247" font-family="system-ui">REST — kaynak isimdir, HTTP fiili eylemdir</text>
+  <text x="320" y="24" text-anchor="middle" font-size="15" font-weight="700" fill="#1C3247" font-family="system-ui">REST: kaynak isimdir, HTTP fiili eylemdir</text>
   <rect x="220" y="40" width="200" height="46" rx="12" fill="#EAF1F7" stroke="#186399" stroke-width="1.5"/>
   <text x="320" y="62" text-anchor="middle" font-size="13" font-weight="700" fill="#186399" font-family="system-ui">/kullanicilar/{id}</text>
   <text x="320" y="79" text-anchor="middle" font-size="10.5" fill="#5D7789" font-family="system-ui">kaynak (resource)</text>
@@ -91,7 +91,7 @@ tipik durum kodlarını gösterir.
 Fiil ve durum kodu bilmek yetmez; olgun bir REST API birkaç alışkanlığı gözetir:
 
 - **Kaynak-merkezli tasarım.** URL'ler isim olmalı, fiil değil. `/kullanicilar/42`
-  doğru; `/kullaniciSil?id=42` yanlış — eylem zaten HTTP fiilinde saklı. İç içe
+  doğru; `/kullaniciSil?id=42` yanlış, çünkü eylem zaten HTTP fiilinde saklı. İç içe
   ilişkiler adreste okunur: `/kullanicilar/42/siparisler`.
 - **İdempotentlik** (idempotency). Bir isteği yanlışlıkla iki kez göndermek zarar
   vermemeli. GET, PUT ve DELETE **idempotent**tir: aynı isteği N kez yapmak, bir kez
@@ -106,17 +106,18 @@ Fiil ve durum kodu bilmek yetmez; olgun bir REST API birkaç alışkanlığı g�
   sunucu bellek ve bant genişliğini korur.
 - **Yazılı sözleşme.** REST'te sözleşme protokolün kendisinde saklı değildir; ayrı bir
   belgeyle yazılır. Yaygın biçim **OpenAPI**'dir (eski adıyla Swagger): hangi adres, hangi
-  fiil, hangi alanlar, hangi yanıt — makine okunur bir dosyada durur. gRPC'nin `.proto`
+  fiil, hangi alanlar, hangi yanıt; hepsi makinenin okuyabileceği bir dosyada durur. gRPC'nin `.proto`
   dosyasından farkı: OpenAPI **zorunlu değildir**, yazılmazsa API yine çalışır (bu yüzden
   REST'in sözleşmesine "gevşek" denir).
 
-### 3. gRPC — sözleşme-önce, ikili, hızlı
+### 3. gRPC: sözleşme-önce, ikili, hızlı
 gRPC farklı bir felsefeden gelir. Önce **sözleşme yazılır**: `.proto` dosyasında
 (protobuf, Protocol Buffers) hangi çağrıların (metotların) olduğu, hangi girdi ve
 çıktı mesajlarını aldığı tanımlanır. Bu tanımdan hem istemci hem sunucu kodu
-**otomatik üretilir** — iki taraf da aynı sözleşmeye uymak zorundadır.
+**otomatik üretilir**; iki taraf da aynı sözleşmeye uymak zorundadır.
 
-- **Sözleşme-önce** (contract-first): `.proto` tek gerçek kaynaktır; koddan önce gelir.
+- **Sözleşme-önce** (contract-first): `.proto` tek doğruluk kaynağıdır (single source of
+  truth); koddan önce gelir.
 - **İkili biçim** (binary): mesajlar JSON gibi metin değil, sıkı ikili paket olarak
   gider. İnsan okuyamaz ama küçüktür ve hızlı çözülür.
 - **Tip güvenliği** (type safety): alanın türü sözleşmede yazar (sayı mı, metin mi).
@@ -131,7 +132,8 @@ ve üç şey kazandırır:
   bekletirdi (buna "baş engelleme", head-of-line blocking denir). HTTP/2 bunu ortadan
   kaldırır.
 - **Başlık sıkıştırma** (header compression): Her istekte tekrarlanan başlık bilgileri
-  (kimlik jetonu, içerik türü…) sıkıştırılarak gönderilir; tekrar eden veri tasarrufu.
+  (kimlik doğrulama token'ı, içerik türü…) sıkıştırılarak gönderilir; böylece tekrar eden
+  veriden tasarruf edilir.
 - **İki yönlü akış**: Bağlantı açık kalır ve iki taraf da istediği an mesaj gönderebilir.
   gRPC'nin akış özelliği doğrudan buna dayanır.
 
@@ -149,8 +151,8 @@ gRPC'de "bir istek → bir yanıt" tek seçenek değildir. Dört biçim vardır:
 4. **Çift yönlü akış** (bidirectional streaming): Çok istek, çok yanıt; ikisi birbirini
    beklemez. Örnek: canlı sohbet, oyun durumu senkronizasyonu.
 
-REST'te doğal karşılığı yalnızca 1. biçimdir; diğer üçü için ek teknolojiler (WebSocket,
-sunucu-gönderimli olaylar) devreye sokman gerekir.
+REST'te doğal karşılığı yalnızca 1. biçimdir; diğer üçü için ek teknolojileri (WebSocket,
+sunucu gönderimli olaylar / Server-Sent Events) devreye sokman gerekir.
 
 #### 3.3. Alan numarası ve şema evrimi
 Protobuf mesajında her alanın bir **alan numarası** (field tag) vardır:
@@ -163,7 +165,7 @@ message Kullanici {
 }
 ```
 
-Ağda giden ikili pakette alanın **adı taşınmaz** — yalnızca numarası taşınır. Bu, hem
+Ağda giden ikili pakette alanın **adı taşınmaz**, yalnızca numarası taşınır. Bu, hem
 paketi küçültür hem de sözleşmenin zamanla güvenle değişmesini (**şema evrimi**, schema
 evolution) mümkün kılar. Kuralları şunlardır:
 
@@ -171,7 +173,7 @@ evolution) mümkün kılar. Kuralları şunlardır:
   numarayı tanımaz, sessizce yok sayar; çalışmaya devam eder. Buna **geriye dönük uyum**
   (backward compatibility) denir.
 - **Alanın numarasını değiştirmek yıkıcıdır**: karşı taraf `2` numarayı hâlâ "mail" sanır,
-  sen başka bir şey gönderirsin. Sessiz veri bozulması olur — hata bile vermez.
+  sen başka bir şey gönderirsin. Sessiz veri bozulması olur; sistem hata bile vermez.
 - **Silinen numarayı asla yeniden kullanma**: alan kaldırıldığında numarası `reserved`
   (ayrılmış) ilan edilir; kimse o numarayı bir daha kullanamaz.
 - **Alanın adını değiştirmek** ikili biçimde sorun yaratmaz (ad taşınmıyor), ama üretilen
@@ -189,37 +191,37 @@ akış ve başlık davranışı tarayıcı ağ arayüzünün verdiğinden fazlas
 Çözüm **grpc-web**'dir: tarayıcı, gRPC'nin tarayıcı-uyumlu bir varyantını konuşur; araya
 konan bir **vekil** (proxy, ör. Envoy) bu çağrıyı gerçek gRPC'ye çevirip iç servise iletir.
 Bedeli var: grpc-web bu yazının yazıldığı sürümlerde **istemci akışını ve çift yönlü akışı
-desteklemez** — yalnızca tekil çağrı ve sunucu akışı çalışır. Yani tarayıcı tarafında
+desteklemez**; yalnızca tekil çağrı ve sunucu akışı çalışır. Yani tarayıcı tarafında
 gRPC'nin dört biçiminden ikisini kaybedersin.
 
-Diğer bedeller: ikili biçim gözle okunmaz — `curl` (komut satırından HTTP isteği atan
+Diğer bedeller: ikili biçim gözle okunmaz; `curl` (komut satırından HTTP isteği atan
 yaygın araç) ile bakınca anlamlı bir metin görmezsin, ayrı araçlar (`grpcurl`) gerekir;
 sözleşme değişince kod yeniden üretilir. Kazancı: az bant genişliği, düşük gecikme,
 tip güvenliği.
 
-### 4. REST vs gRPC — hangisi ne zaman
+### 4. REST mi gRPC mi: hangisi ne zaman
 Kural basit: **kim seninle konuşuyor?**
 
 - **Dışarısı / tarayıcı / üçüncü taraf → REST.** Herkesin bildiği, metinle okunan,
   tarayıcının ve her dilin doğrudan desteklediği ortak dil. Açık (public) API'ler,
-  web ön yüzü, iş ortağı entegrasyonları burada.
+  web ön yüzü, iş ortağı entegrasyonları bu gruba girer.
 - **İç servis-servis / düşük gecikme / yüksek hacim → gRPC.** Senin kontrolündeki
-  mikroservisler kendi aralarında konuşurken hız, küçük paket ve sıkı tip sözleşmesi
+  mikroservisler kendi aralarında konuşurken gRPC hız, küçük paket ve sıkı tip sözleşmesi
   kazandırır; insanın gözle okuması gerekmez.
 - **Tarayıcıdan gRPC'ye mecbursan → grpc-web + vekil.** Bu bir kaçış yolu, varsayılan
   değil: ek bir bileşen (proxy) kurmayı ve iki akış biçimini kaybetmeyi göze alıyorsun
   demektir (§3.4).
 - **Uzun süreli, iki yönlü canlı bağlantı → gRPC akışı.** Canlı konum, telemetri, canlı
-  log gibi işlerde REST'in istek-yanıt kalıbı doğal durmaz.
+  log gibi işlerde REST'in istek-yanıt kalıbı doğal bir çözüm olmaz.
 
 Aşağıdaki diyagram iki yaklaşımın somut farklarını yan yana koyar. Diyagramda REST'in
 taşıması "HTTP/1.1" yazıyor; bu **tipik durumu** anlatır, zorunluluğu değil. REST bugün
-HTTP/2 (hatta HTTP/3) üzerinden de servis edilebilir — fark, gRPC'nin HTTP/2'yi *şart*
-koşması, REST'in ise hangi HTTP sürümüyle taşındığını umursamamasıdır.
+HTTP/2 (hatta HTTP/3) üzerinden de sunulabilir. Fark şu: gRPC HTTP/2'yi *şart* koşar,
+REST ise hangi HTTP sürümüyle taşındığını umursamaz.
 
 ```svg
 <svg viewBox="0 0 640 288" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="REST ve gRPC karşılaştırması: biçim, taşıma, okunabilirlik ve tipik kullanım">
-  <text x="320" y="24" text-anchor="middle" font-size="15" font-weight="700" fill="#1C3247" font-family="system-ui">REST — gRPC: yan yana</text>
+  <text x="320" y="24" text-anchor="middle" font-size="15" font-weight="700" fill="#1C3247" font-family="system-ui">REST ve gRPC: yan yana</text>
   <rect x="30" y="42" width="278" height="222" rx="12" fill="#EAF1F7" stroke="#186399" stroke-width="1.5"/>
   <text x="169" y="70" text-anchor="middle" font-size="15" font-weight="700" fill="#186399" font-family="system-ui">REST</text>
   <g font-family="system-ui" font-size="12" fill="#1C3247">
@@ -283,12 +285,12 @@ isteği içeride gRPC ile mikroservislere dağıtır.
 1. `/kullanicilar/42` adresine hangi HTTP fiili "bu kullanıcıyı sil" demektir ve
    tipik hangi durum kodunu bekleriz?
 2. GET, PUT ve DELETE'i "idempotent" yapan nedir; POST neden bu gruba girmez?
-3. Bir REST API'de neden `/v1/...` ve `/v2/...` gibi sürüm taşırız — hangi sorunu
+3. Bir REST API'de neden `/v1/...` ve `/v2/...` gibi sürüm taşırız? Bu hangi sorunu
    çözer?
 4. gRPC'de "sözleşme-önce" ne demek; `.proto` dosyasının rolü nedir?
 5. Dışa açık web ön yüzü için REST'i, iç servis-servis trafiği için gRPC'yi seçmenin
    gerekçesi nedir? (En az iki fark say.)
-6. gRPC'nin dört çağrı biçimini say ve her birine bir günlük örnek ver. Bunlardan hangisi
+6. gRPC'nin dört çağrı biçimini say ve her birine gündelik hayattan bir örnek ver. Bunlardan hangisi
    REST'in klasik istek-yanıt kalıbına birebir karşılık gelir?
 7. HTTP/2'nin "çoğullama" (multiplexing) özelliği HTTP/1.1'in hangi problemini çözer?
 8. Protobuf mesajında alan numarası (field tag) ne işe yarar? Bir alana yeni numara vermek

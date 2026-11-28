@@ -32,14 +32,14 @@ Layered (katmanlı) monolitin puan kartı:
 | **Dağıtılabilirlik** (deployability) | ★ | Tek satırlık düzeltme bile tüm uygulamanın yeniden dağıtımını gerektirir. |
 | **Hata izolasyonu** (fault tolerance) | ★ | Bir katmanda patlayan hata tüm uygulamayı düşürebilir; ayrı süreç yok. |
 
-- **Bu proje tam olarak Layered'dır.** Katman yönü bellidir: `types → config → repo → service → ai → web` — ve Hafta 4'teki ArchUnit testi (`MimariTestleri.katman_kurali`) bunu mekanik olarak zorlar. Yani stil burada bir slogan değil, **kırmızı yanan bir test**tir.
-- **Doğru okuma:** Tabloda iki ★★★ ve dört zayıf hane var; bu, seçimin yanlış olduğunu göstermez. Tek kullanıcılı, yerelde (127.0.0.1) çalışan bir eğitim uygulamasında **elasticity'nin değeri yoktur**; basitliğin değeri ise çok yüksektir. ★★★'lar tam ihtiyacın olan hanelerde.
+- **Bu proje tam olarak Layered'dır.** Katman yönü bellidir (`types → config → repo → service → ai → web`) ve Hafta 4'teki ArchUnit testi (`MimariTestleri.katman_kurali`) bu yönü otomatik olarak zorlar. Yani stil burada bir slogan değil, **kırmızı yanan bir test**tir.
+- **Doğru okuma:** Tabloda iki ★★★ ve dört zayıf hane var; bu, seçimin yanlış olduğunu göstermez. AI Öğretmen başlangıçta yerelde (127.0.0.1) çalışan tek kişilik bir araçtı; bugün sokratai.tech'te herkese açık bir site olarak da çalışıyor. İki hâlde de **elasticity'nin değeri düşüktür**: küçük bir eğitim sitesinin trafiğini tek konteyner taşır, kötüye kullanımı hız sınırları keser. Basitliğin değeri ise çok yüksektir. ★★★'lar tam ihtiyacın olan hanelerde.
 - **Sonuç:** Puan kartının sorusu "kaç yıldız topladın" değildir. Sorusu şudur: **"Zayıf olduğu haneler, benim umursadığım haneler mi?"** Cevap "hayır"sa stil doğrudur.
 
 ### Sık yapılan hata
 - **Toplam puana bakmak.** Puan kartı yarışma tablosu değil, eşleştirme aracıdır.
 - **"Monolit = eski" sanmak.** Monolit bir olgunluk seviyesi değil, bir dağıtım kararıdır; çoğu ürün için doğru başlangıçtır.
-- **Katman kuralını belgede bırakmak.** Zorlanmayan katman, birkaç ay içinde `web`'den `repo`'ya atılan tek bir çağrıyla ölür.
+- **Katman kuralını belgede bırakmak.** Zorlanmayan katman kuralı, birkaç ay içinde `web`'den `repo`'ya yapılan tek bir çağrıyla çöker.
 - **Stili nitelik konuşmadan seçmek.** Önce hangi nitelik birinci sınıf, sonra stil. Tersi, cevabı bilip soruyu uydurmaktır.
 
 ### Görevlere geçmeden önce

@@ -1,6 +1,6 @@
 ---
-baslik: "Domain Storytelling — İş Süreçlerini Konuşarak Modellemek"
-yazar: "Stefan Hofer, Henning Schwentner (Addison-Wesley) — Türkçe çalışma metni"
+baslik: "Domain Storytelling: İş Süreçlerini Konuşarak Modellemek"
+yazar: "Stefan Hofer, Henning Schwentner (Addison-Wesley): Türkçe çalışma metni"
 tarih: "2026-07-14"
 dil: "Türkçe kavram özeti (diyagramlı)"
 etiketler: 3,6,9
@@ -10,9 +10,9 @@ etiketler: 3,6,9
 Yazılım projelerinin çoğu teknik sebeplerle değil, **yanlış anlaşılma** yüzünden batar: işi bilen
 kişi bir şey anlatır, kodu yazan kişi başka bir şey anlar. Bu metin, o yanlış anlaşılmayı daha ilk
 gün yakalayan bir yöntemi anlatıyor. Yöntem çok basit: işi bilen kişi **tek bir somut olayı**
-baştan sona anlatırken, dinleyen kişi onu aynı anda çöp adamlar ve oklarla **çizer** — sonra çizdiği
-hikâyeyi geri anlatır. Uyuşmayan yer o anda ortaya çıkar. Metnin ikinci yarısı bu resimden nasıl
-gereksinim, sistem sınırı ve sonunda kod çıkardığını gösteriyor.
+baştan sona anlatırken, dinleyen kişi onu aynı anda çöp adamlar ve oklarla **çizer**, sonra çizdiği
+hikâyeyi ona geri anlatır. Uyuşmayan yer o anda ortaya çıkar. Metnin ikinci yarısı bu resimden nasıl
+gereksinim, sistem sınırı ve sonunda kod çıkarıldığını gösteriyor.
 
 > **Baştan tek terim: "domain".** Bu metnin en sık geçen kelimesi. **Domain (iş alanı)**, yazılımın
 > hizmet ettiği işin kendi dünyasıdır: o işin nesneleri, kuralları, rolleri ve kelimeleri. Bir
@@ -25,8 +25,8 @@ gereksinim, sistem sınırı ve sonunda kod çıkardığını gösteriyor.
 ## Neden bu özet
 Domain Storytelling, iş uzmanlarıyla geliştiricileri aynı odaya oturtup **bir iş sürecinin tek bir
 somut hikâyesini** konuşarak ve aynı anda çizerek modelleyen bir **kolektif modelleme tekniğidir**
-(collaborative modeling — birden çok kişinin aynı anda, birlikte model kurması). Kitabın tezi tek cümlede şudur: yazılımı batıran şey nadiren tekniktir;
-asıl vebayı **kötü iletişim** yayar; **panzehir de bu tekniğin kendisidir** — çünkü domain bilgisini
+(collaborative modeling: birden çok kişinin aynı anda, birlikte model kurması). Kitabın tezi kısaca şudur: yazılımı batıran şey nadiren tekniktir;
+asıl vebayı **kötü iletişim** yayar. **Panzehir de bu tekniğin kendisidir**, çünkü domain bilgisini
 etkili iş yazılımına dönüştürür.
 
 Kitap üç haftaya birden bağlanıyor:
@@ -36,42 +36,42 @@ Kitap üç haftaya birden bağlanıyor:
   konuşmadan **inşa edilir**.
 - **Hafta 6 (mimari stiller, sınırlar, modülerlik):** Bölüm 10, tek bir COARSE-GRAINED (kaba taneli,
   yani geniş açıdan bakan) hikâyeden alt-domain'leri, oradan **sınırlı bağlamları** (bounded
-  context — "bu sınırın içinde her terimin tek ve net bir anlamı vardır" denen model bölgesi;
+  context: içinde her terimin tek ve net bir anlamı olan model bölgesi;
   ayrıntısı §9'da), oradan da **Conway yasasıyla** takım sınırlarını türetir. Monolit bölmenin ve mikroservis sınırı çizmenin "domain tarafı" burasıdır.
 - **Hafta 9 (hexagonal / clean):** Bölüm 12, "iş nesneleri sınıfa, faaliyetler metoda dönüşür"
-  altın kuralını verir — ve kitabın kendi dipnotu, katmanlı mimarinin neden yetmediğini, domain'in
-  neden bir **katman değil bir halka** olduğunu söyler. Hafta 9'un tam da kalbi.
+  altın kuralını verir. Kitabın bir dipnotu da katmanlı mimarinin neden yetmediğini, domain'in
+  neden bir **katman değil bir halka** olduğunu söyler. Bu, tam da Hafta 9'un konusu.
 
 Kitabın lakabı **"Ayçiçeği Kitabı"dır**: ayçiçeği güneşsiz yaşayamaz, güneşe benzer, gün boyu başını
-ona çevirir ve tarlada asla tek başına bitmez — domain story ile domain'in ilişkisi de böyledir.
+ona çevirir ve tarlada asla tek başına bitmez. Domain story ile domain'in ilişkisi de böyledir.
 
 Kitap 2021'in sonunda yayımlandı (kapaktaki telif yılı 2022) ve ikinci baskısı gelmedi; ama
 2025–2026'da **kitapta olmayan** bir şey oldu:
-domain story, **dil modelinin bağlamı** hâline geldi ve sınırlı bağlam, **AI ajanının sınırı** olarak
-kullanılmaya başlandı. Bu kaynağın son bölümü (**§15 — 2026 notu**) bunu ayrı ve açıkça işaretlenmiş
+domain story, **dil modeline verilen bağlam** hâline geldi ve sınırlı bağlam, **AI ajanının sınırı** olarak
+kullanılmaya başlandı. Bu kaynağın son bölümü (**§15: 2026 notu**) bunu ayrı ve açıkça işaretlenmiş
 biçimde anlatır; öncesindeki her şey kitabın kendisidir.
 
 ## Türkçe çalışma metni
 
-### 1. Domain Storytelling nedir — notasyon değil, bir konuşma tekniği
+### 1. Domain Storytelling nedir: notasyon değil, bir konuşma tekniği
 Kitabın kendi tanımı: *"Domain Storytelling, insanların birlikte nasıl çalıştığını öne çıkaran bir
 kolektif modelleme tekniğidir. Birincil amacı: **domain bilgisini iş yazılımına dönüştürmek**."*
 
-Bunun neden bir "teknik" değil de "konuşma" olduğunu Alberto Brandolini'nin alıntısı özetler:
+Bunun neden bir çizim tekniğinden çok bir "konuşma" olduğunu Alberto Brandolini'nin alıntısı özetler:
 
 > **"Üretime çıkan şey, uzmanın bilgisi değil, GELİŞTİRİCİNİN (yanlış) anlayışıdır."**
 
 Yani kafandaki model üretime çıkar; uzmanın kafasındaki değil. O yüzden yöntem, uzmandan **soyut
-kurallar** değil **somut hikâyeler** ister: "eğer"siz, "olabilir"siz, siperden gerçek örnekler.
+kurallar** değil **somut hikâyeler** ister: "eğer"siz, "olabilir"siz, sahadan gerçek örnekler.
 
-> **"Kötü bir soyutlamadansa iyi bir örnekten daha çok şey öğrenirsin."**
+> **"İyi bir örnekten, kötü bir soyutlamadan öğreneceğinden daha çok şey öğrenirsin."**
 
 **Metropolis örneği (kitabın açılışı).** Matthew küçük bir sanat sineması işletiyor; okul arkadaşı
 Anna yazılım geliştiriyor. Matthew "online bilet uygulaması" istiyor. Anna beyaz tahtaya geçiyor ve
 "bugün gişede bileti nasıl satıyorsun?" diye soruyor. Matthew anlattıkça Anna çiziyor: bir çöp adam
 (**gişe görevlisi**), ikinci bir çöp adam (**sinemasever**), bir konuşma balonu (**seans**), bir
-ızgara (**koltuk planı**)… Sonunda Anna hikâyeyi **baştan geri anlatıyor** (retelling) — ve asıl
-kazanç orada çıkıyor:
+ızgara (**koltuk planı**)… Sonunda Anna hikâyeyi **baştan Matthew'a geri anlatıyor** (retelling).
+Asıl kazanç da orada çıkıyor:
 
 - Anna, "yabancı dildeki filmler için ayrı bilet satılıyor" sanıyordu.
 - Matthew: *"Hayır hayır! Ekstra bilet satmıyoruz; sadece sinemaseverlere filmin hangi dilde
@@ -82,7 +82,7 @@ Bu yanlış varsayım, hikâye anlatılmasa fark edilmeyecek, koda gömülecek v
 yazılım" olarak geri dönecekti. Kitabın çıkarımı bu yüzden şudur:
 
 > **Modelleme eylemi, çoğu zaman modelin kendisinden daha önemlidir.**
-> Bitmiş bir domain story'ye bakmak, onun yapılışına katılmakla aynı şey değildir — çünkü Domain
+> Bitmiş bir domain story'ye bakmak, onun yapılışına katılmakla aynı şey değildir, çünkü Domain
 > Storytelling **kolektif bir öğrenme deneyimidir.**
 
 Bu yüzden ortaya çıkan resim **bağımsız (stand-alone) bir belge olarak tasarlanmamıştır**: her şeyden
@@ -90,8 +90,8 @@ Bu yüzden ortaya çıkan resim **bağımsız (stand-alone) bir belge olarak tas
 başkalarına anlatmaya yarar). Resmi tek başına birine yollayıp "işte analiz" demek, yöntemin
 kendisini ıskalamaktır.
 
-### 2. Piktografik dil — altı yapı taşı
-Yöntem = **piktografik dil + çalıştay biçimi**. Dilin yapı taşları (bkz. **Diyagram 1**):
+### 2. Piktografik dil: altı yapı taşı
+Yöntem = **piktografik dil** (ikonlarla kurulan resimli dil) **+ çalıştay biçimi**. Dilin yapı taşları (bkz. **Diyagram 1**):
 
 - **Aktör (actor):** Hikâyede **aktif rol** oynayan kişi, insan grubu ya da **yazılım sistemi**.
   Cümlenin **öznesidir**. Kişi adıyla değil **rolle** etiketlenir ("gişe görevlisi", "Matthew" değil).
@@ -110,29 +110,29 @@ Yöntem = **piktografik dil + çalıştay biçimi**. Dilin yapı taşları (bkz.
   verilebilir ama bunu az kullan: hikâyeyi zayıflatır.)
 - **Not (annotation):** Varyasyonlar, bir faaliyetin **amacı**, terim tanımları, varsayımlar. Bir
   öğeye, bir cümleye ya da **hikâyenin bütününe** iliştirilebilir.
-- **Grup (group):** Birbirine ait parçaları çevreleyen etiketli çerçeve — tekrarlanan/isteğe bağlı
+- **Grup (group):** Birbirine ait parçaları çevreleyen etiketli çerçeve: tekrarlanan ya da isteğe bağlı
   faaliyetler, farklı konumlar, **organizasyonel sınırlar** ve en önemlisi **alt-domain'ler**.
 
 **Altın kural:** **Aktörler hikâye başına bir kez görünür; iş nesneleri birden çok kez görünebilir.**
-Her cümle **kendi** iş nesnesini alır — çünkü aynı nesne hikâye boyunca **temsil değiştirebilir**
+Her cümle **kendi** iş nesnesini alır, çünkü aynı nesne hikâye boyunca **temsil değiştirebilir**
 ("boş koltuklar" aranırken koltuk ikonuyla, sinemasevere önerilirken konuşma balonuyla çizilir).
 
 **Ve yöntemin en ayırt edici kuralı: KOŞUL YOK (no conditionals).**
 
-> Piktografik dilde koşul, alternatif ya da varyasyon için **sembol yoktur — bu kasıtlıdır.**
+> Piktografik dilde koşul, alternatif ya da varyasyon için **sembol yoktur ve bu kasıtlıdır.**
 > Gerekçe: *"Bir notasyon alternatifleri modellemek için koşul sunuyorsa, insanlar büyük olasılıkla
-> onu kullanır."* (**Notasyon** = bir şeyi çizerken kullanılan semboller ve kuralları bütünü.)
-> **BPMN**'in (Business Process Model and Notation — iş süreçlerini çizmek için kullanılan yaygın,
+> onu kullanır."* (**Notasyon** = bir şeyi çizerken kullanılan semboller ve kuralların bütünü.)
+> **BPMN**'in (Business Process Model and Notation: iş süreçlerini çizmek için kullanılan yaygın,
 > resmî bir standart) **gateway**'leri (karar/dallanma sembolleri) tam da bunu yapar: bütün
 > vakaları tek diyagrama tıkar.
 >
-> *Adil not — kitap bunu kendi söylüyor:* BPMN gateway kullanmaya **zorlamaz.** Ayrıntı §7'de.
+> *Adil olmak gerekirse (kitap bunu kendisi söylüyor):* BPMN gateway kullanmaya **zorlamaz.** Ayrıntı §7'de.
 
-Bunun yerine yalnızca **en önemli alternatifler** modellenir — **her biri ayrı, baştan sona anlatılan
+Bunun yerine yalnızca **en önemli alternatifler** modellenir: **her biri ayrı, baştan sona anlatılan
 bir domain story olarak.**
 
 ### 3. Gramer ve iyi dil üslubu
-Temel sözdizimi: **özne (aktör) – yüklem (faaliyet) – nesne (iş nesnesi)**.
+Temel sözdizimi: **özne (aktör) → yüklem (faaliyet) → nesne (iş nesnesi)**.
 Kitabın saydığı cümle biçimleri: (1) aktör bir iş nesnesi üzerinde çalışır; (2) bir nesne üzerinde
 çalışarak başka bir nesneyi düzenler; (3) nesneyi başka bir aktöre **devreder** ya da bilgiyi onunla
 **paylaşır** (ikinci ok genelde bir **edat** ile etiketlenir); (4) aynısı ama birden çok alıcıya;
@@ -142,24 +142,24 @@ Kitabın saydığı cümle biçimleri: (1) aktör bir iş nesnesi üzerinde çal
 
 Eric Evans buna **sesli modelleme** (modeling out loud) diyor: *"Bir modeli iyileştirmenin en iyi
 yollarından biri konuşarak keşfetmektir… **Pürüzleri duymak kolaydır.**"* Grameri doğru kullanmaktan
-önemlisi **ifade gücüdür**.
+daha önemli olan **ifade gücüdür**.
 
 **Altı üslup kuralı:**
-1. **Her cümleye kendi iş nesnelerini ver** (nesneleri yeniden kullanma) — yoksa oklar birikir,
+1. **Her cümleye kendi iş nesnelerini ver** (nesneleri yeniden kullanma); yoksa oklar birikir,
    gruplar üst üste biner.
 2. **İş nesnelerini açık yap**, fiilin içine gizleme. "…içinde **boş koltuk** arar" yanlış; koltuk
-   sinema domain'inin ana kavramıdır, ayrı bir iş nesnesi olmalıdır. (Part II'deki her şey — sınır
-   bulmak, koda dökmek — **kavramların dile doğru eşlenmesine** dayanır.)
+   sinema domain'inin ana kavramıdır, ayrı bir iş nesnesi olmalıdır. (Kitabın II. kısmındaki her şey,
+   yani sınır bulmak ve koda dökmek, **kavramların dile doğru eşlenmesine** dayanır.)
 3. **Her yapı taşını etiketle.** Sana bariz olan başkasına bariz değildir; bugün bariz olan bir ay
    sonra kafa karıştırır. Kısalık yerine **okunabilirlik**.
 4. **Aktörler ve iş nesneleri için farklı ikonlar kullan.**
-5. **"Loopback"ten kaçın:** oklar **fonksiyon/metot çağrısı değildir**. Fiyat hesaplayan sistem
+5. **Kendine dönen oktan ("loopback") kaçın:** oklar **fonksiyon/metot çağrısı değildir**. Fiyat hesaplayan sistem
    basitçe bir faaliyettir; kendine dönen ok çizme.
 6. **"İstek–yanıt" (request & response) deseninden kaçın.** İkna edici hikâye anlatmaz, teknik
    gerçeklemeye özgüdür ve gerçekleme değişince **bayatlar**. Bunun yerine **niyeti** modelle:
    kullanıcının hedefi ne, yazılım ona nasıl yardım ediyor? **Her faaliyet hikâyeyi ileri itmeli.**
 
-### 4. Senaryo temelli modelleme — "bir diyagram, bir hikâye"
+### 4. Senaryo temelli modelleme: "bir diyagram, bir hikâye"
 Cyrille Martraire'in deyişiyle: **"Bir diyagram, bir hikâye."** Bu, BPMN'in tam tersidir: BPMN tüm
 vakaları tek diyagramda toplar, Domain Storytelling **tek yürütme yolunu** gösterir (tıpkı UML sekans
 diyagramı gibi).
@@ -169,22 +169,22 @@ diyagramı gibi).
 
 > **Bir senaryo, bir iş sürecinin BİR ÖRNEĞİDİR (one instance).**
 
-**Avrupa yolculuğu benzetmesi (Jörn Koch):** Avrupa keşfetmek istediğin **domain**'dir. Lizbon'dan
-Helsinki'ye tek bir rota izlersen birçok ülkeden (**alt-domain**) ve sınırdan geçersin — ama tüm
-Alpler'i, tüm Akdeniz'i **tümüyle kaçırırsın.** Avrupa'nın sınırlarını kavramak için **birkaç
-kapsamlı yolculuk** — yani **birkaç senaryo** — gerekir.
+**Avrupa yolculuğu benzetmesi (Jörn Koch):** Avrupa, keşfetmek istediğin **domain**'dir. Lizbon'dan
+Helsinki'ye tek bir rota izlersen birçok ülkeden (**alt-domain**) ve sınırdan geçersin, ama
+Alpler'i de Akdeniz'i de **tümüyle kaçırırsın.** Avrupa'nın sınırlarını kavramak için **birkaç
+kapsamlı yolculuk**, yani **birkaç senaryo** gerekir.
 
 **Nereden başlanır?** Önce **varsayılan vaka**, yani "%80 vakası" ve **mutlu yol** (happy path):
 istisna yok, hata yok, güneş parlıyor. Metropolis'te Anna bunu Matthew'a şöyle daralttı: tek seans
 bileti satışı gelirin %75'i → hikâye o vaka üzerine kuruldu. **Sonra** "ne ters gidebilir?" diye
-sorulur ve önemli varyasyonlar **ayrı hikâyeler** olarak modellenir (Metropolis 3: "seans dolu" —
-mutlu yolun kopyası olarak başlar, 3. cümleden sonra hikâye hattı ayrılır). Küçük varyasyonlar ise
+sorulur ve önemli varyasyonlar **ayrı hikâyeler** olarak modellenir (Metropolis 3: "seans dolu".
+Bu hikâye mutlu yolun kopyası olarak başlar, 3. cümleden sonra ondan ayrılır). Küçük varyasyonlar ise
 ayrı hikâyeyi hak etmez; onlar için **not** kullanılır.
 
-**Uyarı — erken soyutlama:**
+**Erken soyutlama uyarısı:**
 > **Kötü soyutlamalar domain'i gizler; iyi soyutlamalar domain diline kesinlik katar.**
-> Önce tipik vakaları sağlam anla — **hikâye anlat.** Ancak ondan sonra başka ne olabileceğini
-> tartış — **kural topla.**
+> Önce tipik vakaları sağlam anla: **hikâye anlat.** Ancak ondan sonra başka ne olabileceğini
+> tartış: **kural topla.**
 
 **Mutlu yol yoksa?** Yazarlar bir liman acil müdahale ekibine naif biçimde "tipik vakanız nedir?"
 diye sordu. Cevap: *"Biz **yalnızca** beklenmedik olanla ve kuralların istisnalarıyla uğraşırız."*
@@ -200,7 +200,7 @@ Kitabın kendi formülü (bir **çarpım kümesi**):
 
 > **Kapsam (scope) = Granülarite × Domain Saflığı × Zaman Noktası**
 
-**(a) Granülarite (granularity): COARSE-GRAINED (kaba taneli) ↔ FINE-GRAINED (ince taneli)**, arada
+**(a) Granülarite (granularity, ayrıntı düzeyi): COARSE-GRAINED (kaba taneli) ↔ FINE-GRAINED (ince taneli)**, arada
 **MEDIUM-GRAINED (orta taneli)**. Spektrum süreklidir. İfade gücünü artırmak için Alistair Cockburn'ün
 **okyanus metaforu** (hedef seviyeleri) ödünç alınır:
 
@@ -217,11 +217,11 @@ Moderatör ipucu: bu ikonları yapışkan notlara çizip duvara as. Bir süre so
 **Çok derine indiğinin işareti:** "müşteri butona tıklar" gibi kullanıcı–sistem etkileşimlerini ya
 da nesneler arası çağrıları modelliyorsan, muhtemelen fazla ileri gittin.
 
-**(b) Domain saflığı (domain purity): PURE ↔ DIGITALIZED.**
+**(b) Domain saflığı (domain purity): PURE (saf) ↔ DIGITALIZED (dijitalleşmiş).**
 - **PURE:** hikâyede **hiç yazılım sistemi yok.** Domain'i, mevcut yazılımın kattığı **arızi
-  karmaşıklıktan** (accidental complexity — işin doğasından değil, onu çözmek için seçtiğimiz
-  araçlardan gelen zorluk) arındırılmış olarak görürsün. Soru: *"Tüm faaliyetler
-  yalnızca domain tarafından motive edilseydi işler nasıl yapılırdı?"* / *"Bunu bilgisayarsız
+  karmaşıklıktan** (accidental complexity: işin doğasından değil, onu çözmek için seçtiğimiz
+  araçlardan gelen zorluk) arındırılmış olarak görürsün. Soru: *"Bütün faaliyetleri
+  yalnızca işin kendi gerekleri belirleseydi işler nasıl yapılırdı?"* / *"Bunu bilgisayarsız
   yapsanız nasıl yapardınız?"*
 - **DIGITALIZED:** yazılım sistemleri de birer **aktördür**; yazılımın işlevselliği **ve
   eksiklikleri** hikâyenin parçası olur.
@@ -229,13 +229,13 @@ da nesneler arası çağrıları modelliyorsan, muhtemelen fazla ileri gittin.
 > **Birçok organizasyonda domain modeli, onlarca yıllık kötü modellenmiş yazılım sistemlerinin
 > altına gömülmüştür.**
 
-**(c) Zaman noktası (point in time): AS-IS ↔ TO-BE.** AS-IS = **problem uzayı** (analiz, anlamak);
+**(c) Zaman noktası (point in time): AS-IS (bugünkü hâl) ↔ TO-BE (hedeflenen hâl).** AS-IS = **problem uzayı** (analiz, anlamak);
 TO-BE = **çözüm uzayı** (tasarım, yeni bir şey yaratmak). TO-BE çalıştayları aslında **tasarım
 oturumlarıdır** → %50 daha fazla zaman ayır, çok daha fazla tartışmaya hazır ol ve
 **belirli bir gelecek noktası** tanımla (birinin 6 ay, diğerinin 24 ay sonrasını düşünmesi büyük
 fark yaratır).
 
-**Tipik yolculuk — Alphorn Auto Leasing vakası (Bölüm 8).** Alphorn araba kiralayan bir şirkettir;
+**Tipik yolculuk: Alphorn Auto Leasing vakası (Bölüm 8).** Alphorn araba kiralayan bir şirkettir;
 patron Becky yeni bir leasing sistemi istiyor. Beş hikâyenin kapsamı, üç eksende gezinir
 (bkz. **Diyagram 2**):
 
@@ -248,11 +248,11 @@ patron Becky yeni bir leasing sistemi istiyor. Beş hikâyenin kapsamı, üç ek
 | Yeni yazılımı **tanıt** | Alphorn 5 | FINE | TO-BE | DIGITALIZED |
 
 Yani: **keşif → derinleşme → temizleme (jargondan arınma) → tasarım → dijitalleştirme.** Alphorn
-2→3 hareketi, "risk yöneticilerinin yazılımdan devraldığı tüm terminolojiden kaçınarak hikâyeyi
-tekrar anlatmasıyla" yapıldı. 3→4 hareketinde, saf süreç duvara çıkar çıkmaz Raymond'un patronu
-itiraz etti: *"Sözleşmeyi satış temsilcisine imzalatmak gereksiz iş yaratıyor."* — süreç iyileşti.
+2'den 3'e geçiş, risk yöneticilerinin hikâyeyi "yazılımdan devraldıkları bütün terminolojiden kaçınarak"
+yeniden anlatmasıyla yapıldı. 3'ten 4'e geçişte, saf süreç duvara çıkar çıkmaz Raymond'un patronu
+itiraz etti: *"Sözleşmeyi satış temsilcisine imzalatmak gereksiz iş yaratıyor."* Süreç bu itirazla iyileşti.
 
-### 5b. Araçlar — beyaz tahta, yapışkan not ve Egon.io
+### 5b. Araçlar: beyaz tahta, yapışkan not ve Egon.io
 Basit bir **beyaz tahta + kalem** çoğu zaman yeter. Yazarların en iyi bulduğu analog düzen şudur:
 
 > **Aktör ve iş nesnelerini YAPIŞKAN NOTA çiz; oku, etiketini ve sıra numarasını DOĞRUDAN tahtaya
@@ -261,17 +261,17 @@ Basit bir **beyaz tahta + kalem** çoğu zaman yeter. Yazarların en iyi bulduğ
 Pratik ayrıntı: iş nesneleri için **kare**, aktörler için daha **büyük dikdörtgen** not (aktörler
 kolay ayırt edilsin); sıra numarasını okun başına yaz ve etrafına **daire** çiz.
 
-Analog'un dijitale bir üstünlüğü var: **tüm katılımcıların modele "yazma erişimi" olur** — modelleme
-gerçekten paylaşımlı ve işbirlikçi hâle gelir.
+Analog çalışmanın dijitale göre bir üstünlüğü var: **tüm katılımcıların modele "yazma erişimi" olur**,
+yani herkes modeli doğrudan değiştirebilir. Böylece modelleme gerçekten paylaşımlı ve ortak bir iş hâline gelir.
 
-**UYARI — ikonlar süs değildir.** Beyaz tahtalar (analog ve dijital), insanı **ikonları tümüyle
+**UYARI: ikonlar süs değildir.** Beyaz tahtalar (analog ve dijital), insanı **ikonları tümüyle
 atlayıp sadece metinli yapışkan not kullanmaya ayartır.**
 
 > İkonlar **anlam taşırlar ve tartışma açarlar.** *"Bu iş nesnesini hangi ikon temsil eder?"*
-> tartışması **gizli varsayımları söker.** Metne kaçarsan o tartışmayı da kaybedersin.
+> tartışması **gizli varsayımları ortaya çıkarır.** Metne kaçarsan o tartışmayı da kaybedersin.
 
-**Yazarların bir araçtan üç şartı:**
-1. Domain story'nin **sözdizim kurallarını ZORLASIN** — *"Biz çizim değil, **modelleme** aracı
+**Yazarların bir araçtan beklediği üç şart:**
+1. Domain story'nin **sözdizim kurallarını ZORLASIN**: *"Biz çizim değil, **modelleme** aracı
    istiyoruz."*
 2. Cümleleri **otomatik numaralasın** (ve sırayı değiştirmeyi kolaylaştırsın).
 3. Cümle dizisini **canlandırarak (animasyon)** hikâye anlatmaya yardım etsin.
@@ -281,19 +281,19 @@ atlayıp sadece metinli yapışkan not kullanmaya ayartır.**
 oynatma) modudur**: hikâyeyi **cümle cümle geri anlatır** → bu, Bölüm 1'deki **yeniden anlatma
 (retelling)** ilkesinin araç hâlidir.
 
-**Altın kural — alan sınırı:**
+**Alan sınırı için altın kural:**
 
-> **Bir domain story, ekranın (ya da tahtanın/kâğıdın) boyutunu — ya da yaklaşık **20 cümleyi** —
+> **Bir domain story, ekranın (ya da tahtanın/kâğıdın) boyutunu ya da yaklaşık **20 cümleyi**
 > geçmemelidir.** Geçiyorsa böl.
 
-Ve ters bir sezgi: flip chart/beyaz tahtadaki **sınırlı alan bir dezavantaj değildir** — hikâyeleri
-derli toplu ve öz tutmaya yardım eder. Dijital araçların sunduğu **sınırsız alan + zoom** ise
+Sezgiye ters bir nokta da var: flip chart ya da beyaz tahtadaki **sınırlı alan bir dezavantaj değildir**;
+hikâyeleri derli toplu ve öz tutmaya yardım eder. Dijital araçların sunduğu **sınırsız alan + zoom** ise
 **disiplinli bir moderatör** gerektirir.
 
-*(§15'te göreceğin gibi Egon.io hâlâ aktif ve 2026'da domain story'yi makine-okunur metin olarak dışa
-aktarabiliyor — bu, kaynağın son bölümünün dayanağıdır.)*
+*(§15'te göreceğin gibi Egon.io hâlâ aktif ve 2026'da domain story'yi makinenin okuyabileceği metin olarak dışa
+aktarabiliyor. Kaynağın son bölümü buna dayanır.)*
 
-### 6. Çalıştay — roller, güvenlik ve sınırlar
+### 6. Çalıştay: roller, güvenlik ve sınırlar
 > **Domain Storytelling bir konuşma (sohbet) tekniğidir.** En önemli faktör: **doğru insanların
 > odada olması.**
 
@@ -301,11 +301,11 @@ aktarabiliyor — bu, kaynağın son bölümünün dayanağıdır.)*
 - **Ev sahibi (host):** çalıştayı düzenleyen, katılımcıları davet eden, sonucunda çıkarı olan kişi.
 - **Moderatör (moderator):** çalıştaya liderlik eder; anlatıcılarla dinleyicileri buluşturup **ortak
   anlayış** yaratmalarına yardım eder.
-- **Modelleyici (modeler):** hikâyeyi çizen kişi. **Başlangıçta bu iki rolü ayırmanız önerilir** —
-  ikisi de zahmetli iştir.
-- **Anlatıcı (storyteller):** domain uzmanı; siperdeki gerçek uzman, "kulaktan dolma bilen vekil"
+- **Modelleyici (modeler):** hikâyeyi çizen kişi. **Başlangıçta moderatör ile modelleyici rollerini ayırman önerilir**,
+  çünkü ikisi de zahmetli iştir.
+- **Anlatıcı (storyteller):** domain uzmanı; sahadaki gerçek uzman, "kulaktan dolma bilen vekil"
   değil.
-- **Dinleyici (listener):** öğrenmeye gelen — çoğu kez geliştirme takımı.
+- **Dinleyici (listener):** öğrenmeye gelen kişiler; çoğu kez geliştirme takımı.
 
 **Psikolojik güvenlik.** Bazı organizasyonlarda domain uzmanları, **üstleri odadayken problemler
 hakkında açık konuşmaz.** Yazarlar, uzmanların patronlarını düzeltmek ya da onlara "aslında şirket
@@ -321,7 +321,7 @@ soruları sormana yardım eder.**
 
 **Acı noktalarını (pain points) görünür kıl:** katılımcılar şikâyet ettiğinde ("bu sürekli ters
 gidiyor!"), bunu farklı renkte bir notla işaretle. Kapsam dışı tartışmalar için ise bir **"OTOPARK"
-(parking lot)** aç — ertelenen fikirler için görsel bir alan.
+(parking lot)** aç: ertelenen fikirlerin bekletildiği görsel bir alan.
 
 **Cümle sınırı (altın kural):**
 
@@ -332,34 +332,35 @@ gidiyor!"), bunu farklı renkte bir notla işaretle. Kapsam dışı tartışmala
 | Dijital araçlar | **20 cümle** |
 
 Hikâye taşarsa: daha COARSE bir kapsama geç, olay örgüsünü incelt, ilk adımları **varsayımla** atla,
-ya da hikâyeyi **böl** — iyi bölme noktaları: bir ara sonuca ulaşılması, bir iş nesnesinin **devri**
-(handover), ya da hikâyenin bir alt-domain'den diğerine geçmesi.
-*Unutma: "cliffhanger"lar sevdiğin dizide heyecan vericidir; domain story'de değil.*
+ya da hikâyeyi **böl**. İyi bölme noktaları: bir ara sonuca ulaşılması, bir iş nesnesinin **devri**
+(handover) ya da hikâyenin bir alt-domain'den diğerine geçmesi.
+*Unutma: bölümü en heyecanlı yerde kesen "cliffhanger" sahneleri sevdiğin dizide heyecan vericidir, domain story'de değil.*
 
 **Çelişkiyi saklama:**
 > **Çelişen görüşlerden kaçınmak için soyutlamaya atlama.** Çözülemeyen farkları **notlarla**
 > herkesin dikkatine sun. **Görünür kılmak, tartışmaya kalite katar.**
 
-### 7. Diğer yöntemlerle ilişki — alet çantasındaki bir alet
+### 7. Diğer yöntemlerle ilişki: alet çantasındaki bir alet
 - **EventStorming (Brandolini):** Olayları soldan sağa bir **zaman çizgisine** dizer.
   > **Bir event storm NE OLDUĞUNU gösterir; bir domain story KİMİN KİMİNLE NE YAPTIĞINI gösterir.**
-  EventStorming'i tercih et: domain çok **yapılandırılmamışsa**, **durum değişimleriyle** karakterize
-  ediliyorsa, ya da **yüzlerce olayı** yönetmen gerekiyorsa (notasyonu daha iyi ölçeklenir).
+  EventStorming'i tercih et: domain pek **yapılandırılmamışsa**, ağırlıklı olarak **durum değişimlerinden**
+  oluşuyorsa ya da **yüzlerce olayı** yönetmen gerekiyorsa (notasyonu daha iyi ölçeklenir).
   Domain Storytelling'i tercih et: **çok sayıda aktör** varsa, aktörlerin **nasıl işbirliği yaptığı**
   merak ediliyorsa, **TO-BE tasarımı** yapılacaksa ya da **belgeleme** bir hedefse.
-- **Example Mapping (Wynne):** Örtüşme az, çünkü farklı yönlere bakarlar:
+- **Example Mapping (Wynne):** İkisinin örtüşmesi az, çünkü farklı yönlere bakarlar:
   > **Bir domain story, iş sürecinin BİR SOMUT YOLUNU görselleştirir. Example Mapping ise O YOLUN
-  > SAĞINDA ve SOLUNDA ne olduğunu keşfetmekle ilgilidir** — sürekli sorar: "Başka ne olabilirdi?",
+  > SAĞINDA ve SOLUNDA ne olduğunu keşfetmekle ilgilidir.** Sürekli şunu sorar: "Başka ne olabilirdi?",
   > "Bu vakayı diğerlerinden farklı kılan ne?" → İkisi birbirini **çok iyi tamamlar.**
 - **User Story Mapping (Patton):** Yatay eksende kullanıcı yolculuğu, dikey eksende detay ve
-  önceliklendirme. **Büyük fark: bir story map aktörlerin nasıl etkileştiğini göstermez** — ama
-  gereksinimleri planlamakta güçlüdür. **"Düz backlog tuzağı"** (flat backlog trap) buradan gelir:
-  yüzlerce gereksinim, faydalı bir ürün oluşturduklarına dair perspektifi öldürür.
-- **Use case'ler (Cockburn/Jacobson):** Metinsel senaryo tarifi. Domain story'yi belgelemek için —
-  özellikle **ihale** gibi, konuşma yerine metin+resim paylaşılacaksa — hâlâ önerilir.
+  önceliklendirme. **Büyük fark: bir story map aktörlerin nasıl etkileştiğini göstermez**, ama
+  gereksinimleri planlamakta güçlüdür. **"Düz backlog tuzağı"** (flat backlog trap) kavramı da buradan,
+  Patton'dan gelir: yüzlerce gereksinim düz bir liste olarak durunca, birlikte işe yarar bir ürün
+  oluşturdukları bütün tablo gözden kaybolur.
+- **Use case'ler (Cockburn/Jacobson):** Metinsel senaryo tarifi. Domain story'yi belgelemek için hâlâ
+  önerilir; özellikle **ihale** gibi, konuşma yerine metin ve resim paylaşılacak durumlarda.
   > Belgelemeyi düşünmesen bile birkaç use case şablonuna bak: bir Domain Storytelling **konuşması
   > için kontrol listesi** olarak oldukça faydalılar.
-- **UML** (Unified Modeling Language — yazılımın yapısını ve akışını çizmek için kullanılan klasik
+- **UML** (Unified Modeling Language: yazılımın yapısını ve akışını çizmek için kullanılan klasik
   standart notasyon; sınıf diyagramı, sekans diyagramı gibi): *"Bizim için UML her şeyden önce
   **geliştiriciler arası** bir iletişim aracıdır. Domain
   Storytelling ise çoğunlukla **geliştirici ile domain uzmanı** arasında bir iletişim aracıdır."*
@@ -367,21 +368,21 @@ ya da hikâyeyi **böl** — iyi bölme noktaları: bir ara sonuca ulaşılması
   **gateway**'lerle (karar/dallanma sembolleri) tek diyagrama tıkar ve **uzman modelleyicilere**
   yöneliktir. Birleştirme yolu: önce Domain Storytelling ile TO-BE süreçleri tasarla, **mutlu yolu
   formal BPMN'e çevir**, alternatifleri ve hata vakalarını **parça parça** BPMN modeline entegre et.
-  > *Adil not — kitap bunu kendi söylüyor:* BPMN gateway kullanmaya **zorlamaz.** Jakob Freund ve
-  > Bernd Rücker (*Real-Life BPMN*), modelin ilk sürümünün **tek vakaya** odaklanmasını — yani
-  > gateway'leri atlamayı — iyi pratik sayar. Sorun notasyonun kendisi değil, **sunduğu imkânın
+  > *Adil olmak gerekirse (kitap bunu kendisi söylüyor):* BPMN gateway kullanmaya **zorlamaz.** Jakob Freund ve
+  > Bernd Rücker (*Real-Life BPMN*), modelin ilk sürümünün **tek vakaya** odaklanmasını, yani
+  > gateway'leri atlamayı iyi pratik sayar. Sorun notasyonun kendisi değil, **sunduğu imkânın
   > kullanılmasıdır.** (Kitabın asıl itirazı başka: BPMN uzman modelleyicilere yönelik bir araçtır;
   > geliştirici ↔ domain uzmanı **konuşması** için Domain Storytelling daha iyi bir yoldur.)
-- **DDD (Domain-Driven Design — "alan-güdümlü tasarım"; Eric Evans'ın 2003 tarihli kitabıyla
+- **DDD (Domain-Driven Design, "alan güdümlü tasarım": Eric Evans'ın 2003 tarihli kitabıyla
   yerleşen, yazılımı işin kendi kavram ve diline göre kurma yaklaşımı):** Domain Storytelling,
   DDD'nin "kolektif modelleme" boşluğunu doldurur:
-  **ubiquitous language** için dil öğrenmek (Böl.9), **stratejik tasarım** için sınır bulmak
+  **ubiquitous language** (her yerde geçerli dil) için dil öğrenmek (Böl.9), **stratejik tasarım** için sınır bulmak
   (Böl.10), **taktik tasarım** için kodda modellemek (Böl.12).
 
-### 8. Domain dilini öğrenmek — her yerde geçerli dil
+### 8. Domain dilini öğrenmek: her yerde geçerli dil
 Yabancı dil öğrenir gibi: **dinle, duyduğunu tekrar et, geri bildirime dikkat et.** Kaydederken
 duyduğunu tekrar et, tanımadığın terimleri sor. Görsel modelleme, uzmanın anlattığını **hem
-duymasını hem görmesini** sağlar → **iki geri bildirim kanalı, birden iyidir.**
+duymasını hem görmesini** sağlar → **iki geri bildirim kanalı tek kanaldan iyidir.**
 
 **Züllighoven'in aşçı benzetmesi (gözlemin sınırı):**
 > Domates sosu karıştıran bir aşçıyı izliyorsun. Saati tutuyorsun: tam **beş dakika** karıştırıyor.
@@ -390,7 +391,7 @@ duymasını hem görmesini** sağlar → **iki geri bildirim kanalı, birden iyi
 > **Belirleyici faktör zaman değildi:** aşçı sosu **doğru kıvama gelene kadar** karıştırmıştı.
 Yani sadece **izleyerek**, konuşmadan domain öğrenilmez.
 
-**"Hesap" homonim hikâyesi (Stefan'ın tarayıcı oyunları pazar yeri projesi).** Domain uzmanları
+**Eşadlı "hesap" hikâyesi (Stefan'ın tarayıcı oyunları pazar yeri projesi).** Domain uzmanları
 "hesap (account)" nedir konusunda **anlaşamadı**; hikâye her değiştiğinde biri itiraz etti. Detaylar
 sorulunca her müşteri için **iki ayrı hesap** olduğu ortaya çıktı:
 - biri **müşteriye** bağlı (faturalama ve ödeme bilgisi) → "müşteri hesabı",
@@ -403,47 +404,47 @@ insanları** davet etmek için de kritik oldu. Aynı kelimenin farklı bağlamla
 
 > **Organizasyonlar tek, birleşik, evrensel bir domain dili konuşmaz!**
 > Dil farklarını **soyutlama inşa ederek ya da yapay bir dil sentezleyerek** çözmeye çalışma. Bunun
-> yerine: COARSE hikâyelerde farkları **notla** işaretle, sonra alt-domain'lere **FINE, PURE, AS-IS**
-> hikâyelerle kaz ve o alt-domain'e **özgü, belirsizlik içermeyen** bir dil çıkar. DDD'de böyle bir
+> yerine: COARSE hikâyelerde farkları **notla** işaretle, sonra alt-domain'lerde **FINE, PURE, AS-IS**
+> hikâyelerle derine in ve o alt-domain'e **özgü, belirsizlik içermeyen** bir dil çıkar. DDD'de böyle bir
 > dile **her yerde geçerli dil** (ubiquitous language) denir.
 
 **Sözlük (glossary):** Domain'in **tüm** terimlerini tanımlamak zahmetlidir ve çoğu kimseye yaramaz.
-**Sadece açıklamayı hak eden** terimleri al — bunlar zaten hikâyede **tanımlayıcı bir not** taşırlar.
-Ve sadece isimler değil, **fiiller** de:
+**Sadece açıklamayı hak eden** terimleri al; bunlar zaten hikâyede **tanımlayıcı bir not** taşır.
+Yalnız isimleri değil, **fiilleri** de al:
 
 | Terim | Tanım |
 |---|---|
-| **kredi notu (credit rating)** | Müşterinin kredi riskinin değerlendirmesi; A (mükemmel) – D (zayıf). |
+| **kredi notu (credit rating)** | Müşterinin kredi riskinin değerlendirmesi; A (mükemmel) ile D (zayıf) arası. |
 | **oylamak (to vote)** | Bir sözleşmenin riskinin, anlaşmayı kapatacak kadar düşük olup olmadığına karar vermek. |
 
 > Sözlük eskirse büyük sorun değil: **onu yazmak dili öğrenmene yardım ettiyse, zahmete değmiştir.**
-> Ama sözlüğü, uzmanlarla **konuşmaktan kaçınmanı sağlayan bir kısayol** sanma —
-> **yabancı bir dili sadece sözlük okuyarak öğrenmeyi düşünür müydün?**
+> Ama sözlüğü, uzmanlarla **konuşmaktan kaçınmanı sağlayan bir kısayol** sanma.
+> **Yabancı bir dili sadece sözlük okuyarak öğrenmeyi düşünür müydün?**
 
 **Çevirmen değil moderatör.** Birçok organizasyon iş analistini/gereksinim mühendisini profesyonel
 bir **çevirmen** gibi kullanır. Bu sorunludur: **nüans çeviride kolayca kaybolur**, çevirmenler
-varsayımlarını gerçek gibi iletebilir — ve daha kötüsü, **geliştiriciler artık domain dilini
+varsayımlarını gerçek gibi iletebilir. Daha da kötüsü, **geliştiriciler artık domain dilini
 öğrenmelerine gerek olmadığına inandırılır.** Öneri:
 
 > **Aracıyı ÇEVİRMEN olarak değil, MODERATÖR olarak kullan.** Moderatörün hedefi: **geliştirme
 > takımının domain dilinde akıcı hale gelmesine yardım etmek.**
 
 > **Madalyonun diğer yüzü:** İş analistleri ve gereksinim mühendisleri, domain uzmanlarında çoğu kez
-> **eksik** olan becerilere sahiptir — bir yazılımdan ne beklendiğini ifade edebilmek, **doğru
+> **eksik** olan becerilere sahiptir: bir yazılımdan ne beklendiğini ifade edebilmek, **doğru
 > soyutlama seviyesini** bulmak. Ayrıca birçok geliştirici doğru bilgiyi domain uzmanından **tek
 > başına** alamaz. Sorun rolün kendisi değil, o rolün **çevirmen** olarak kullanılmasıdır.
 
-### 9. Sınırları bulmak — Hafta 6'nın çekirdeği
+### 9. Sınırları bulmak: Hafta 6'nın çekirdeği
 > **Birçok domain, bir bütün olarak anlaşılamayacak ve modellenemeyecek kadar büyüktür.**
 
 Martin Fowler: *"Tek bir kavramsal model, çalışması zor bir canavardır."* Yazarlar, teknik mimarisi
-yeterli olmasına rağmen geliştiricilerince **büyük çamur topu** (big ball of mud — hiçbir net yapısı
+yeterli olmasına rağmen geliştiricilerince **büyük çamur topu** (big ball of mud: hiçbir net yapısı
 kalmamış, her şeyin her şeye bağlı olduğu sistem) sayılan, **1 milyon satırın üzerinde** **legacy**
-(eski, hâlâ çalışan ama devralınmış ve değiştirmesi zor) sistemler gördü. Kaynaktaki temel yanlış anlama şudur: yazılımın domain'in
+(eski, hâlâ çalışan ama devralınmış ve değiştirmesi zor) sistemler gördü. Bunun kökündeki yanlış anlama şudur: yazılımın domain'in
 **tek, ortak, belirsizlik içermeyen ve gerçek dünyanın tüm özelliklerini içeren** bir modeline
 dayanması gerektiği fikri.
 
-> **Saf ve belirsizliksiz tek bir gerçek kaynağı olarak "o tek model" bir İLÜZYONDUR.**
+> **Saf, belirsizlik içermeyen tek doğruluk kaynağı olarak "o tek model" bir İLÜZYONDUR.**
 > **Büyük çamur topu model → büyük çamur topu yazılım.**
 
 **Alt-domain bulma heuristiği (sezgisel kural):**
@@ -480,50 +481,50 @@ yazılım inşa edeceksen **çözüm uzayına** geçip **sınırlı bağlam tasa
 bağlam, **belirsizlik içermeyen bir domain modelini bir ubiquitous language ile hayata geçirir.**
 Bu bir **tasarım sürecidir**; Nick Tune beş kriter kategorisi sayar: **iş değeri, domain,
 sosyopolitik, teknik, kullanıcı deneyimi.** Yani domain'le hizalanma **sadece bir kriterdir**; tek ve
-bariz bir çözüm çoğu zaman yoktur, **ödünleşmeler** düşünülmelidir.
+bariz bir çözüm çoğu zaman yoktur, **ödünleşimler** (trade-off) düşünülmelidir.
 
 **Üç görünüm:**
 - **Domain Storytelling → davranışsal (behavioral) görünüm**
-- **Context map → yapısal (structural) görünüm**
+- **Context map (bağlam haritası) → yapısal (structural) görünüm**
 - **EventStorming → zamansal (temporal) görünüm**
 
 > **Bağlam sınırları modelleri ayırmalıdır, İNSANLARI DEĞİL.**
 > Domain Storytelling sadece sınır **bulma** aracı değil; **bağlam sınırları arasındaki işbirliğini
 > görselleştirme** aracıdır da.
 
-**Sınırdan takıma — Conway yasası.**
+**Sınırdan takıma: Conway yasası.**
 > **Conway yasası:** Yazılımın mimarisi, onu inşa eden **takımların organizasyonuyla aynı yapıya**
 > sahip olacaktır.
 
 Bu yüzden takımları **mimari katmana göre** bölmek (bir UI takımı, bir iş mantığı takımı, bir
-veritabanı takımı = **yatay kesit**) kötü fikirdir. Modern fikir **çapraz-fonksiyonel takımlar**dır
-(**dikey kesit**) — ve sınır **sınırlı bağlamlardan** gelir:
+veritabanı takımı = **yatay kesit**) kötü fikirdir. Modern yaklaşım **çapraz fonksiyonlu takımlar**dır
+(**dikey kesit**). Takımın sınırı da **sınırlı bağlamlardan** gelir:
 
 > **Bir sınırlı bağlam yalnızca bir takıma ait olmalıdır.** (Tersi geçerli değil: bir takımın birden
 > fazla bağlamı olabilir.) **Kolektif kod sahipliği takım İÇİNDE arzu edilir, takım sınırlarının
 > ötesinde değil.**
 
 Ve sınırlar sadece **keşfedilmez**, **tasarlanabilir** de: bir organizasyonun iletişim yapısını
-değiştirerek arzu ettiğin mimariyi teşvik edebilirsin — buna **ters Conway manevrası** (inverse
+değiştirerek arzu ettiğin mimariyi teşvik edebilirsin. Buna **ters Conway manevrası** (inverse
 Conway maneuver) denir.
 
 **Henning'in uçak bakım hikâyesi:** 20 kişilik bir grupla COARSE/PURE hikâyeler çizdiler. Uzmanlar,
-"bu hikâyelerdeki cümlelerin **kendi başlarına birer iş süreci** sayılabileceğini" söyledi — iş
-nesneleri her hikâyede yalnızca **bir kez** görünüyordu; cümleler birbirinin üstüne inşa olan bir
+"bu hikâyelerdeki cümlelerin **kendi başlarına birer iş süreci** sayılabileceğini" söyledi. Gerçekten de iş
+nesneleri her hikâyede yalnızca **bir kez** görünüyordu; cümleler birbirinin üstüne kurulan bir
 hikâyeden çok **bir kontrol listesinin maddeleri** gibiydi. Bu, kapsamın **bulut seviyesinde** olduğunun
 işaretiydi. Kapsam daraltılıp **uçurtma seviyesine** inildiğinde tutarlı faaliyet grupları çıktı ve
 bunlar **20 bounded context adayına** dönüştü. Damıtılan **context map**, sistemin **yeni mimarisinin
 ve takım organizasyonunun temeli** oldu. (Bkz. **Diyagram 3**.)
 
-> **Sınırları bulmak zordur — aslında bu kitapta yazdığımız muhtemelen en zor meydan okuma.**
+> **Sınırları bulmak zordur; muhtemelen bu kitapta ele aldığımız en zor iş.**
 
-### 10. Gereksinimler — Hafta 3'ün çekirdeği
+### 10. Gereksinimler: Hafta 3'ün çekirdeği
 > **Gereksinimlerle çalışmak nesnel, katı analitik bir süreç değildir.** Christiane Floyd:
 > *"Gereksinimleri **analiz etmeyiz**; onları **kendi perspektifimizden inşa ederiz.**"*
 
 **Domain story'yi parçalama tarifi (5 adım):**
-1. Takım, iş sürecini **MEDIUM–FINE-GRAINED** bir domain story olarak modeller — **en önemli
-   senaryoyla (mutlu yol)** başlayarak.
+1. Takım, iş sürecini **en önemli senaryodan (mutlu yol)** başlayarak **MEDIUM–FINE-GRAINED**
+   (orta ile ince taneli arası) bir domain story olarak modeller.
 2. Her faaliyet için sor: **"Bu, yeni yazılım tarafından desteklenmeli mi?"**
    > **Altın kural:** BT tarafından desteklenecekse, onun için **uçurtma seviyesinde** bir gereksinim
    > yaz. Bu gereksinimler **backlog**'unun (yapılacak işlerin öncelik sırasıyla tutulduğu liste)
@@ -534,7 +535,7 @@ ve takım organizasyonunun temeli** oldu. (Bkz. **Diyagram 3**.)
    gereksinim yaz.
 5. Gereksinimleri **omurgaya eşle** → kullanıcı hikâyesi haritası (user story map).
 
-**Şablon eşleşmesi (asıl numara burada):**
+**Şablon eşleşmesi (işin püf noktası burada):**
 
 > `< kullanıcı tipi > olarak, < bir hedef > istiyorum, çünkü/böylece < bir sebep >.`
 > `< AKTÖR >          olarak, < FAALİYET + İŞ NESNESİ > istiyorum, böylece …`
@@ -544,20 +545,20 @@ ve takım organizasyonunun temeli** oldu. (Bkz. **Diyagram 3**.)
 - **"sebep" (neden) → bazen notlarda, bazen doğrudan konuşmalarda** bulunur.
 
 Alphorn'da omurga şöyle çıktı: "Müşteri **katalogdan** araba seçer" cümlesi → uçurtma seviyesinde
-**"araba seç"** gereksinimi. *"Katalogdan"* kısmı bilinçli olarak dışarıda bırakıldı — çünkü o,
+**"araba seç"** gereksinimi. *"Katalogdan"* kısmı bilinçli olarak dışarıda bırakıldı, çünkü o kısım
 hedefe ulaşmanın **birkaç yolundan birini** tarif ediyor ve zaten **deniz seviyesinde** bir gereksinim
 (4. adıma saklandı). 2. ve 3. cümleler tek bir uçurtma gereksiniminde yoğunlaştırıldı:
 **"sözleşme teklif et"**.
 
 > **Dikkat: "user story" kulağa "domain story" gibi geliyor ama farklı şeyler. Biraz Java ile
-> JavaScript gibi.** Bir user story **"bir konuşma için verilen sözdür"** (a promise for a
-> conversation) — yazılı metin bir **yan üründür**, iletişimin yerine geçen bir şey değil.
+> JavaScript gibi.** Bir user story **"ileride yapılacak bir konuşmanın sözüdür"** (a promise for a
+> conversation); yazılı metin bir **yan üründür**, iletişimin yerine geçmez.
 
-**Ve en sert uyarı:**
+**En sert uyarı da şu:**
 
 > **DOMAIN UZMANLARININ SANA SÖYLEDİĞİNİ KÖRÜ KÖRÜNE MODELLEME!**
-> Uzmanlar (özellikle TO-BE tasarlarken) **yanlıdır**: vizyonları **bildikleriyle sınırlıdır** —
-> yani mevcut süreçler ve mevcut yazılım. Sonuç olarak kökten değişmiş bir süreçten çok, mevcuda
+> Uzmanlar (özellikle TO-BE tasarlarken) **yanlıdır**: vizyonları **bildikleriyle**, yani mevcut
+> süreçler ve mevcut yazılımla **sınırlıdır**. Sonuç olarak kökten değişmiş bir süreçten çok, mevcuda
 > **küçük iyileştirmeler** çıkması daha olasıdır.
 
 **John Ferguson Smart:** *"Kullanıcılar, problemlerini çözeceğini düşündükleri **çözümler** hakkında
@@ -567,7 +568,7 @@ ihtiyaçları olan şey değildir."*
 
 **Eric Evans:** *"Programcılar domain'le ilgilenmiyorlarsa, sadece uygulamanın **ne yapması
 gerektiğini** öğrenirler, **ardındaki ilkeleri değil.** Bu şekilde faydalı yazılım inşa edilebilir,
-ama proje asla, güçlü yeni özelliklerin eskilerin doğal sonuçları olarak açıldığı bir noktaya
+ama proje, güçlü yeni özelliklerin eskilerden doğal olarak doğduğu bir noktaya asla
 varamaz."*
 
 Çıkarım: kullanıcıyla iletişim **doğru** yazılımı inşa etmek için gereklidir; ama gerçekten **güçlü**
@@ -575,15 +576,15 @@ iş yazılımı için geliştiricilerin domain'i **kısmen domain uzmanı hâlin
 gerekir.
 
 *(Stefan'ın ihale hikâyesi bunu doğrular: **300 sayfalık**, **80 use case**'lik mükemmel yazılmış bir
-gereksinim belgesiyle işe başladılar — ve yazılıma dokunur dokunmaz fark ettiler ki **use case'ler
-domain'i gerçekten anlamak için yeterli değildi.** Bir yan kazanç: takım ayda bir geliştirici
-büyüyordu ve **domain story'leri yeniden anlatmak, işe alıştırma sürecinin parçası oldu.*)
+gereksinim belgesiyle işe başladılar. Yazılıma dokunur dokunmaz **use case'lerin domain'i gerçekten
+anlamak için yeterli olmadığını** fark ettiler. Bir yan kazanç: takıma her ay bir geliştirici
+katılıyordu ve **domain story'leri yeniden anlatmak, işe alıştırma sürecinin parçası oldu.*)
 
-### 11. Kodda modelleme — Hafta 9 bağı
+### 11. Kodda modelleme: Hafta 9 bağı
 > Nihai hedefin yazılımsa, bir noktada **yapışkan notla modellemekten programlama diliyle
-> modellemeye** geçmen gerekir. Ve domain'in terimlerini **doğrudan kodunda** kullanmalısın.
+> modellemeye** geçmen gerekir. Domain'in terimlerini de **doğrudan kodunda** kullanmalısın.
 
-**Piktografik dil, DDD'nin taktik yapı taşlarına doğal oturur:**
+**Piktografik dil, DDD'nin taktik yapı taşlarına doğal olarak oturur:**
 
 > **ALTIN KURAL: İş nesneleri SINIFA dönüşür, faaliyetler METODA dönüşür.**
 
@@ -597,20 +598,20 @@ Alphorn'da: `Contract` (sözleşme) hikâyelerde tekrar tekrar geçiyor ve **sö
 kimliği var** → **entity**. `installment` (taksit), `price` (fiyat), `term` (vade), `interest`
 (faiz) → **kimlikleri yok** → **value object** (ve `calculateInstallment()`'ın parametreleri).
 
-**Ama kitabın kendi iki itirafı — altın kural MEKANİK DEĞİLDİR:**
+**Ama kitap iki şeyi kendisi itiraf ediyor; altın kural MEKANİK DEĞİLDİR:**
 
-> 1. Sınıf diyagramında tasarlanan `fillOut()` metodu koda **girmedi**; Java'da doldurmanın (yani
->    oluşturmanın) deyimsel yolu **kurucudur (constructor)**. Kitabın sözü: *"Bu, programlama dilinin
->    tasarımı etkilemesinin bir örneğidir. Her zaman bir **ödünleşme** vardır: **(a)** domain'i en saf
->    ve en 'doğru' biçimde ifade etmek ↔ **(b)** programlama diliyle kavga etmemek ve o dilde
->    'deyimsel olmayan' (unidiomatic) görünen kod yazmamak."*
+> 1. Sınıf diyagramında tasarlanan `fillOut()` metodu koda **girmedi**; Java'da bir nesneyi doldurmanın (yani
+>    oluşturmanın) dile uygun, alışılmış yolu **kurucudur (constructor)**. Kitabın sözü: *"Bu, programlama dilinin
+>    tasarımı etkilemesinin bir örneğidir. Her zaman bir **ödünleşim** vardır: **(a)** domain'i en saf
+>    ve en 'doğru' biçimde ifade etmek ↔ **(b)** programlama diliyle kavga etmemek ve o dilin
+>    alışkanlıklarına aykırı (unidiomatic) görünen kod yazmamak."*
 > 2. `Price` ve `Installment` **ayrı tip olmadı**; ikisi de "bir para miktarı" olarak ifade edildiği
 >    için tek bir `Amount` tipi kuruldu → o iş nesneleri **tip değil, değişken ve parametre adı** oldu.
 >
 > Yani **"iş nesnesi → sınıf" bir YÖNDÜR, otomatik bir eşleme değil.**
 
-**Anemik (cılız) model — YAPMA.** Domain'i düzgün bilmeden koda başlarsan modelin **anemik** olur:
-veri + o veriyi kurcalayan setter'lar. Kitabın örneği: `setSignatureDate(LocalDate date)` — imza
+**Anemik (cılız) model: YAPMA.** Domain'i düzgün bilmeden koda başlarsan modelin **anemik** olur:
+veri + o veriyi kurcalayan setter'lar. Kitabın örneği: `setSignatureDate(LocalDate date)`. Bu metotla imza
 tarihi **her zaman herhangi bir değere** ayarlanabilir. Oysa "teklif" bağlamında bir sözleşme ancak
 **(a) taksit hesaplanmışsa** ve **(b) daha önce imzalanmamışsa** imzalanabilir. Bu bir **iş
 kuralıdır** (politika).
@@ -638,9 +639,9 @@ bunların birleşimi olur. Hedef tek cümlede şudur:
 
 > **Geçersiz durumu temsil edilemez kılmak** (make illegal state unrepresentable).
 
-İş nesneleri **tipe**, faaliyetler **fonksiyona** dönüşür — altın kuralın fonksiyonel karşılığı.
+İş nesneleri **tipe**, faaliyetler **fonksiyona** dönüşür. Bu, altın kuralın fonksiyonel programlamadaki karşılığıdır.
 
-**Ve kitabın kendi dipnotu — Hafta 9'un tam kalbi:**
+**Kitabın bir dipnotu da tam olarak Hafta 9'un konusu:**
 
 > *"DDD tasarlandığında **katmanlı mimari** son teknolojiydi ve 'domain **katmanı**' adı o zamandan
 > kalma. Bu arada topluluk öğrendi ki katmanlı mimarinin **'üstte/altta' ayrımı, mimarinin ne
@@ -653,12 +654,12 @@ bunların birleşimi olur. Hedef tek cümlede şudur:
 (her işlem için baştan sona akan tek bir yordam), **table module** (tablo başına bir sınıf),
 **anemic domain model** (veri + setter), **domain model** (kuralları kendi içinde taşıyan zengin
 model). Zengin bir domain modelinin **bir bedeli vardır**; domain'in bazı parçaları doğası gereği
-**veri-merkezlidir** ve **CRUD** (create-read-update-delete — "oluştur, oku, güncelle, sil"; kayıt
+**veri-merkezlidir** ve **CRUD** (create-read-update-delete: "oluştur, oku, güncelle, sil", yani kayıt
 tutmaktan ibaret temel işlemler) **yeter**.
 
-> **Domain tarafından haklı çıkarılmayan bir şeyi icat etmenin anlamı yoktur.** CRUD modelleme kendi
-> başına kötü olmak zorunda değil. Ama domain'in **daha ilginç** parçaları, veri-merkezli olmayanlardır
-> — ve bu tipik olarak DDD'nin **çekirdek domain** (core domain) dediği yerde geçerlidir.
+> **Domain'in gerektirmediği bir şeyi icat etmenin anlamı yoktur.** CRUD modelleme kendi
+> başına kötü olmak zorunda değil. Ama domain'in **daha ilginç** parçaları, veri-merkezli olmayanlardır.
+> Bu da tipik olarak DDD'nin **çekirdek domain** (core domain) dediği yer için geçerlidir.
 > Zengin **domain model** stili, çekirdek domain için **tipik seçimdir.**
 
 Son olarak, kabul testi (acceptance test) domain story'den doğrudan çıkar: "Satış temsilcisi
@@ -668,13 +669,13 @@ modellenmez** → somut değerler için uzmandan (Sandy) ek girdi gerekir.
 
 ### 12. Gölge BT'yi bulmak
 **Gölge BT (shadow IT)**, bilgi işlem biriminin bilgisi ve onayı dışında, işi yapan kişilerce
-kurulmuş ve kullanılan yazılımdır — çoğu zaman bir Excel dosyası.
+kurulmuş ve kullanılan yazılımdır; çoğu zaman bir Excel dosyası.
 
 > Belli bir büyüklüğün üstündeki **her** şirket, merkezî BT'nin haberi olmadığı yazılımlar kullanır.
-> İş departmanlarında koşan, neredeyse kimsenin bilmediği o küçük çözümler **çoğu kez iş-kritiktir.**
+> İş birimlerinde çalışan, neredeyse kimsenin bilmediği o küçük çözümler **çoğu kez iş-kritiktir.**
 
 **Uçak fabrikası zinciri (Henning ve Carola'nın MES analizi).** (**MES** = manufacturing execution
-system — fabrikadaki üretimin planlanmasını ve takibini yapan yazılım.) Amaç üretim duruşunu
+system: fabrikadaki üretimin planlanmasını ve takibini yapan yazılım.) Amaç üretim duruşunu
 (downtime) en
 aza indirmekti; bir günlük duruş milyonlara mal oluyordu. DIGITALIZED, AS-IS hikâyeler modellendi ve
 şu zincir çıktı:
@@ -685,9 +686,9 @@ aza indirmekti; bir günlük duruş milyonlara mal oluyordu. DIGITALIZED, AS-IS 
 > Öğrenilen: **gövde tasarımı Excel dosyası olmadan üretim durur.**
 
 Alphorn'da da aynı avı yaptılar. Risk yöneticisi Raymond'a "sözleşmeyi oylarken araba fiyatı kararını
-nasıl etkiliyor?" diye soruldu; cevap incelikliydi (*"pahalı arabaları tipik olarak zenginler kiralar
-— satın alabilirler ama vergi sebebiyle kiralarlar; faturalarını da öderler. Yani pahalı arabada risk
-düşüktür."*). Sonrası, moderatörün **her cevabı bir soruyla eşelemesinin** ders niteliğinde örneğidir:
+nasıl etkiliyor?" diye soruldu; cevap incelikliydi (*"pahalı arabaları tipik olarak zenginler kiralar.
+Satın alabilirler ama vergi sebebiyle kiralarlar; faturalarını da öderler. Yani pahalı arabada risk
+düşüktür."*). Sonrası, moderatörün **her cevabın ardından yeni bir soruyla derine inmesinin** ders niteliğinde bir örneğidir:
 
 - *"Peki riski nasıl değerlendiriyorsun?"* → **"Araba fiyatını **fiyat risk tablosuyla**
   karşılaştırıyorum."**
@@ -696,12 +697,12 @@ düşüktür."*). Sonrası, moderatörün **her cevabı bir soruyla eşelemesini
 - *"Bunu açıklar mısın?"* → **"Bir müşteri taksidi ödemediğinde **muhasebe bize haber verir.**"**
 - → **"Ödenmemiş taksidi duyduğumda onu **eksik ödeme takibine** (missing payments tracking)
   giriyorum. Oradan da fiyat risk tablosu bir **VLOOKUP** (Excel'in "bu değeri şu tabloda ara ve
-  karşılığını getir" formülü — Türkçe Excel'de DÜŞEYARA) ile çıkarılıyor."**
+  karşılığını getir" formülü; Türkçe Excel'de DÜŞEYARA) ile çıkarılıyor."**
 
 Sonuç: **"eksik ödeme takibi" bir Excel sayfası, "fiyat risk tablosu" bir başkası.** İş mantığının
 önemli bir kısmı Excel dosyalarına dayanıyordu.
 
-**Yakalama sinyalleri (pratik heuristik):**
+**Yakalama sinyalleri (pratik sezgisel kural):**
 > **Gizli yazılım kullanımı, iş nesneleri "birdenbire, durup dururken" ortaya çıktığında belli olur.**
 1. Uzman *"XYZ listesine bakarım"* der.
 2. *"Bunu nereden biliyorsun?"* sorusu *"Onu ABC raporundan aldım"* diye yanıtlanır.
@@ -711,7 +712,7 @@ Kitabın dengeli hükmü: **BT'ci olmayan insanların yazılım yazması kendi b
 olan, bu yazılımın sadece eğitimli gözün fark edebileceği tüm risklere açık olmasıdır** (yedekleme,
 sürüm kontrolü, bilgi tekeli, güvenlik).
 
-### 13. Değişimi görselleştirmek — renkli diff ve make/buy
+### 13. Değişimi görselleştirmek: renkli diff ve yap-ya-da-al (make/buy) kararı
 Yeni yazılımın amacı işi daha iyi yapmaktır. Ama:
 
 > **Bu hedefe KÖTÜ MANUEL SÜREÇLERİ DİJİTALLEŞTİREREK ulaşılmaz.** Bir yığın gereksinim de sihirli
@@ -731,7 +732,7 @@ değişeceğini, **yeşil** oklar benim için neyin yeni olacağını gösteriyo
 ve ele** birden anlatmanın en ucuz yolu budur. *(Renk yerine gruplama da denenebilir ama yazarların
 deneyimine göre **o kadar faydalı değildir**: değişen parçalar kolayca gruplanamaz.)*
 
-**Make/buy — Paynator vs. GreatPay.** Alphorn "ödeme" bağlamı için hazır ürün almayı düşünüyor. Önce
+**Make/buy: Paynator mı, GreatPay mi?** Alphorn "ödeme" bağlamı için hazır ürün almayı düşünüyor. Önce
 **PURE** süreçler modellendi (Alphorn 8: standart ödeme; Alphorn 9: eksik ödeme). Sonra **aynı
 hikâye, her aday sistemle DIGITALIZED olarak yeniden** modellendi:
 
@@ -744,19 +745,19 @@ hikâye, her aday sistemle DIGITALIZED olarak yeniden** modellendi:
 > **Kitabın dürüst uyarısı:** *"İtiraf edelim, Alphorn örneği oldukça basitleştirilmiş."* Gerçek
 > dünyada karar sadece hangi sistemin iş süreçlerini en iyi desteklediğine bakmaz; **maliyet, teknik
 > uyum, kullanılabilirlik** gibi ölçütler de tartılır. Domain story'nin katkısı şudur: bir sistemin
-> **kullanıcıların çalışma biçimini nasıl değiştireceğini** görünür kılar — kararın tamamını vermez,
+> **kullanıcıların çalışma biçimini nasıl değiştireceğini** görünür kılar. Kararı tek başına vermez,
 > ama doğru olanı seçmeye yardım eder.
 
 > **Metodolojik öz: Bir senaryoda kazanan, diğerinde kaybedebilir → en az İKİ senaryo (standart +
 > istisna/hata vakası) modellenmelidir.**
 
-> **Son bir uyarı — kitap kendi kurallarını kanun saymıyor.** Deneyim arttıkça piktografik dilin
+> **Son bir uyarı: kitap kendi kurallarını kanun saymıyor.** Deneyim arttıkça piktografik dilin
 > grameri konusunda rahatlarsın; bir domain story'nin nasıl görünmesi gerektiğini bildiğinde
 > **yardımcı tekerlekler çıkabilir.** *"Sonuçta amaç **anlam aktarmaktır**, katı kurallara uymak
-> değil."* Yazarlar yazdıklarını çöpe atmanı önermiyor — ama bir noktadan sonra bu kuralları
+> değil."* Yazarlar yazdıklarını çöpe atmanı önermiyor; ama bir noktadan sonra bu kuralları
 > **kanun değil, tavsiye** olarak gör.
 
-### 14. Yöntemin özü — yedi değişmez
+### 14. Yöntemin özü: yedi değişmez özellik
 1. **Kolektif:** Birkaç kişi **tek bir hikâyeyi** anlatmaya ve dinlemeye katılır.
 2. **Konuşmaya dayalı:** Anlatıcılar ile **soru soran** dinleyicilerin konuşmasıdır; bir moderatör
    kolaylaştırır.
@@ -767,38 +768,39 @@ hikâye, her aday sistemle DIGITALIZED olarak yeniden** modellendi:
 6. **Çok yönlü:** Kapsam granülaritede, zaman noktasında ve domain saflığında değişebilir.
 7. **Entegre:** DDD, gereksinim mühendisliği, test etme ve çevik geliştirmeyle birleştirilebilir.
 
-### 15. 2026 notu — kitaptan sonra ne oldu
+### 15. 2026 notu: kitaptan sonra ne oldu
 
 > **Bu bölüm kitapta YOKTUR.** Buraya kadarki her şey Hofer ve Schwentner'ın kitabından; bu bölüm
-> ise 2026 itibarıyla dışarıda ne olduğunun notudur. İkisini karıştırma — kitabın kendi zinciri
-> (Diyagram 3) olduğu gibi durur; aşağıdaki, o zincire dışarıdan eklenen bir halkadır.
+> ise kitap dışında 2026'ya kadar neler olduğunun notudur. İkisini karıştırma: kitabın kendi zinciri
+> (Diyagram 3) olduğu gibi durur; aşağıda anlatılanlar o zincire dışarıdan eklenen bir halkadır.
 
-Kitabın **ikinci baskısı yok**, yöntemin özü değişmedi. Değişen üç şey var.
+Kitabın **ikinci baskısı yok**, yöntemin özü değişmedi. Değişen beş şey var.
 
-**(a) Araç yaşıyor ve artık makine-okunur çıktı veriyor.** Yazarların açık kaynak aracı **Egon.io**
+**(a) Araç yaşıyor ve artık makinenin okuyabileceği çıktı veriyor.** Yazarların açık kaynak aracı **Egon.io**
 2025'te baştan yazıldı, 2026 boyunca sürüm almaya devam etti (v3.2.1, Haziran 2026). **Yeniden
-anlatım (replay) modu duruyor** — hatta gelişti. Asıl önemlisi: bir domain story **metin dosyası
+anlatım (replay) modu duruyor**, hatta gelişti. Asıl önemlisi: bir domain story **metin dosyası
 olarak** (ya da içine o metin gömülmüş bir SVG olarak) dışa aktarılabiliyor. Yani bir domain story
-**zaten bir metin artefaktıdır** — ve (c) maddesini mümkün kılan şey budur.
+**zaten metin olarak saklanabilen bir çıktıdır**; (c) maddesini mümkün kılan da budur.
 
 **(b) Yöntem kurumsallaştı.** DDD Europe (2026) programında Hofer ve Schwentner hâlâ çalıştay
-veriyor; kolektif modelleme kampı CoMoCamp sürüyor. EventStorming'le ilişki artık "rekabet" değil
-**boru hattı** olarak anlaşılıyor: Domain Storytelling ile **kimin kiminle ne yaptığını** keşfet →
-design-level EventStorming ile **yazılımın nasıl çalışacağını** tasarla.
+veriyor; kolektif modelleme kampı CoMoCamp sürüyor. EventStorming'le ilişki artık "rekabet" değil,
+art arda gelen iki adımlık bir **boru hattı** (pipeline) olarak anlaşılıyor: Domain Storytelling ile
+**kimin kiminle ne yaptığını** keşfet → tasarım düzeyinde EventStorming (design-level EventStorming)
+ile **yazılımın nasıl çalışacağını** tasarla.
 
-**(c) VE ASIL OLAY: domain story, dil modelinin (LLM) BAĞLAMI hâline geldi.**
+**(c) ASIL OLAY: domain story, dil modeline (LLM) verilen BAĞLAM hâline geldi.**
 
 > **"Dil modelleri domain işinde zeki olmadıkları için başarısız olmuyor. Senin domain'ine
-> ERİŞİMLERİ OLMADIĞI için başarısız oluyorlar."** — Annegret Junker (codecentric), Mart 2026
+> ERİŞİMLERİ OLMADIĞI için başarısız oluyorlar."** (Annegret Junker, codecentric, Mart 2026)
 
-2026'da yazılı hâle gelen pratik şu: **domain story + görsel sözlük** (visual glossary) doğrudan
+2026'da yazıya dökülen pratik şu: **domain story + görsel sözlük** (visual glossary) doğrudan
 dil modeline verilir; model tıklanabilir bir prototip ya da bir API sözleşmesi üretir. İş bölümü
 nettir:
 
 > **"Domain story, yapay zekâya HANGİ ekranları HANGİ SIRADA kuracağını söyler.
 > Görsel sözlük ise ona her şeye NE AD vereceğini söyler."**
 
-Ve şu cümle, kitabın **Bölüm 9'daki** iddiasının ("dil, kodda kullanılarak *her yerde geçerli*
+Şu cümle de kitabın **Bölüm 9'daki** iddiasının ("dil, kodda kullanılarak *her yerde geçerli*
 olur") makine çağındaki karşılığıdır:
 
 > **"O dilin kalitesi, üretilen çıktının kalitesini doğrudan belirler."**
@@ -809,15 +811,15 @@ olur") makine çağındaki karşılığıdır:
 
 > *"Peki bir kullanıcı rafa vardığında bisiklet çoktan gitmişse ne olacak?"*
 
-Bu bir **yarış durumudur** (race condition) ve çalıştayda kimse dile getirmemiştir. Yani prototip,
+Bu bir **yarış durumudur** (race condition) ve çalıştayda o ana kadar kimse bunu dile getirmemişti. Yani prototip,
 kitabın 1. bölümündeki **yeniden anlatmanın (retelling)** makineyle yapılmış hâlidir: Anna'nın
-hikâyeyi baştan geri anlatıp yanlış anlaşılmayı patlatması gibi, dil modeli de anladığını
-**çalıştırılabilir bir şey olarak** geri anlatır — ve boşluk orada görünür olur.
+hikâyeyi baştan geri anlatıp yanlış anlaşılmayı ortaya çıkarması gibi, dil modeli de anladığını
+**çalıştırılabilir bir şey olarak** geri anlatır ve boşluk orada görünür olur.
 
 **(d) Sınırlı bağlam = AI ajanının sınırı.** Kitabın Bölüm 10'daki sınır bulma işi, 2026'da yeni
-bir müşteri buldu: **ajan mimarisi.** Siemens'ten Nikita Golovko'nun tespiti (Şubat 2026): agentic
-sistemlerde prompt'lar şişip **"prompt spagettisine"** dönüşüyor — bir ajanın prompt'unun *"yaklaşık
-%85'i ayrıştırma ve entegrasyon mantığı"* oluyor, domain değil. Reçetesi doğrudan Evans'tan:
+bir kullanım alanı buldu: **ajan mimarisi.** Siemens'ten Nikita Golovko'nun tespiti (Şubat 2026): ajan
+tabanlı (agentic) sistemlerde prompt'lar şişip **"prompt spagettisine"** dönüşüyor. Bir ajanın prompt'unun *"yaklaşık
+%85'i ayrıştırma ve entegrasyon mantığı"* oluyor, domain bilgisi değil. Önerdiği çözüm doğrudan Evans'tan geliyor:
 
 - **"Bir ajan = bir sınırlı bağlam = bir sorumluluk."**
 - **"Doğal dili API'miz olarak kullanmayı bırakmalıyız. Sözleşme olarak yapılandırılmış şemalar
@@ -825,33 +827,35 @@ sistemlerde prompt'lar şişip **"prompt spagettisine"** dönüşüyor — bir a
 - **"Yozlaşma-önleyici katman (anti-corruption layer) bizim semantik güvenlik duvarımızdır."**
 
 Kitabın *"bağlam sınırları modelleri ayırmalıdır, insanları değil"* kuralı bugün bir adım daha
-gidiyor: **sınırlar modelleri ayırır — ve artık ajanları da.** Ama uyarı da var: ajanlar
+gidiyor: **sınırlar modelleri ayırır; artık ajanları da.** Ama uyarı da var: ajanlar
 kendilerine çizilen sınırı **kendiliğinden aşar** (yardım masası botu bir bakmışsın politika
 önerisi yapıyor), yani sınır statik değil, **bakım isteyen yaşayan bir sınırdır.**
 
 **(e) Madalyonun karanlık yüzü: yapay zekâ, her yerde geçerli dili AŞINDIRIR.** Kodlama
 asistanları **anlamsal kaymayı** (semantic drift) hızlandırır: domain terimini alıp yerine daha
-"yaygın" jenerik bir ad koyar — `Manager`, `Handler`, `Processor`. Duncan Brown'ın formülü:
+"yaygın" jenerik bir ad koyar: `Manager`, `Handler`, `Processor`. Duncan Brown'ın formülü:
 
-> **"Yapay zekâ, FORMALİZE EDİLMEMİŞ bir domain sözlüğüne saygı gösteremez."**
+> **"Yapay zekâ, BİÇİMSEL OLARAK TANIMLANMAMIŞ bir domain sözlüğüne saygı gösteremez."**
 
-Kitabın Bölüm 9'daki homonim/eşanlamlı avı ("hesap" hikâyesi) bu yüzden 2026'da **daha da**
-yakıcıdır. Kitabın öğüdü — *"sözlük yaz, ama sözlüğü konuşmanın yerine koyma"* — hâlâ geçerli;
-ama sözlüğün artık **ikinci bir okuyucusu** var. 2026 pratiği: sözlüğü **kanonik ve makine-okunur**
-bir dosyada tut, **kod gibi sürümle ve gözden geçir**, ve **ajanın prompt'una kısıt olarak ver.**
+Kitabın Bölüm 9'daki eşadlı/eşanlamlı kelime avı ("hesap" hikâyesi) bu yüzden 2026'da **daha da**
+yakıcıdır. Kitabın *"sözlük yaz, ama sözlüğü konuşmanın yerine koyma"* öğüdü hâlâ geçerli;
+ama sözlüğün artık **ikinci bir okuyucusu** var. 2026 pratiği: sözlüğü **tek yetkili (kanonik) ve makinenin
+okuyabileceği** bir dosyada tut, **kod gibi sürümle ve gözden geçir** ve **ajanın prompt'una kısıt olarak ver.**
 
 > Kitap "sözlüğü yazmak dili öğrenmene yardım ettiyse zahmete değmiştir" diyordu.
 > 2026'da bir de **makinenin dili öğrenmesine** yarıyor.
 
-**Kaynaklar (14 Tem 2026'da doğrulandı):** Annegret Junker, codecentric —
-*"From Stories to Code"* (4 Mar 2026) ve *"From Domain Story to Prototype"* (2 Nis 2026) ·
-Nikita Golovko (Siemens), AI Coding Summit 2026 — *"From Prompt Spaghetti to Bounded Contexts"*
-(26 Şub 2026) · Duncan Brown — *"AI Coding Assistants and the Erosion of Ubiquitous Language"*
-(2025) · Egon.io sürüm geçmişi (github.com/WPS/egon.io, v3.2.1 / Haz 2026).
+**Kaynaklar (14 Tem 2026'da doğrulandı):** Annegret Junker (codecentric):
+*"From Stories to Code"* ("Hikâyelerden koda", 4 Mar 2026) ve *"From Domain Story to Prototype"*
+("Domain story'den prototipe", 2 Nis 2026) ·
+Nikita Golovko (Siemens), AI Coding Summit 2026: *"From Prompt Spaghetti to Bounded Contexts"*
+("Prompt spagettisinden sınırlı bağlamlara", 26 Şub 2026) · Duncan Brown: *"AI Coding Assistants and
+the Erosion of Ubiquitous Language"* ("Kodlama asistanları ve her yerde geçerli dilin aşınması", 2025)
+· Egon.io sürüm geçmişi (github.com/WPS/egon.io, v3.2.1 / Haz 2026).
 
-## Diyagram 1 — Piktografik dil: bir cümle nasıl kurulur
-Metropolis'in 1. cümlesi: *"Sinemasever gişe görevlisine seansı söyler."* Cümle **özne (aktör) –
-yüklem (faaliyet + sıra numarası) – nesne (iş nesnesi)** biçimindedir. Ve dilde **koşul yoktur.**
+## Diyagram 1: Piktografik dilde bir cümle nasıl kurulur
+Metropolis'in 1. cümlesi: *"Sinemasever gişe görevlisine seansı söyler."* Cümle **özne (aktör) →
+yüklem (faaliyet + sıra numarası) → nesne (iş nesnesi)** biçimindedir. Dilde **koşul yoktur.**
 
 ```svg
 <svg viewBox="0 0 640 372" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Piktografik dil: sinemasever aktörü, seans iş nesnesi ve gişe görevlisi aktörü arasında numaralı bir faaliyet oku; yanında not kutusu, koşul yok uyarısı ve yapı taşları lejantı">
@@ -860,7 +864,7 @@ yüklem (faaliyet + sıra numarası) – nesne (iş nesnesi)** biçimindedir. Ve
     <marker id="dsok-b" markerWidth="10" markerHeight="10" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#5D7789"/></marker>
     <marker id="dsok-f" markerWidth="10" markerHeight="10" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#1C3247"/></marker>
   </defs>
-  <text x="320" y="24" text-anchor="middle" font-size="15" font-weight="700" fill="#1C3247" font-family="system-ui">Piktografik dil: bir cümle = özne – yüklem – nesne</text>
+  <text x="320" y="24" text-anchor="middle" font-size="15" font-weight="700" fill="#1C3247" font-family="system-ui">Piktografik dil: bir cümle = özne → yüklem → nesne</text>
   <text x="320" y="44" text-anchor="middle" font-size="11.5" fill="#5D7789" font-family="system-ui">Metropolis 1. cümle: “Sinemasever gişe görevlisine seansı söyler.”</text>
 
   <rect x="24" y="72" width="140" height="96" rx="10" fill="#EAF1F7" stroke="#186399" stroke-width="1.6"/>
@@ -902,7 +906,7 @@ yüklem (faaliyet + sıra numarası) – nesne (iş nesnesi)** biçimindedir. Ve
 
   <rect x="250" y="182" width="366" height="56" rx="8" fill="#EEF0FF" stroke="#4F46E5" stroke-width="1.6"/>
   <text x="433" y="202" text-anchor="middle" font-size="11" font-weight="700" fill="#4F46E5" font-family="system-ui">KOŞUL YOK (no conditionals)</text>
-  <text x="433" y="217" text-anchor="middle" font-size="9.5" fill="#1C3247" font-family="system-ui">“eğer” / “veya” için sembol YOKTUR — bu kasıtlıdır.</text>
+  <text x="433" y="217" text-anchor="middle" font-size="9.5" fill="#1C3247" font-family="system-ui">“eğer” / “veya” için sembol YOKTUR; bu kasıtlıdır.</text>
   <text x="433" y="231" text-anchor="middle" font-size="9.5" fill="#1C3247" font-family="system-ui">Her önemli alternatif = AYRI bir domain story.</text>
 
   <line x1="24" y1="256" x2="616" y2="256" stroke="#D6DEE5" stroke-width="1"/>
@@ -913,11 +917,11 @@ yüklem (faaliyet + sıra numarası) – nesne (iş nesnesi)** biçimindedir. Ve
   <line x1="35" y1="308" x2="53" y2="308" stroke="#186399" stroke-width="1.5"/>
   <line x1="44" y1="316" x2="38" y2="326" stroke="#186399" stroke-width="1.5"/>
   <line x1="44" y1="316" x2="50" y2="326" stroke="#186399" stroke-width="1.5"/>
-  <text x="64" y="303" text-anchor="start" font-size="10" font-weight="700" fill="#186399" font-family="system-ui">aktör — ÖZNE</text>
+  <text x="64" y="303" text-anchor="start" font-size="10" font-weight="700" fill="#186399" font-family="system-ui">aktör · ÖZNE</text>
   <text x="64" y="318" text-anchor="start" font-size="8.5" fill="#5D7789" font-family="system-ui">kişi / yazılım sistemi</text>
 
   <rect x="182" y="298" width="26" height="20" rx="5" fill="#E9F4EE" stroke="#25804C" stroke-width="1.4"/>
-  <text x="218" y="303" text-anchor="start" font-size="10" font-weight="700" fill="#25804C" font-family="system-ui">iş nesnesi — NESNE</text>
+  <text x="218" y="303" text-anchor="start" font-size="10" font-weight="700" fill="#25804C" font-family="system-ui">iş nesnesi · NESNE</text>
   <text x="218" y="318" text-anchor="start" font-size="8.5" fill="#5D7789" font-family="system-ui">belge · bilgi · ortam</text>
 
   <line x1="336" y1="308" x2="370" y2="308" stroke="#1C3247" stroke-width="1.8" marker-end="url(#dsok-f)"/>
@@ -934,7 +938,7 @@ yüklem (faaliyet + sıra numarası) – nesne (iş nesnesi)** biçimindedir. Ve
 </svg>
 ```
 
-## Diyagram 2 — Kapsam küpü: üç eksen ve Alphorn'un yolculuğu
+## Diyagram 2: Kapsam küpü (üç eksen ve Alphorn'un yolculuğu)
 Kapsam üç ekseni çarpar. Alphorn 1→5, bu üç eksende gezinen tipik bir yolculuktur: **keşif →
 derinleşme → temizleme → tasarım → dijitalleştirme.**
 
@@ -1028,7 +1032,7 @@ derinleşme → temizleme → tasarım → dijitalleştirme.**
 </svg>
 ```
 
-## Diyagram 3 — Hikâyeden sınıra ve koda: kitabın uçtan uca zinciri
+## Diyagram 3: Hikâyeden sınıra ve koda (kitabın uçtan uca zinciri)
 Aynı hikâye, önce **alt-domain gruplarına**, oradan **sınırlı bağlama**, oradan **takım sınırına**
 (Conway) ve nihayet **sınıf ve metoda** dönüşür.
 
@@ -1077,8 +1081,8 @@ Aynı hikâye, önce **alt-domain gruplarına**, oradan **sınırlı bağlama**,
 
   <rect x="22" y="190" width="290" height="100" rx="10" fill="#FFFFFF" stroke="#25804C" stroke-width="1.6"/>
   <text x="167" y="214" text-anchor="middle" font-size="11" font-weight="700" fill="#25804C" font-family="system-ui">İş nesnesi → SINIF</text>
-  <text x="167" y="236" text-anchor="middle" font-size="9.5" fill="#1C3247" font-family="system-ui">“sözleşme” — kimliği var → entity Contract</text>
-  <text x="167" y="254" text-anchor="middle" font-size="9.5" fill="#1C3247" font-family="system-ui">“taksit, fiyat, vade” — kimliksiz → value object</text>
+  <text x="167" y="236" text-anchor="middle" font-size="9.5" fill="#1C3247" font-family="system-ui">“sözleşme”: kimliği var → entity Contract</text>
+  <text x="167" y="254" text-anchor="middle" font-size="9.5" fill="#1C3247" font-family="system-ui">“taksit, fiyat, vade”: kimliksiz → value object</text>
   <text x="167" y="276" text-anchor="middle" font-size="9.5" fill="#5D7789" font-family="system-ui">Soru: “Bu bir ŞEY mi, bir DEĞER mi?”</text>
 
   <rect x="328" y="190" width="290" height="100" rx="10" fill="#FFFFFF" stroke="#4F46E5" stroke-width="1.6"/>
@@ -1092,10 +1096,10 @@ Aynı hikâye, önce **alt-domain gruplarına**, oradan **sınırlı bağlama**,
 </svg>
 ```
 
-## Diyagram 4 — Sözleşmenin durum makinesi: anemik model vs. zengin model
+## Diyagram 4: Sözleşmenin durum makinesi (anemik model ile zengin model)
 İş kuralı ("bir sözleşme ancak taksit hesaplanmışsa ve daha önce imzalanmamışsa imzalanabilir") aslında
 bir **durum geçişi kısıtıdır.** Anemik model bu kuralı hiçbir yerde tutmaz; zengin model onu **durum
-makinesine gömer** — böylece geçersiz durum baştan imkânsızlaşır.
+makinesine gömer**; böylece geçersiz durum baştan imkânsız hâle gelir.
 
 ```svg
 <svg viewBox="0 0 640 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Sözleşmenin durum makinesi: doldurulmuş, hesaplanmış, teklif edilmiş, imzalanmış durumları arasında metot geçişleri; sign metodunun ön ve son koşulları; altta anemik model ile zengin modelin karşılaştırması">
@@ -1131,12 +1135,12 @@ makinesine gömer** — böylece geçersiz durum baştan imkânsızlaşır.
 
   <line x1="503" y1="114" x2="503" y2="132" stroke="#4F46E5" stroke-width="1.4" stroke-dasharray="4 3" marker-end="url(#dsok-h)"/>
   <rect x="336" y="134" width="280" height="60" rx="9" fill="#EEF0FF" stroke="#4F46E5" stroke-width="1.5"/>
-  <text x="476" y="152" text-anchor="middle" font-size="10" font-weight="700" fill="#4F46E5" font-family="system-ui">sign() — Sözleşmeye Göre Tasarım (DbC)</text>
+  <text x="476" y="152" text-anchor="middle" font-size="10" font-weight="700" fill="#4F46E5" font-family="system-ui">sign(): Sözleşmeye Göre Tasarım (DbC)</text>
   <text x="476" y="169" text-anchor="middle" font-size="9" fill="#1C3247" font-family="system-ui">ön koşul: isCalculated()=doğru, isSigned()=yanlış</text>
   <text x="476" y="185" text-anchor="middle" font-size="9" fill="#1C3247" font-family="system-ui">son koşul: isSigned()=doğru</text>
 
   <rect x="24" y="214" width="290" height="104" rx="10" fill="#FBF0DE" stroke="#C77A17" stroke-width="1.6"/>
-  <text x="169" y="234" text-anchor="middle" font-size="11" font-weight="700" fill="#C77A17" font-family="system-ui">ANEMİK (cılız) MODEL — YAPMA</text>
+  <text x="169" y="234" text-anchor="middle" font-size="11" font-weight="700" fill="#C77A17" font-family="system-ui">ANEMİK (cılız) MODEL: YAPMA</text>
   <text x="169" y="255" text-anchor="middle" font-size="9.5" fill="#1C3247" font-family="system-ui">setSignatureDate(date)</text>
   <text x="169" y="273" text-anchor="middle" font-size="9" fill="#1C3247" font-family="system-ui">imza tarihi her durumdan, her değere yazılır</text>
   <text x="169" y="291" text-anchor="middle" font-size="9" fill="#1C3247" font-family="system-ui">kural yok → geçersiz durum mümkün</text>
@@ -1144,7 +1148,7 @@ makinesine gömer** — böylece geçersiz durum baştan imkânsızlaşır.
 
   <rect x="326" y="214" width="290" height="104" rx="10" fill="#E9F4EE" stroke="#25804C" stroke-width="1.6"/>
   <text x="471" y="234" text-anchor="middle" font-size="11" font-weight="700" fill="#25804C" font-family="system-ui">ZENGİN MODEL</text>
-  <text x="471" y="255" text-anchor="middle" font-size="9.5" fill="#1C3247" font-family="system-ui">kural koda gömülü — sign() yalnız:</text>
+  <text x="471" y="255" text-anchor="middle" font-size="9.5" fill="#1C3247" font-family="system-ui">kural koda gömülü; sign() yalnız:</text>
   <text x="471" y="273" text-anchor="middle" font-size="9.5" font-weight="700" fill="#25804C" font-family="system-ui">hesaplanmış → imzalanmış</text>
   <text x="471" y="291" text-anchor="middle" font-size="9" fill="#1C3247" font-family="system-ui">değişmezlerle bütünlük; kural çiğnenemez</text>
   <text x="471" y="309" text-anchor="middle" font-size="8.5" fill="#5D7789" font-family="system-ui">F#'ta: geçersiz durumu temsil edilemez kıl</text>
@@ -1153,33 +1157,33 @@ makinesine gömer** — böylece geçersiz durum baştan imkânsızlaşır.
 
 ## Öz-sınav (kendini test et)
 1. Piktografik dilde koşul (if/veya) sembolü **kasıtlı olarak** yoktur. Bu kısıt, BPMN'in gateway'li
-   yaklaşımına kıyasla domain'i anlamana nasıl yardım ediyor — ve alternatifleri nereye koyuyorsun?
+   yaklaşımına kıyasla domain'i anlamana nasıl yardım ediyor? Alternatifleri nereye koyuyorsun?
 2. "Aktörler hikâye başına bir kez, iş nesneleri birden çok kez görünür" kuralının pratik gerekçesi
    ne? Aynı biletin iki farklı ikonla çizilmesi neyi ifade eder?
 3. Elindeki hikâyede bir faaliyet "koltuk planında **boş koltukları** arar" diye etiketlenmiş.
-   Kitabın hangi üslup kuralı çiğnenmiş, ve bunu düzeltmek Bölüm 10/12'de (sınır bulmak, koda dökmek)
+   Kitabın hangi üslup kuralı çiğnenmiş? Bunu düzeltmek Bölüm 10/12'de (sınır bulmak, koda dökmek)
    neyi kurtarır?
 4. Bir alt-domain'i AS-IS/DIGITALIZED modelledin ve terimler sana çok teknik geliyor. Kapsam
    ekseninde hangi yöne hareket edersin, domain uzmanlarına hangi soruyu sorarsın ve bu hangi Alphorn
    geçişine karşılık gelir?
 5. Bir çalıştayda hikâyede "oklarla bağlanmamış" parçalar görüyorsun. Buna ne denir, hangi soruları
-   sorman gerekir, ve neden bunu "soyutlamaya atlayarak" kapatmamalısın?
+   sorman gerekir ve neden bunu "soyutlamaya atlayarak" kapatmamalısın?
 6. Alt-domain sınırı göstergelerinden ikisini seç ve Alphorn'daki karşılığını anlat. Bir gösterge
    neden "sınır olduğunun kesin kanıtı" sayılmaz?
 7. "Bağlam sınırları modelleri ayırmalıdır, insanları değil" cümlesi ile "bir sınırlı bağlam yalnızca
    bir takıma ait olmalıdır" kuralı çelişiyor mu? Conway yasası ve ters Conway manevrası bu ikisini
    nasıl uzlaştırıyor?
 8. Bir domain story cümlesini kullanıcı hikâyesi (user story) şablonuna eşle. Şablondaki "sebep"
-   (neden) kısmı hikâyenin neresinden gelir, ve neden "omurga" (backbone) uçurtma seviyesinde yazılır?
+   (neden) kısmı hikâyenin neresinden gelir? "Omurga" (backbone) neden uçurtma seviyesinde yazılır?
 9. Bir sözleşme sınıfına `setSignatureDate(...)` koydun. Bu neden anemik bir modeldir, hangi iş kuralı
-   kaçırılmıştır, ve Design by Contract ile durum makinesi bunu nasıl kurtarır?
+   kaçırılmıştır? Design by Contract (sözleşmeye göre tasarım) ile durum makinesi bunu nasıl kurtarır?
 10. Uzman sana "bunu XYZ listesinden alıyorum" dedi. Hangi olguyu avlıyorsun, izini nasıl sürersin ve
     uçak fabrikası örneğinde bu zincirin sonunda ne bulundu?
 11. *(2026)* Bir domain story'yi ve sözlüğü bir dil modeline verip prototip ürettin. Bu, kitabın
-    1. bölümündeki hangi eyleme karşılık geliyor — ve neden asıl kazanç prototipin kendisi değil,
+    1. bölümündeki hangi eyleme karşılık geliyor? Asıl kazanç neden prototipin kendisi değil,
     domain uzmanının ona bakınca sorduğu sorudur?
 12. *(2026)* "Bir ajan = bir sınırlı bağlam" kuralı, kitabın "bir sınırlı bağlam = bir takım"
-    kuralının aynısı mı? Ajan sınırının takım sınırından farkı ne — ve neden "yaşayan sınır"
+    kuralının aynısı mı? Ajan sınırının takım sınırından farkı ne? Neden "yaşayan sınır"
     demek gerekiyor?
 13. *(2026)* Yapay zekâ `Sozlesme` yerine `ContractManager` yazdı. Bu hangi olgudur, kitabın
-    Bölüm 9'undaki hangi derdin devamıdır, ve panzehiri nedir?
+    Bölüm 9'undaki hangi derdin devamıdır ve panzehiri nedir?

@@ -1,6 +1,6 @@
 ---
-baslik: "Canlıda LLM — Gecikme SLO'su, AI Gateway, Hata Katmanları ve Güvenli Yayın"
-yazar: "AI Öğretmen çalışma metni — AI Engineering from Scratch (Rohit Ghumare, MIT) dersleri: 11-13 production-app, 17-01 managed-llm-platforms, 17-08 inference-metrics-goodput, 17-19 ai-gateways, 17-20 shadow-canary-progressive, 17-21 ab-testing-llm-features, 17-22 load-testing-llm-apis, 17-24 chaos-engineering-llm + bu deponun kendi vakası"
+baslik: "Canlıda LLM: Gecikme SLO'su, AI Gateway, Hata Katmanları ve Güvenli Yayın"
+yazar: "AI Öğretmen çalışma metni. Kaynak: AI Engineering from Scratch (Rohit Ghumare, MIT) dersleri 11-13 production-app, 17-01 managed-llm-platforms, 17-08 inference-metrics-goodput, 17-19 ai-gateways, 17-20 shadow-canary-progressive, 17-21 ab-testing-llm-features, 17-22 load-testing-llm-apis, 17-24 chaos-engineering-llm + bu deponun kendi vakası"
 tarih: "2026-10-25"
 url: "https://github.com/rohitg00/ai-engineering-from-scratch"
 dil: "Türkçe kavram özeti (diyagramlı)"
@@ -8,36 +8,41 @@ etiketler: 8,9
 ---
 
 ### Bu metin ne anlatıyor?
-Yapay zekâ özelliği dizüstünde çalışınca iş bitmez; canlıda (production) dört soru doğar: **ne kadar
-hızlı**, **hangi kapıdan çıkıyor**, **bozulunca ne oluyor**, **yeni sürümü nasıl güvenle açıyorum**.
-Bu metin dördüne birer karar kuralı verir:
+Yapay zekâ özelliği dizüstü bilgisayarında çalışınca iş bitmez; canlıda (production) dört soru doğar:
+**ne kadar hızlı**, **hangi kapıdan çıkıyor**, **bozulunca ne oluyor**, **yeni sürümü nasıl güvenle
+açıyorum**. Metin bu dört soruya karar kuralları verir:
 
-1. **Gecikmeyi tek sayı sanma — üçe ayır.** İlk token süresi (TTFT = kuyruk + ağ + prompt'u işleme)
+1. **Gecikmeyi tek sayı sanma, üçe ayır.** İlk token süresi (TTFT = kuyruk + ağ + prompt'u işleme)
    prompt uzadıkça büyür; token başına süre (TPOT) çıktı uzadıkça birikir; **uçtan uca = TTFT +
-   TPOT × çıktı token sayısı.** Kaldıracı hangi terim baskınsa ona uygula.
-2. **SLO'yu çok kısıtlı yaz, "goodput" ile ölç.** Bir istek ancak *bütün* kısıtları aynı anda
-   sağlarsa "iyi"dir (TTFT ≤ a **VE** TPOT ≤ b **VE** E2E ≤ c); goodput iyi isteklerin payıdır.
-   Yük testinde tek prompt'u tekrarlama: önbellek kapasiteyi şişirir.
-3. **AI gateway bir giden port'un (outgoing port) adaptörüdür.** Yönlendirme, yedek model,
-   yeniden deneme, hız sınırı, sır yönetimi, gözlem, korkuluk — hepsi tek yerde. Ürün için kritik
-   çağrıda **en az iki bağımsız sağlayıcı**.
-4. **Üç hata katmanı, üç ayrı ilaç:** API hatası → geri çekilmeli yeniden deneme; model hatası →
-   doğrulama hatasını içeren yeniden deneme; bağımlılık hatası → zarif düşüş. Yedek model zinciri
-   kaliteyi erişilebilirliğe takas eder; katman katman yeniden deneme yükü **çarpar**.
+   TPOT × çıktı token sayısı.** Kaldıracı (en çok kazandıran müdahaleyi) hangi terim baskınsa ona
+   uygula.
+2. **SLO'yu birden çok kısıtla yaz, "goodput" ile ölç.** (SLO: hizmet seviyesi hedefi, service
+   level objective.) Bir istek ancak *bütün* kısıtları aynı anda sağlarsa "iyi"dir (TTFT ≤ a **VE**
+   TPOT ≤ b **VE** E2E ≤ c); goodput iyi isteklerin payıdır. Yük testinde tek prompt'u tekrarlama:
+   önbellek, kapasiteyi olduğundan yüksek gösterir.
+3. **AI gateway (yapay zekâ ağ geçidi) bir giden port'un (outgoing port) adaptörüdür.** Yönlendirme,
+   yedek model, yeniden deneme, hız sınırı, sır yönetimi, gözlem, guardrail (koruma kuralı): hepsi
+   tek yerde. Ürün için kritik çağrıda **en az iki bağımsız sağlayıcı** olmalı.
+4. **Üç hata katmanı, üç ayrı ilaç:** API hatası → geri çekilmeli (backoff: her denemede biraz daha
+   uzun bekleyen) yeniden deneme; model hatası → doğrulama hatasını içeren yeniden deneme; bağımlılık
+   hatası → zarif düşüş (graceful degradation: ana işi koruyup ikincil özelliği bırakmak). Yedek model
+   zinciri kaliteyi erişilebilirliğe takas eder; her katman ayrı yeniden deneme yaparsa yük **çarpılarak**
+   artar.
 5. **Yayın merdiveni:** gölge (shadow) → kanarya (canary; LLM kapıları: istek başı maliyet, ret
-   oranı, çıktı uzunluğu) → gerekiyorsa A/B. Eval "işi yapabiliyor mu?", A/B "kullanıcı önemsiyor
-   mu?" sorusunu cevaplar. **Geri alma = bayrak çevirmek + sabitlenmiş model kimliği**, yeniden
-   dağıtım değil.
+   oranı, çıktı uzunluğu) → gerekiyorsa A/B. Eval (değerlendirme testi) "işi yapabiliyor mu?", A/B
+   "kullanıcı önemsiyor mu?" sorusunu cevaplar.
+   **Geri alma = bayrak çevirmek + sabitlenmiş model kimliği**, yeniden dağıtım değil (bayrak:
+   feature flag, kod dağıtmadan açılıp kapatılabilen ayar).
 
 ## Neden bu özet
 Programda bu konuların parçaları dağınık duruyordu. [`hafta08-ai-engineering-ii.md`](hafta08-ai-engineering-ii.md)
 "Maliyet ve gecikme" bölümü akışı (streaming) tek satırla anar ama gecikmenin **bileşenlerini**
 vermez; [`hafta11-ddia-veri-yogun.md`](hafta11-ddia-veri-yogun.md) "ortalama değil yüzdelik dilim"
-der ama LLM'e özgü TTFT/TPOT ayrımını bilmez; [`mikroservis-monolit-hatalar.md`](mikroservis-monolit-hatalar.md)
+der ama LLM'e özgü TTFT/TPOT ayrımını ele almaz; [`mikroservis-monolit-hatalar.md`](mikroservis-monolit-hatalar.md)
 genel zaman aşımı/yeniden deneme/devre kesici anlatır ama **modelin kendisinin** hata
 üretebileceğini (bozuk JSON, uydurma araç adı) ele almaz; Hafta 8 yeni sürümü "küçük bir kullanıcı
 dilimine aç" diye geçer, ama o dilimde **neye bakılacağını** söylemez. Hiçbir kaynakta AI gateway bir
-mimari öğe olarak geçmiyordu — oysa bu deponun **ADR-0004 (OpenRouter)** kararı tam olarak bir
+mimari öğe olarak geçmiyordu. Oysa bu deponun **ADR-0004 (OpenRouter)** kararı tam olarak bir
 gateway kararıdır.
 
 Bu metin o boşlukları modeli **eğiten** değil **kullanan** mimarın gözünden doldurur: GPU'ya
@@ -47,23 +52,23 @@ ve yayın kapılarını **sen** seçersin. Her bölüm bu deponun gerçek koduna
 deneme ve zaman aşımı bütçesi), `ai/AiHataCevirici` (hata sınıflandırması), `ai/JsonCevapParser`
 (model hatası). Maliyet tarafı [`finops-ai-tokenomics.md`](finops-ai-tokenomics.md)'de, eval tarafı
 [`evals-llm-observability.md`](evals-llm-observability.md)'de, yeniden deneme ayrıntısı
-[`arac-cagrisi-guvenilirligi.md`](arac-cagrisi-guvenilirligi.md)'de; burada tekrarlanmaz, bağlanır.
+[`arac-cagrisi-guvenilirligi.md`](arac-cagrisi-guvenilirligi.md)'de; burada tekrarlanmaz, yalnızca bağlantı verilir.
 
-## 1. Gecikmenin anatomisi — TTFT, TPOT, uçtan uca
+## 1. Gecikmenin anatomisi: TTFT, TPOT, uçtan uca
 Bir LLM isteğinin süresi tek bir blok değildir; farklı nedenlerle büyüyen üç parçadan oluşur.
 
-- **İlk token süresi (TTFT — time to first token)** = kuyrukta bekleme + ağ (TLS dahil) + **ön
+- **İlk token süresi (TTFT, time to first token)** = kuyrukta bekleme + ağ (TLS dahil) + **ön
   doldurma (prefill)**, yani modelin bütün prompt'u okuyup işlemesi. Prefill, prompt uzunluğuyla
   büyür. Uzun sistem prompt'u, şişkin sohbet geçmişi, bağlama eklenmiş belge → TTFT'yi uzatır.
-- **Token başına süre (TPOT — time per output token)**, bazı araçlarda **token arası gecikme (ITL —
+- **Token başına süre (TPOT, time per output token)**, bazı araçlarda **token arası gecikme (ITL,
   inter-token latency)**: ilk token'dan sonra her yeni token için geçen süre. Çıktı token token,
   sırayla üretildiği için (bkz. [`model-ve-caba.md`](model-ve-caba.md) §2) bu süre çıktı uzunluğuyla
   **çarpılır**.
-- **Uçtan uca gecikme (E2E — end-to-end)** = TTFT + TPOT × çıktı token sayısı (+ dönüş ağı).
+- **Uçtan uca gecikme (E2E, end-to-end)** = TTFT + TPOT × çıktı token sayısı (+ dönüş ağı).
 
 Pratik sonuç: **hangi terim baskınsa kaldıraç odur.** Uzun prompt + kısa cevap (ör. "şu metni tek
-kelimeyle sınıfla") TTFT'nin baskın olduğu iştir — prompt'u kırpmak, önbelleklemek işe yarar. Kısa
-prompt + uzun cevap (ör. rapor üretimi) TPOT'un baskın olduğu iştir — orada prompt'u kısaltmak
+kelimeyle sınıfla") TTFT'nin baskın olduğu iştir: prompt'u kırpmak, önbelleklemek işe yarar. Kısa
+prompt + uzun cevap (ör. rapor üretimi) TPOT'un baskın olduğu iştir. Orada prompt'u kısaltmak
 neredeyse hiçbir şey kazandırmaz; **çıktıyı sınırlamak** (max_tokens, "kısa yaz" talimatı, daha hızlı
 model) kazandırır.
 
@@ -76,24 +81,24 @@ akış yok). Yani öğrenci her zaman E2E'yi bekler. `AiYapilandirma` bunu biler
 kurar: bağlantı 5 sn, okuma 120 sn, yeniden deneme penceresi 30 sn; en kötü durum ~157 sn, ön yüzün
 180 sn'lik kesme süresinin altında. Kod yorumu okuma süresinin neden 120 sn olduğunu da söyler:
 3000–4000 token'lık rapor/quiz/görsel üretimi ~60–80 sn sürüyor. Bu tam olarak **TPOT baskın** bir
-iş yüküdür — haftalık raporu hızlandırmanın yolu prompt'u kırpmak değil, çıktıyı kısaltmak ya da
+iş yüküdür: haftalık raporu hızlandırmanın yolu prompt'u kırpmak değil, çıktıyı kısaltmak ya da
 akışa geçmektir.
 
 **Ölçüm tuzağı.** Benchmark araçları ITL'i farklı tanımlar: biri ilk token'ı hesaba katmaz (2.
-token'dan başlar), diğeri katar. Aynı koşu için iki araç farklı TPOT raporlar. Kural: **bir gecikme
+token'dan başlar), diğeri katar. Aynı ölçüm çalıştırması için iki araç farklı TPOT raporlar. Kural: **bir gecikme
 rakamı aktarıyorsan aracın adını ve tanımını yaz.**
 
 > *Şerh:* Ders, belirli bir açık model + NVIDIA sunucu yığını için "ortalama TTFT 162 ms, TPOT 7,33
 > ms" gibi referans rakamlar verir. Bunlar **kendi GPU'sunu işleten** biri için anlamlıdır; API
-> üzerinden model kullanan bizim kitle için hedef değildir — senin TTFT'ne sağlayıcının kuyruğu,
-> gateway sıçraması ve bölge mesafesi eklenir. Hedefini kendi ölçümünden koy.
+> üzerinden model kullanan bizim gibiler için hedef değildir. Senin TTFT'ne sağlayıcının kuyruğu,
+> gateway'den geçiş (fazladan bir ağ adımı) ve bölge mesafesi eklenir. Hedefini kendi ölçümünden koy.
 
 ```svg
 <svg viewBox="0 0 660 330" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Bir LLM isteğinin zaman çizelgesi: istek önce kuyrukta bekler, sonra ağdan geçer, sonra model prompt'un tamamını işler (prefill); bu üçünün toplamı ilk token süresi TTFT'dir ve prompt uzadıkça büyür; ardından çıktı token'ları tek tek gelir, aralarındaki süre token başına süre TPOT'tur ve çıktı uzadıkça birikir; uçtan uca süre TTFT artı TPOT çarpı çıktı token sayısıdır. Altta iki senaryo: uzun prompt kısa cevapta TTFT baskındır ve kaldıraç prompt'u kırpmak veya önbelleklemektir; kısa prompt uzun cevapta, örneğin bu depodaki haftalık raporda, TPOT çarpı N baskındır ve kaldıraç çıktıyı sınırlamaktır. Bu depoda çağrı akışsızdır, kullanıcı uçtan uca sürenin tamamını bekler">
   <defs>
     <marker id="lu-1a" markerWidth="10" markerHeight="10" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#5D7789"/></marker>
   </defs>
-  <text x="330" y="22" text-anchor="middle" font-size="15" font-weight="700" fill="#1C3247" font-family="system-ui">Bir isteğin süresi üç parçadır — kaldıraç baskın parçadadır</text>
+  <text x="330" y="22" text-anchor="middle" font-size="15" font-weight="700" fill="#1C3247" font-family="system-ui">Bir isteğin süresi üç parçadır; kaldıraç baskın parçadadır</text>
   <text x="330" y="41" text-anchor="middle" font-size="11" fill="#5D7789" font-family="system-ui">Amber = TTFT bileşenleri · yeşil = çıktı token'ları · E2E = TTFT + TPOT × N</text>
 
   <line x1="30" y1="110" x2="635" y2="110" stroke="#5D7789" stroke-width="1.4" marker-end="url(#lu-1a)"/>
@@ -120,14 +125,14 @@ rakamı aktarıyorsan aracın adını ve tanımını yaz.**
   <line x1="30" y1="62" x2="276" y2="62" stroke="#C77A17" stroke-width="1.4"/>
   <line x1="30" y1="57" x2="30" y2="67" stroke="#C77A17" stroke-width="1.4"/>
   <line x1="276" y1="57" x2="276" y2="67" stroke="#C77A17" stroke-width="1.4"/>
-  <text x="153" y="56" text-anchor="middle" font-size="10" font-weight="700" fill="#C77A17" font-family="system-ui">TTFT — prompt uzadıkça büyür</text>
+  <text x="153" y="56" text-anchor="middle" font-size="10" font-weight="700" fill="#C77A17" font-family="system-ui">TTFT: prompt uzadıkça büyür</text>
   <line x1="288" y1="62" x2="304" y2="62" stroke="#25804C" stroke-width="1.4"/>
   <text x="360" y="66" text-anchor="middle" font-size="10" font-weight="700" fill="#25804C" font-family="system-ui">TPOT (token arası)</text>
 
   <line x1="30" y1="140" x2="588" y2="140" stroke="#186399" stroke-width="1.6"/>
   <line x1="30" y1="134" x2="30" y2="146" stroke="#186399" stroke-width="1.6"/>
   <line x1="588" y1="134" x2="588" y2="146" stroke="#186399" stroke-width="1.6"/>
-  <text x="309" y="158" text-anchor="middle" font-size="10.5" font-weight="700" fill="#186399" font-family="system-ui">E2E = TTFT + TPOT × çıktı token sayısı — akışsız çağrıda kullanıcı bunun TAMAMINI bekler</text>
+  <text x="309" y="158" text-anchor="middle" font-size="10.5" font-weight="700" fill="#186399" font-family="system-ui">E2E = TTFT + TPOT × çıktı token sayısı; akışsız çağrıda kullanıcı bunun TAMAMINI bekler</text>
 
   <rect x="30" y="176" width="295" height="104" rx="9" fill="#FBF0DE" stroke="#C77A17" stroke-width="1.5"/>
   <text x="177" y="196" text-anchor="middle" font-size="11" font-weight="700" fill="#C77A17" font-family="system-ui">Uzun prompt + kısa cevap</text>
@@ -150,9 +155,9 @@ rakamı aktarıyorsan aracın adını ve tanımını yaz.**
 </svg>
 ```
 
-## 2. Goodput — SLO'yu çok kısıtlı yazmak
+## 2. Goodput: SLO'yu birden çok kısıtla yazmak
 "Saniyede 15.000 token işliyoruz" cümlesi ürün hakkında bir şey söylemez. İsteklerin %40'ı 2
-saniyeyi aşıyorsa kullanıcılar çoktan gitmiştir. **Verim (throughput)** filonun verimliliğini ölçer;
+saniyeyi aşıyorsa kullanıcılar çoktan gitmiştir. **Verim (throughput)** bütün sistemin toplam verimini ölçer;
 tek tek isteklerin sağlığını ölçmez.
 
 Ürün için anlamlı ölçü **goodput**'tur: **bütün SLO kısıtlarını aynı anda sağlayan isteklerin payı.**
@@ -166,8 +171,8 @@ goodput başarısızlıktır; düşük verimde %99 goodput hedeftir.
 
 İki ek kural:
 
-- **Ortalama değil, yüzdelik dilim (percentile).** LLM gecikme dağılımı sağa çarpıktır; uzun bir
-  komşu istek yüzünden bazı isteklerin TPOT'u birkaç katına fırlar. Ortalama bunu gizler; kullanıcı
+- **Ortalama değil, yüzdelik dilim (percentile).** LLM gecikme dağılımı sağa çarpıktır; aynı anda
+  işlenen uzun bir istek yüzünden bazı isteklerin TPOT'u birkaç katına fırlar. Ortalama bunu gizler; kullanıcı
   p99'u yaşar. p50 / p90 / p99 üçlüsünü raporla ([`hafta11-ddia-veri-yogun.md`](hafta11-ddia-veri-yogun.md)
   "Ölçmenin doğru birimi" bölümü aynı ilkeyi veritabanı için anlatır).
 - **SLO'yu işe göre yaz.** Sohbet ile haftalık rapor aynı SLO'yu taşımaz. Sohbette TTFT
@@ -175,18 +180,19 @@ goodput başarısızlıktır; düşük verimde %99 goodput hedeftir.
   saniyelik tavanı aşmamak gerekir. Tek bir "gecikme SLO'su" yazan ekip ya sohbeti cezalandırır ya
   raporu yanlış alarm kaynağına çevirir.
 
-**Bu projedeki bağ — veri var, SLO yok.** `ai_kullanim` tablosu (`AiKullanim`: kullanıcı, işlem,
-model, girdi/çıktı token, tarih) 2026-10-26'ya kadar **süre kaydetmiyordu**; goodput hesaplanamaz,
-ancak log satırlarından tahmin edilirdi. ADR-0016 (karar 4) iki eklemeli sütun getirdi: `sure_ms`
+**Bu projedeki bağ: veri var, SLO yok.** `ai_kullanim` tablosu (`AiKullanim`: kullanıcı, işlem,
+model, girdi/çıktı token, tarih) 2026-10-26'ya kadar **süre kaydetmiyordu**; goodput hesaplanamıyor,
+ancak log satırlarından tahmin edilebiliyordu. ADR-0016 (karar 4) tabloya iki sütun ekledi: `sure_ms`
 ve `yanit_model` (eski satırlarda boş). `sure_ms`, `SpringAiOgretmenClient`'ta `System.nanoTime()`
-ile ölçülen **duvar saati** süresidir ve `chatModel.call`'ın tamamını kapsar — Spring AI'nın kendi
-yeniden denemeleri (429/5xx) bu çağrının içinde olduğu için **dahildir**. Yani kullanıcının gerçekten
+ile ölçülen **duvar saati** süresidir (wall-clock, yani gerçekte geçen süre) ve `chatModel.call`'ın
+tamamını kapsar. Spring AI'nın kendi yeniden denemeleri (429/5xx) bu çağrının içinde olduğu için
+süreye **dahildir**. Yani kullanıcının gerçekten
 beklediği E2E'dir, tek denemenin süresi değil. Çağrı akışsız olduğu için TTFT ve TPOT ayrı ölçülmez;
 goodput bu depoda yalnız **E2E kısıtıyla** hesaplanabilir. Artık ölçülebilir veri var, ama asıl iş
-hâlâ yapılmadı: "`islem` başına hangi E2E kısıtı?" sorusunu yazmak. SLO yazılmadan süre sütunu
+hâlâ yapılmadı: "`islem` başına hangi E2E kısıtı?" sorusunun cevabını yazmak. SLO yazılmadan süre sütunu
 yalnızca bir sayı daha olur; ADR-0016 da özet/panoyu bilinçli olarak eklemedi.
 
-## 3. Yük testi — tek prompt'u tekrarlama tuzağı
+## 3. Yük testi: tek prompt'u tekrarlama tuzağı
 Klasik bir yük testi aynı isteği binlerce kez gönderir. LLM'de bu, ölçtüğünü sandığın şeyi ölçmez.
 
 - **Prompt tekdüzeliği tuzağı (prompt-uniformity trap):** Aynı prompt'u döngüde gönderirsen
@@ -199,22 +205,23 @@ Klasik bir yük testi aynı isteği binlerce kez gönderir. LLM'de bu, ölçtü�
   ucuna aynı hafta için 500 istek atan bir test **sıfır** model çağrısını ölçer.
 - **Test aracı darboğaz olabilir.** Ders, token ölçümünü istemci tarafında Python'da yapan bir yük
   aracının kendi kuyruğunu sunucunun yavaşlığı gibi raporladığı vakayı anlatır. Kural: ölçüm
-  istemcisinin de doyduğunu varsayma, kontrol et.
+  istemcisinin de doyabileceğini (darboğaz olabileceğini) unutma, kontrol et.
 - Dört desen (sabit, rampa, ani sıçrama, uzun süreli/soak) genel yük testi bilgisidir; LLM'e özgü
   olan, her desende **prompt dağılımını** gerçekçi tutmaktır.
 
 **API kullanan mimar için ek bir incelik:** ücretli bir sağlayıcıya yük testi yapmak hem para yakar
-hem de sağlayıcının hız sınırına (429) çarpar — yani kendi kapasiteni değil **onun kotanı** ölçersin.
+hem de sağlayıcının hız sınırına (429) çarpar. Yani kendi kapasiteni değil,
+**sağlayıcının sana tanıdığı kotayı** ölçersin.
 Burada port/adaptör ayrımı işe yarar: `OgretmenAiClient` arayüzünün arkasına gerçekçi gecikme
 üreten bir sahte (stub) adaptör koyarak **kendi** tarafının (bağlantı havuzu, iş parçacıkları, DB
 yazımı) kapasitesini ölçersin; sağlayıcı tarafını ise küçük ve gerçekçi bir örnekle ayrıca
 doğrularsın. İkisini tek testte karıştırmak hangi tarafın doyduğunu gizler.
 
-## 4. AI gateway — giden port'un adaptörü
+## 4. AI gateway: giden port'un adaptörü
 Ürünün birden çok sağlayıcıyı (ve modeli) çağırıyorsa, her sağlayıcının farklı SDK'sı, hata modeli,
 hız sınırı ve kimlik doğrulaması vardır. Bunu her serviste ayrı ayrı çözmek, her servisi her
 sağlayıcıya bağlar. **AI gateway** bu işi tek bir katmanda toplar: genellikle OpenAI-uyumlu tek bir
-API sunar, arkada sağlayıcılara dağıtır.
+API sunar, arkada istekleri sağlayıcılara dağıtır.
 
 Hafta 9'un diliyle: çekirdeğin dış dünyadan istediği şey ("şu prompt'a cevap ver") bir **giden port**
 (outgoing / driven port), o isteği gerçek bir sağlayıcıya ileten şey bir **adaptör**dür
@@ -223,25 +230,25 @@ adaptörün kendisi ya da adaptörün konuştuğu dış katmandır.
 
 **Bu depodaki vaka.** Üç halka var:
 
-1. **Port:** `ai/OgretmenAiClient` — `cagir(AiIstek)`, `cagirGoruntulu(...)`; içinde yalnız
+1. **Port:** `ai/OgretmenAiClient`: `cagir(AiIstek)`, `cagirGoruntulu(...)`. İçinde yalnız
    projenin kendi tipleri (`Islem`, `ModelTuru`, `AiYanit`) var, Spring AI tipi sızmıyor. Servisler
    (`DegerlendirmeService`, `HafizaService`, `AtolyeService`…) yalnız bu arayüzü görür.
-2. **Adaptör:** `ai/SpringAiOgretmenClient` + `ai/AiYapilandirma` — Spring AI'nın OpenAI-uyumlu
+2. **Adaptör:** `ai/SpringAiOgretmenClient` + `ai/AiYapilandirma`: Spring AI'nın OpenAI-uyumlu
    istemcisi, kısa yeniden deneme şablonu, zaman aşımları, `AiHataCevirici` ile hata çevirisi,
    `ai_kullanim` kaydı. Uygulama içindeki küçük bir gateway gibi davranır.
-3. **Dış gateway:** OpenRouter (ADR-0004) — tek anahtarla çok sağlayıcı, kullanım paneli, harcama
+3. **Dış gateway:** OpenRouter (ADR-0004): tek anahtarla çok sağlayıcı, kullanım paneli, harcama
    limiti.
 
 `MimariTestleri` bu sınırı mühürler: Spring AI sınıfları yalnız `ai/` paketinde kullanılabilir ve
 `ai` katmanına yalnız `service` erişir. ADR-0004'ün kendi cümlesi portun değerini kanıtlar: doğrudan
-Anthropic API'ye dönmek gerekirse "starter'ı ve base-url'ü değiştir — `OgretmenAiClient` arayüzü
+Anthropic API'ye dönmek gerekirse "starter'ı ve base-url'ü değiştir; `OgretmenAiClient` arayüzü
 sayesinde servisler değişmez."
 
-> *Şerh (Hafta 9'un "portu kim tanımlar" sorusu):* Saf altıgen mimaride portu çekirdek tanımlar ve
+> *Şerh (Hafta 9'un "portu kim tanımlar" sorusu):* Saf altıgen (hexagonal) mimaride portu çekirdek tanımlar ve
 > adaptörden ayrı bir pakette durur. Bu depoda `OgretmenAiClient` arayüzü adaptörle **aynı** `ai/`
 > paketindedir; katman yönü `service → ai`dir. Bu pragmatik bir sadeleştirmedir: arayüz tipleri saf
 > olduğu için servisler sağlayıcıdan bağımsız kalır, ama "port çekirdeğin malıdır" ilkesi paket
-> düzeyinde değil, sözleşme düzeyinde korunur. Bunu bilerek kabul edilmiş bir takas olarak oku,
+> düzeyinde değil, sözleşme düzeyinde korunur. Bunu bilerek kabul edilmiş bir ödünleşim (trade-off) olarak oku,
 > ders kitabı örneği olarak değil.
 
 **Gateway'in yedi işi** ve bu depodaki karşılığı:
@@ -249,50 +256,52 @@ sayesinde servisler değişmez."
 | İş | Ne demek | Bu depoda |
 |---|---|---|
 | Yönlendirme (routing) | işe göre model/sağlayıcı seçimi | `ModelTuru` GUCLU/HIZLI, model kimlikleri `application.yml`'de (ADR-0003) |
-| Yedek (fallback) | 429/5xx/kalite hatasında başka yere git | **Uygulamada yok** — tek model (§6). OpenRouter aynı model için sağlayıcılar arası yedeği varsayılan yapar (`allow_fallbacks: true`); model yedeği (`models` dizisi) kullanılmıyor |
+| Yedek (fallback) | 429/5xx/kalite hatasında başka yere git | **Uygulamada yok**: tek model (§6). OpenRouter aynı model için sağlayıcılar arası yedeği varsayılan yapar (`allow_fallbacks: true`); model yedeği (`models` dizisi) kullanılmıyor |
 | Yeniden deneme (retry) | sınırlı, geri çekilmeli | 3 deneme, yalnız 5xx/bağlantı hatası, 30 sn pencere (`AiYapilandirma`) |
-| Hız sınırı (rate limit) | kiracı/anahtar/model başına | **Var (site)**: sohbet 20/dk/ziyaretçi, yazma 60/dk/IP, yeni ziyaretçi 20/saat/IP (ADR-0017 §7); kota yok, harcama tavanı ziyaretçinin kendi OpenRouter hesabında; bkz. [`finops-ai-tokenomics.md`](finops-ai-tokenomics.md) |
-| Sır referansı (secret reference) | anahtarı çalışma anında kasadan çek | Yerel modda ortam değişkeni `OPENROUTER_API_KEY`; sitede sunucu anahtarı yok — ziyaretçinin anahtarı istek başına `X-OpenRouter-Anahtar` başlığıyla gelir, hiçbir yere yazılmaz (ADR-0017) |
-| Gözlem (observability) | iz, maliyet, kim/ne | `ai_kullanim`: kullanıcı + işlem + istenen model + token + **süre** (`sure_ms`) + **cevaptaki model** (`yanit_model`) — ADR-0016; pano yok (§2) |
-| Korkuluk (guardrail) | PII, kötüye kullanım, konu filtresi | Kısmi: kimliksiz çağrı yapılmaz (fail-closed), ham sağlayıcı gövdesi kullanıcıya/loga gitmez (`AiHataCevirici`) |
+| Hız sınırı (rate limit) | kiracı (tenant)/anahtar/model başına | **Var (site)**: sohbet 20/dk/ziyaretçi, yazma 60/dk/IP, yeni ziyaretçi 20/saat/IP (ADR-0017 §7); kota yok, harcama tavanı ziyaretçinin kendi OpenRouter hesabında; bkz. [`finops-ai-tokenomics.md`](finops-ai-tokenomics.md) |
+| Sır referansı (secret reference) | anahtarı çalışma anında sır kasasından (vault) çek | Yerel modda ortam değişkeni `OPENROUTER_API_KEY`; sitede sunucu anahtarı yok: ziyaretçinin anahtarı istek başına `X-OpenRouter-Anahtar` başlığıyla gelir, hiçbir yere yazılmaz (ADR-0017) |
+| Gözlem (observability) | iz, maliyet, kim/ne | `ai_kullanim` (ADR-0016): kullanıcı + işlem + istenen model + token + **süre** (`sure_ms`) + **cevaptaki model** (`yanit_model`); pano yok (§2) |
+| Guardrail (koruma kuralı) | PII, kötüye kullanım, konu filtresi | Kısmi: kimliksiz çağrı yapılmaz (fail-closed: emin olunamayınca reddet), ham sağlayıcı gövdesi kullanıcıya/loga gitmez (`AiHataCevirici`) |
 
-**Kendin mi işletirsin, yönetilen mi kullanırsın?** Bu karar teknik zevk değil, iki kısıtla verilir:
-**veri ikametgâhı** (verinin hangi ülkede/kimin altyapısında işlendiği; düzenlemeye tabi kiracı
-kendi işlettiğin gateway'i gerektirebilir) ve **işletme bütçesi** (kendi gateway'in bir servis daha
-demektir: nöbet, güncelleme, ölçekleme). Gateway'in kendisi de TTFT'ye eklenir; gecikme bütçesi
-dar bir SLO'da bu sıçrama ölçülmelidir.
+**Kendin mi işletirsin, yönetilen (managed) bir hizmet mi kullanırsın?** Bu karar teknik zevk değil,
+iki kısıtla verilir: **veri ikametgâhı** (verinin hangi ülkede/kimin altyapısında işlendiği; yasal
+düzenlemeye tabi bir kiracı, kendi işlettiğin gateway'i gerektirebilir) ve **işletme bütçesi** (kendi gateway'in bir servis daha
+demektir: nöbet, güncelleme, ölçekleme). Gateway'den geçmek de TTFT'ye süre ekler; gecikme bütçesi
+dar bir SLO'da bu ek adım ölçülmelidir.
 
-> *Şerh — satıcı benchmark'ları:* Ders gateway'leri karşılaştırırken bir satıcının **kendi
+> *Şerh (satıcı benchmark'ları):* Ders gateway'leri karşılaştırırken bir satıcının **kendi
 > yürüttüğü** benchmark'ını ("rakiplerinden %228 / %859 daha hızlı") ve bir açık kaynak gateway'in
 > "~2000 istek/sn'de çöktüğü" iddiasını aktarır; ikinci rakam da **rakip satıcının** benchmark'ından
 > gelir. Gateway başına "5–15 ms / 20–40 ms ek gecikme" rakamları da bağımsız kaynak göstermez. Bu
 > sayıları seçim gerekçesi yapma; kendi trafiğinle ölç.
 
-## 5. Kritik çağrıda en az iki sağlayıcı — ve rezerve kapasite
+## 5. Kritik çağrıda en az iki sağlayıcı ve rezerve kapasite
 **İki sağlayıcı kuralı (two-provider minimum).** Ürünün çalışması için *şart* olan bir LLM çağrısı
 tek bir sağlayıcıya bağlıysa, o sağlayıcının kesintisi senin kesintindir. Kural: ürün için kritik
-çağrılarda en az iki **bağımsız** sağlayıcı, tek bir gateway arkasında, aralarında otomatik geçiş.
-İnce nokta "bağımsız" kelimesindedir: aynı gateway üzerinden iki farklı modele gitmek, gateway'in
-kendisi çöktüğünde seni kurtarmaz — aynı **arıza alanını** (failure domain) paylaşırlar.
+çağrılarda tek bir gateway arkasında en az iki **bağımsız** sağlayıcı olmalı ve aralarında otomatik
+geçiş yapılmalı. İnce nokta "bağımsız" kelimesindedir: sağlayıcıları bağımsız seçmek, gateway'in
+kendisini bağımsız yapmaz. Aynı gateway üzerinden iki farklı modele gitmek, gateway'in kendisi
+çöktüğünde seni kurtarmaz, çünkü ikisi aynı **arıza alanını** (failure domain) paylaşır. Yani gateway
+de tek arıza noktasıdır; kritik çağrıda onun çökmesine karşı da bir yedek yol düşünülmelidir.
 
 **Bu depodaki durum.** Tek dış gateway (OpenRouter), tek anahtar, tek model ailesi. ADR-0004 bunu
 bilerek kabul eder: "Araya bir sağlayıcı daha girdi (gecikme + kullanım koşulları); kişisel eğitim
-aracı için kabul edilebilir." Bu bir eğitim aracı için doğru karardır — bir öğrencinin değerlendirmesi
+aracı için kabul edilebilir." Bu bir eğitim aracı için doğru karardır: bir öğrencinin değerlendirmesi
 bir saat gecikse kimse para kaybetmez. Aynı mimari bir müşteri ürününde kabul edilemezdi; fark
 mimari değil, **kritiklik sınıfı**dır. Mimarın işi bu sınıfı ADR'ye yazmaktır.
 
-**Rezerve kapasite (provisioned / reserved throughput) ne zaman öder?** Bazı platformlar GPU
-kapasitesini sana ayırır: kuyruk değişkenliği azalır, TTFT öngörülebilir olur, ama **boşta da
-ödersin**. Mekanik basittir: rezerve kapasitenin saatlik bedeli, aynı saatte isteğe bağlı (on-demand)
-ödeyeceğin tutardan düşükse kazanırsın — bu da ancak **sürekli** yüksek kullanımda olur. Gündüz
+**Rezerve kapasite (provisioned / reserved throughput) ne zaman karşılığını verir?** Bazı platformlar
+GPU kapasitesini sana ayırır: kuyruk değişkenliği azalır, TTFT öngörülebilir olur, ama **kullanmadığın
+saatlerde de ödersin**. Mekanik basittir: rezerve kapasitenin saatlik bedeli, aynı saatte isteğe bağlı (on-demand)
+ödeyeceğin tutardan düşükse kazanırsın. Bu da ancak **sürekli** yüksek kullanımda olur. Gündüz
 yoğun, gece boş, hafta sonu ölü bir iş yükü (50–60 geliştiricinin eğitim sitesi tam budur)
 isteğe bağlı fiyatlamada kalmalıdır. Rezerve kapasiteyi gecikme SLO'su gerektiriyorsa al, "indirim"
 diye alma.
 
 > *Şerh:* Ders başa baş noktasını "~%40–60 sürekli kullanım" diye verir; kaynak göstermez ve oran
-> fiyat listesine göre değişir — kendi fiyatınla hesapla. Platformlar arası "50 ms vs 75 ms TTFT"
+> fiyat listesine göre değişir; kendi fiyatınla hesapla. Platformlar arası "50 ms vs 75 ms TTFT"
 > karşılaştırması belirli bir açık modelde ve belirli bir tarihte ölçülmüştür; ders ayrıca "Claude
-> 3.7"yi güncel model gibi anar — tarihli bilgidir.
+> 3.7"yi güncel model gibi anar; bu bilgi eskimiştir.
 
 ## 6. Üç hata katmanı, yedek model zinciri ve yükün çarpılması
 Canlıdaki bir LLM uygulaması üç **farklı** yoldan bozulur ve her birinin ilacı farklıdır. Hepsine
@@ -302,16 +311,16 @@ aynı "yeniden dene" refleksini uygulamak, ya hatayı uzatır ya faturayı katla
 |---|---|---|---|
 | **1. API hatası** | 429 hız sınırı, 5xx, zaman aşımı | geri çekilmeli (backoff) + rastgele sapmalı (jitter) sınırlı yeniden deneme | 5xx/bağlantı: 3 deneme, bekleme 1→2 sn (tavan 4 sn); 401/402/429 **denenmez**, Türkçe nedene çevrilir (`AiHataCevirici`: ANAHTAR_GECERSIZ, KREDI_BITTI, YOGUN…) |
 | **2. Model hatası** | bozuk JSON, uydurma araç adı, şemaya uymayan çıktı | **doğrulama hatasını içeren** yeniden deneme ("şu alan eksikti, düzelt") | `JsonCevapParser` toleranslı ayrıştırır, olmazsa `Optional.empty` → çağıran zarif düşer; boş cevap → `AiCiktisiBozukException` |
-| **3. Bağımlılık hatası** | vektör deposu, önbellek, korkuluk servisi | **zarif düşüş** (graceful degradation): ana yolu koru, ikincil özelliği atla | `AnlamArama` yoksa no-op; `KitapService` hafta etiketi eşleşmesine düşer (ADR-0005) |
+| **3. Bağımlılık hatası** | vektör deposu, önbellek, guardrail servisi | **zarif düşüş** (graceful degradation): ana yolu koru, ikincil özelliği atla | `AnlamArama` yoksa hiçbir şey yapmaz (no-op); `KitapService` hafta etiketi eşleşmesine düşer (ADR-0005) |
 
 İkinci satır LLM'e özgüdür: geleneksel bir HTTP istemcisi "200 OK" gördüğünde işi bitmiş sayar;
 LLM'de 200 OK içinde **bozuk** bir cevap gelebilir. Onu aynı prompt'la körü körüne tekrar istemek
 çoğu zaman aynı hatayı üretir; hatayı modele geri vermek düzeltme şansını artırır.
 
-> *Karar notu — 429:* Ders 429'u da geri çekilmeyle yeniden denemeyi önerir. Bu depo 429'u
+> *Karar notu (429):* Ders, 429'da da geri çekilmeli yeniden denemeyi önerir. Bu depo 429'u
 > **denemez**, kullanıcıya "yoğun" der. İkisi de savunulabilir: yeniden denemek kısa süreli
 > sıkışmayı emer, ama paylaşılan tek anahtarda zaten doymuş bir hız sınırına daha çok istek
-> yollamak sıkışmayı uzatır. Hangisini seçtiğini ve neden seçtiğini yaz; varsayılanı kendiliğinden
+> yollamak sıkışmayı uzatır. Hangisini seçtiğini ve neden seçtiğini yaz; varsayılanı sorgulamadan
 > kabul etme.
 
 **Yedek model zinciri (fallback chain).** Birincil model erişilemezken sırayla düşülen basamaklar:
@@ -320,33 +329,34 @@ iyi cevap → dürüst "şu an hizmet veremiyoruz" mesajı. Her basamak **kalite
 takas eder.** Mimarın kararı zinciri kurmak değil, **işlem başına** zinciri seçmektir: sohbet için
 küçük modele düşmek kabul edilebilir; öğrencinin ödevini puanlayan değerlendirmede küçük modelin
 verdiği yanlış puan, "şu an puanlayamıyoruz" mesajından **daha kötüdür**. Bazı işlemlerde zincirin
-doğru son basamağı dürüst hatadır. Bu depoda zincir yok — ve bu artık yazılı bir karar (ADR-0016
+doğru son basamağı dürüst hatadır. Bu depoda zincir yok ve bu artık yazılı bir karar (ADR-0016
 karar 4): OpenRouter aynı model için sağlayıcılar arası yedeği zaten varsayılan yapar
 (`allow_fallbacks: true`); uygulamanın başka bir **modele** sessizce düşmesi quiz/değerlendirme JSON
-biçimini ve kaliteyi değiştirir; yedeğe geçiş de artık `yanit_model` ile görülebiliyor. Yeniden açma
-koşulu: `ai_kullanim` verisi tek modelin süreğen kesintisini gösterirse. Kurulursa `Islem` enum'u
-zaten zincirin anahtarı olabilecek yerdedir, haftalık rapor dosya önbelleği de doğal bir
+biçimini ve kaliteyi değiştirir; yedeğe geçiş de artık `yanit_model` ile görülebiliyor. Karar şu durumda
+yeniden açılır: `ai_kullanim` verisi tek modelin süreğen kesintisini gösterirse. Zincir kurulursa
+`Islem` enum'u zaten zincirin anahtarı olabilecek konumdadır, haftalık rapor dosya önbelleği de doğal bir
 "önbellekteki cevap" basamağıdır.
 
-**Yeniden deneme yükü çarpar (retry amplification).** Varsayımsal bir yığın düşün: her katman kendi
-başına makul sayıda deneme yapıyor — ön yüz 2, adaptör 3, gateway 3. Sağlayıcı yavaşladığında tek bir kullanıcı tıklaması
+**Yeniden denemeler yükü çarpar (retry amplification).** Varsayımsal bir yığın düşün: her katman
+kendi başına makul sayıda deneme yapıyor: ön yüz 2, adaptör 3, gateway 3. Sağlayıcı yavaşladığında tek bir kullanıcı tıklaması
 2 × 3 × 3 = **18** çağrıya dönüşebilir ve bu, sağlayıcının zaten zorlandığı anda olur. Ders bunu
-kaos deneylerinin bir bulgusu olarak anlatır: sağlayıcı 429 dönünce gateway'in yeniden denemeleri
+kaos deneylerinin (sisteme bilerek hata sokup davranışını gözlemleme) bir bulgusu olarak anlatır: sağlayıcı 429 dönünce gateway'in yeniden denemeleri
 eşzamanlılığı katlar ve servisin belleğini tüketir. Kural: **yeniden denemeyi tek bir katmana ver**,
 diğerleri hatayı yukarı iletsin; her katmanda toplam zaman bütçesi olsun. Bu depoda ön yüz yeniden denemez (180 sn'de keser), yalnız adaptör dener;
 30 sn yeniden deneme penceresi + 157 sn tavanı bu bütçenin örneğidir. Bir katman daha var:
 OpenRouter aynı model için sağlayıcı hata verirse varsayılan olarak sıradaki sağlayıcıya geçer
-(`allow_fallbacks: true`, [provider selection](https://openrouter.ai/docs/guides/routing/provider-selection)) —
-yani adaptörün 3 denemesinin her biri arkada birden fazla sağlayıcı denemesi olabilir. Bütçe
+(`allow_fallbacks: true`; bkz. [provider selection](https://openrouter.ai/docs/guides/routing/provider-selection),
+"sağlayıcı seçimi" belgesi). Yani adaptörün 3 denemesinin her biri arkada birden fazla sağlayıcı
+denemesi olabilir. Bütçe
 hesabında bu görünmeyen katmanı da say. Yeniden deneme sınıfları, idempotency
-anahtarı ve devre kesici ayrıntısı için: [`arac-cagrisi-guvenilirligi.md`](arac-cagrisi-guvenilirligi.md).
+anahtarı (aynı isteğin iki kez işlenmesini önleyen anahtar) ve devre kesici ayrıntısı için: [`arac-cagrisi-guvenilirligi.md`](arac-cagrisi-guvenilirligi.md).
 
-**Kaos deneyi — en ucuz ilk adım.** "Yedeğimiz var" demek, yedeğin çalıştığını göstermez. Ders,
-çoğu ekibin ilk denemede yedeğin hiç sınanmadığını keşfettiğini söyler. İlk LLM'e özgü deney
-küçüktür: sağlayıcıyı 5 dakika boyunca %100 429 dönüyormuş gibi davrandır; geçiş SLA içinde oluyor
-mu, yük çarpılıyor mu, kullanıcı ne görüyor? Port/adaptör ayrımı bunu kolaylaştırır: hata enjekte
+**Kaos deneyi: en ucuz ilk adım.** "Yedeğimiz var" demek, yedeğin çalıştığını göstermez. Ders,
+çoğu ekibin ilk denemede yedeğin hiç sınanmadığını keşfettiğini söyler. LLM'e özgü ilk deney
+küçüktür: 5 dakika boyunca sağlayıcının her isteğe (%100) 429 döndüğünü taklit et. Yedeğe geçiş SLA
+(hizmet seviyesi anlaşması) içinde oluyor mu, yük çarpılıyor mu, kullanıcı ne görüyor? Port/adaptör ayrımı bunu kolaylaştırır: hata enjekte
 eden bir adaptör testte yeterlidir. Canlıda kaos için önkoşullar ise yazılı SLO, gözlem, otomatik
-geri alma ve runbook'tur; biri eksikse deney gerçek bir olaya dönüşür.
+geri alma ve runbook'tur (adım adım müdahale kılavuzu); biri eksikse deney gerçek bir olaya dönüşür.
 
 ```svg
 <svg viewBox="0 0 660 380" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Gateway'li altıgen akış ve yedek model zinciri: solda çekirdek servisler, örneğin DegerlendirmeService ve SohbetService, yalnız OgretmenAiClient giden port arayüzünü görür; port, SpringAiOgretmenClient adaptörüne bağlanır; adaptör yeniden deneme şablonu, AiHataCevirici ve ai_kullanim kaydını içerir; adaptör dış gateway OpenRouter'a gider, OpenRouter da arkadaki model sağlayıcılarına dağıtır. ArchUnit Spring AI'yı yalnız ai paketine mühürler. Altta yedek model zinciri: birincil model, başka sağlayıcıdaki eşdeğer model, küçük model, önbellekteki cevap, dürüst hata mesajı; her basamak kaliteyi erişilebilirliğe takas eder; bu depoda zincir yoktur, kırmızı ile işaretli; değerlendirme gibi işlemlerde doğru son basamak dürüst hatadır">
@@ -354,7 +364,7 @@ geri alma ve runbook'tur; biri eksikse deney gerçek bir olaya dönüşür.
     <marker id="lu-2a" markerWidth="10" markerHeight="10" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#5D7789"/></marker>
     <marker id="lu-2b" markerWidth="10" markerHeight="10" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#B3402F"/></marker>
   </defs>
-  <text x="330" y="22" text-anchor="middle" font-size="15" font-weight="700" fill="#1C3247" font-family="system-ui">Gateway bir giden port'un adaptörüdür — yedek zinciri onun arkasındadır</text>
+  <text x="330" y="22" text-anchor="middle" font-size="15" font-weight="700" fill="#1C3247" font-family="system-ui">Gateway bir giden port'un adaptörüdür; yedek zinciri onun arkasındadır</text>
   <text x="330" y="41" text-anchor="middle" font-size="11" fill="#5D7789" font-family="system-ui">Mavi = çekirdek · mor = port · yeşil = adaptör (bu depoda var) · kırmızı = bu depoda yok</text>
 
   <rect x="20" y="60" width="150" height="120" rx="10" fill="#EAF1F7" stroke="#186399" stroke-width="1.6"/>
@@ -388,7 +398,7 @@ geri alma ve runbook'tur; biri eksikse deney gerçek bir olaya dönüşür.
   <text x="577" y="156" text-anchor="middle" font-size="8" fill="#B3402F" font-family="system-ui">tek anahtar = tek</text>
   <text x="577" y="168" text-anchor="middle" font-size="8" fill="#B3402F" font-family="system-ui">arıza alanı</text>
 
-  <text x="330" y="212" text-anchor="middle" font-size="12" font-weight="700" fill="#1C3247" font-family="system-ui">Yedek model zinciri — her basamak kaliteyi erişilebilirliğe takas eder</text>
+  <text x="330" y="212" text-anchor="middle" font-size="12" font-weight="700" fill="#1C3247" font-family="system-ui">Yedek model zinciri: her basamak kaliteyi erişilebilirliğe takas eder</text>
 
   <rect x="20" y="228" width="110" height="52" rx="8" fill="#E9F4EE" stroke="#25804C" stroke-width="1.5"/>
   <text x="75" y="250" text-anchor="middle" font-size="9.5" font-weight="700" fill="#25804C" font-family="system-ui">Birincil model</text>
@@ -417,57 +427,59 @@ geri alma ve runbook'tur; biri eksikse deney gerçek bir olaya dönüşür.
   <text x="330" y="326" text-anchor="middle" font-size="9.5" font-weight="700" fill="#C77A17" font-family="system-ui">ödev puanlamada yanlış puan, "şu an puanlayamıyoruz"dan daha kötüdür</text>
 
   <rect x="20" y="342" width="620" height="28" rx="8" fill="#1C3247"/>
-  <text x="330" y="361" text-anchor="middle" font-size="10.5" font-weight="700" fill="#FFFFFF" font-family="system-ui">Yeniden denemeyi TEK katmana ver — 2 × 3 × 3 = 18 çağrı, sağlayıcı zaten zorlanırken</text>
+  <text x="330" y="361" text-anchor="middle" font-size="10.5" font-weight="700" fill="#FFFFFF" font-family="system-ui">Yeniden denemeyi TEK katmana ver; yoksa 2 × 3 × 3 = 18 çağrı, sağlayıcı zaten zorlanırken</text>
 </svg>
 ```
 
-## 7. Güvenli yayın — gölge, kanarya, A/B
-Yeni bir model ya da prompt sürümü çevrimdışı eval'da %3 iyi çıktı; açtın. Bir gün sonra maliyet
+## 7. Güvenli yayın: gölge, kanarya, A/B
+Yeni bir model ya da prompt sürümü çevrimdışı eval'da %3 daha iyi çıktı ve onu yayına açtın. Bir gün sonra maliyet
 %40 yukarıda, olumsuz geri bildirim artmış, birkaç "garip cevap" şikâyeti var. Geri almak yeniden
-dağıtım gerektiriyor ve saatler sürüyor. Dersin bu senaryosundaki her adım önlenebilirdi; önleyen şey
+dağıtım gerektiriyor ve saatler sürüyor. Dersin anlattığı bu senaryodaki her sorun önlenebilirdi; önleyen şey
 bir **yayın merdivenidir**.
 
 **1. Gölge modu (shadow mode).** Aday sürüm canlı isteklerin kopyasını alır; çıktısı **loglanır,
-kullanıcıya dönmez.** Yakaladıkları: token sayısı (maliyet farkı), çıktı uzunluğu, gecikme, ret ve
-hata oranı. **Yakalayamadığı: kalite.** Kimse gölge çıktısını okuyup "bu daha iyi" demedi; gölge bir
-duman testidir (smoke test), kalite testi değil. Ve bedavaya gelmez: gölgedeki her istek ikinci bir
-model çağrısıdır — gölge süresince LLM faturası kabaca ikiye katlanır. Kısa tut, örnekle.
+kullanıcıya dönmez.** Gölge modunun yakaladıkları: token sayısı (maliyet farkı), çıktı uzunluğu, gecikme, ret ve
+hata oranı. **Yakalayamadığı: kalite.** Kimse gölge çıktısını okuyup "bu daha iyi" demez; gölge bir
+duman testidir (smoke test: sistemin temelde çalışıp çalışmadığına bakan kaba kontrol), kalite testi
+değil. Ve bedavaya gelmez: gölgedeki her istek ikinci bir model çağrısıdır, bu yüzden gölge süresince
+LLM faturası kabaca ikiye katlanır. Gölge süresini kısa tut, trafiğin tamamını değil bir örneğini kopyala.
 
 **2. Kanarya (canary).** Gerçek trafiğin küçük bir dilimi yeni sürüme gider; dilim kapılardan geçtikçe
 büyür (ör. %1 → %10 → %25 → %50 → %100). Klasik kanarya hata oranına ve gecikmeye bakar; LLM
 kanaryası beş kapıya bakar:
 
-1. **Gecikme yüzdelikleri** (p50/p95/p99 — §2'nin goodput'u),
-2. **İstek başı maliyet** — "daha iyi" model istek başına üç kat pahalıysa birim ekonomiyi bozar; bu
+1. **Gecikme yüzdelikleri** (p50/p95/p99; §2'deki goodput),
+2. **İstek başı maliyet:** "daha iyi" model istek başına üç kat pahalıysa birim ekonomiyi bozar; bu
    bir geri alma sebebidir,
-3. **Hata + ret (refusal) oranı** — model "bunu yapamam" demeye başladıysa 5xx gibi sayılır,
-4. **Çıktı uzunluğu dağılımı** — ortalama ve p99; yeni model sessizce kısalıyor ya da uzuyorsa hem
+3. **Hata + ret (refusal) oranı:** model "bunu yapamam" demeye başladıysa bu, 5xx gibi sayılır,
+4. **Çıktı uzunluğu dağılımı:** ortalama ve p99. Yeni model sessizce kısalıyor ya da uzuyorsa bu hem
    maliyet hem kalite sinyalidir,
-5. **Kullanıcı geri bildirimi** — olumsuz oy, şikâyet.
+5. **Kullanıcı geri bildirimi:** olumsuz oy, şikâyet.
 
-İki LLM'e özgü incelik: (a) Aynı girdi aynı çıktıyı vermez (örnekleme, toplu işlem boyutu,
-kayan nokta sırası). Bu yüzden "kararlı" = "taban çizgisiyle aynı" değil, **"beklenen gürültü
-içinde"** demektir; kapı eşiklerini gürültü tabanının üstüne koy, yoksa kanarya sürekli yanlış alarm
+LLM'e özgü iki incelik: (a) Aynı girdi aynı çıktıyı vermez (örnekleme, toplu işlem boyutu,
+kayan nokta işlemlerinin sırası). Bu yüzden "kararlı", "taban çizgisiyle aynı" demek değildir;
+**"beklenen gürültü içinde"** demektir; kapı eşiklerini gürültü tabanının üstüne koy, yoksa kanarya sürekli yanlış alarm
 verir. (b) Küçük dilimde örnek azdır: %1'lik dilim gecikme için yeterli veri toplar ama kullanıcı
 geri bildirimi için gürültülüdür; her basamakta yeterli örnek birikene kadar bekle.
 
-> *Şerh:* Ders "aynı eval setinde koşudan koşuya %15'e varan doğruluk farkı" der ve kaynak göstermez;
+> *Şerh:* Ders "aynı eval setinde bir çalıştırmadan ötekine %15'e varan doğruluk farkı" der ve kaynak
+> göstermez;
 > eşik örnekleri (p99 > 1,5× taban, maliyet > %20, ret > 2×) bir standart değil, dersin örnek
 > değerleridir. Kendi gürültü tabanını aynı sürümü iki kez koşturarak ölç.
 
-**3. A/B testi — isteğe bağlı basamak.** Yeni sürüm yalnızca "iyileştirilmiş aynı şey"se kanarya
+**3. A/B testi: isteğe bağlı basamak.** Yeni sürüm yalnızca "iyileştirilmiş aynı şey"se kanarya
 kapıları geçince %100'e çıkılır. Davranışı, tonu ya da maliyet eğrisi belirgin biçimde farklıysa
 kanaryadan sonra %50/%50 A/B koşulur. Burada iki soruyu karıştırmamak gerekir:
 
 - **Eval** (çevrimdışı, etiketli set, rubrik/yargıç model) sorar: **"İşi yapabiliyor mu?"**
 - **A/B** (çevrimiçi, canlı kullanıcı, rastgele atama) sorar: **"Kullanıcı farkı önemsiyor mu?"**
 
-İkisi de gereklidir: eval, kullanıcıya göstermeden regresyonu yakalar; A/B, ürün etkisini sonradan
+İkisi de gereklidir: eval, kullanıcıya göstermeden gerilemeyi (regression) yakalar; A/B, ürün etkisini sonradan
 doğrular. Eval'ın nasıl kurulduğu [`evals-llm-observability.md`](evals-llm-observability.md)'de
-(özellikle §6 çevrimdışı/çevrimiçi ayrımı); burada tekrar edilmez. A/B'nin iki ucuz ama hayati
-kontrolü: **örnek oranı uyumsuzluğu (SRM — sample ratio mismatch)** — %50/%50 tasarlanan atama
-%47/%53 geliyorsa atama bozuktur, sonuca bakma; **çoklu karşılaştırma düzeltmesi** — %95 güvenle 20
-ayrı test koşarsan şans eseri yaklaşık bir "kazanan" çıkar. Kullanıcıyı varyanta **kullanıcı
+(özellikle §6 çevrimdışı/çevrimiçi ayrımı); burada tekrar edilmez. A/B'nin ucuz ama hayati iki
+kontrolü vardır. Birincisi **örnek oranı uyumsuzluğu (SRM, sample ratio mismatch)**: %50/%50 tasarlanan
+atama %47/%53 geliyorsa atama bozuktur, sonuca bakma. İkincisi **çoklu karşılaştırma düzeltmesi**: %95
+güvenle 20 ayrı test koşarsan şans eseri yaklaşık bir "kazanan" çıkar. Kullanıcıyı varyanta **kullanıcı
 kimliğinin özetiyle** (hash) ata, rastgele değil; aynı kişi her istekte aynı varyantı görsün.
 
 > *Şerh:* Ders, belirli bir deney platformunun belirli bir tutarla satın alındığını "hatırlanacak
@@ -480,7 +492,7 @@ kimliğinin özetiyle** (hash) ata, rastgele değil; aynı kişi her istekte ayn
     <marker id="lu-3a" markerWidth="10" markerHeight="10" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#5D7789"/></marker>
     <marker id="lu-3b" markerWidth="10" markerHeight="10" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#B3402F"/></marker>
   </defs>
-  <text x="330" y="22" text-anchor="middle" font-size="15" font-weight="700" fill="#1C3247" font-family="system-ui">Yayın merdiveni — her basamak farklı bir soruyu cevaplar</text>
+  <text x="330" y="22" text-anchor="middle" font-size="15" font-weight="700" fill="#1C3247" font-family="system-ui">Yayın merdiveni: her basamak farklı bir soruyu cevaplar</text>
   <text x="330" y="41" text-anchor="middle" font-size="11" fill="#5D7789" font-family="system-ui">Kullanıcı etkisi soldan sağa artar · kırmızı ok = herhangi bir kapı ihlalinde geri alma</text>
 
   <rect x="16" y="62" width="110" height="78" rx="9" fill="#EEF0FF" stroke="#4F46E5" stroke-width="1.6"/>
@@ -524,7 +536,7 @@ kimliğinin özetiyle** (hash) ata, rastgele değil; aynı kişi her istekte ayn
   <text x="170" y="224" font-size="9.5" fill="#1C3247" font-family="system-ui">3 · Hata + ret (refusal) oranı</text>
   <text x="410" y="224" font-size="9.5" fill="#1C3247" font-family="system-ui">4 · Çıktı uzunluğu dağılımı</text>
   <text x="170" y="244" font-size="9.5" fill="#1C3247" font-family="system-ui">5 · Kullanıcı geri bildirimi (olumsuz oy, şikâyet)</text>
-  <text x="390" y="260" text-anchor="middle" font-size="8.5" fill="#5D7789" font-family="system-ui">klasik kanarya yalnız 1 ve 3'e bakar — 2 ve 4 LLM'e özgüdür</text>
+  <text x="390" y="260" text-anchor="middle" font-size="8.5" fill="#5D7789" font-family="system-ui">klasik kanarya yalnız 1 ve 3'e bakar; 2 ve 4 LLM'e özgüdür</text>
 
   <path d="M150,214 L80,214 L80,148" fill="none" stroke="#B3402F" stroke-width="1.8" marker-end="url(#lu-3b)"/>
   <text x="76" y="232" text-anchor="middle" font-size="9" font-weight="700" fill="#B3402F" font-family="system-ui">ihlal →</text>
@@ -535,22 +547,22 @@ kimliğinin özetiyle** (hash) ata, rastgele değil; aynı kişi her istekte ayn
   <text x="330" y="310" text-anchor="middle" font-size="9" fill="#1C3247" font-family="system-ui">saniyeler sürer; yeniden dağıtım gerektiriyorsa önce bunu düzelt, sonra yayına çık</text>
 
   <rect x="16" y="324" width="628" height="28" rx="8" fill="#1C3247"/>
-  <text x="330" y="343" text-anchor="middle" font-size="10.5" font-weight="700" fill="#FFFFFF" font-family="system-ui">Eval regresyonu kullanıcıdan ÖNCE yakalar; A/B ürün etkisini SONRA doğrular — biri diğerinin yerini tutmaz</text>
+  <text x="330" y="343" text-anchor="middle" font-size="10.5" font-weight="700" fill="#FFFFFF" font-family="system-ui">Eval gerilemeyi kullanıcıdan ÖNCE yakalar; A/B ürün etkisini SONRA doğrular. Biri diğerinin yerini tutmaz</text>
 </svg>
 ```
 
-## 8. Geri alma — bayrak + sabitlenmiş model kimliği
+## 8. Geri alma: bayrak + sabitlenmiş model kimliği
 Merdivenin bütün değeri, bir kapı kırmızıya döndüğünde **ne kadar hızlı** geri dönebildiğine
 bağlıdır. Ders iki parçayı birlikte ister:
 
-- **Politika bayrağı (feature flag):** trafiğin yüzde kaçının hangi sürüme gittiği yapılandırmadadır;
+- **Politika bayrağı (feature flag):** trafiğin yüzde kaçının hangi sürüme gittiği yapılandırmada tutulur;
   değiştirmek saniyeler sürer, yeniden dağıtım gerektirmez.
 - **Sabitlenmiş model kimliği (pinned model id / digest):** "en güncel sürüm" anlamına gelen bir
   takma ad (alias) kullanırsan, sağlayıcı arkadaki modeli değiştirdiğinde sen hiçbir şey
-  yayınlamadan davranışın değişir — ve geri alacak bir "önceki sürüm"ün yoktur. Sabitlenmiş kimlik
-  hem sessiz değişimi önler hem de geri almanın hedefini verir.
+  yayınlamadan uygulamanın davranışı değişir. Üstelik geri dönebileceğin bir "önceki sürüm"ün de
+  yoktur. Sabitlenmiş kimlik hem sessiz değişimi önler hem de geri alırken dönülecek hedefi verir.
 
-**Bu projedeki bağ.** ADR-0003 model kimliklerini koda gömmez, `application.yml`'de property tutar
+**Bu projedeki bağ.** ADR-0003 model kimliklerini koda gömmez, `application.yml`'de property (yapılandırma ayarı) olarak tutar
 (`app.ai.model.guclu` / `hizli`): model değiştirmek bir satırdır. Ama bu bir **bayrak değildir**:
 değiştirmek yeniden başlatma ister ve trafiği ikiye bölemez (ya hep eski ya hep yeni). İki somut
 gözlem:
@@ -560,28 +572,29 @@ gözlem:
    modeli değiştirse log bunu göstermezdi. Bu "ucuz iyileştirme" ADR-0016 ile yapıldı: yeni
    `yanit_model` sütunu Spring AI'nın `ChatResponseMetadata.getModel()` değerini tutar (OpenAI-uyumlu
    cevabın `model` alanı); sağlayıcı bildirmezse uydurma değer yazılmaz, `null` kalır; 100 karakteri
-   aşan değer kullanım satırı düşmesin diye kırpılır. Artık `model` ile `yanit_model` farkı istenenle
+   aşan değer, kullanım satırının kaydı başarısız olmasın diye kırpılır. Artık `model` ile `yanit_model` farkı istenenle
    gerçekleşeni ayırır.
 2. OpenRouter dokümanına göre somut kimlik (`anthropic/claude-sonnet-4.6` gibi) tekrarlanabilirlik
    için önerilen yoldur; "hep en yenisi" isteyen takma ad ayrı bir sözdizimidir (`~…-latest`). Cevabın
-   `model` alanı isteği gerçekte hangi modelin karşıladığını bildirir — 1. maddedeki (artık yapılmış)
-   iyileştirme bu yüzden aynı zamanda yedeğe geçişi de görünür kılar
-   ([latest resolution](https://openrouter.ai/docs/guides/routing/routers/latest-resolution)).
+   `model` alanı isteği gerçekte hangi modelin karşıladığını bildirir. Bu yüzden 1. maddedeki (artık
+   yapılmış) iyileştirme, yedeğe geçişi de görünür kılar
+   ([latest resolution](https://openrouter.ai/docs/guides/routing/routers/latest-resolution), "en yeni
+   sürümün çözümlenmesi" belgesi).
 
 Bir eğitim aracı için "property değiştir, yeniden başlat" yeterli olabilir. Ama merdiveni kurmadan
 önce sorulacak soru şudur: **kapı kırmızıya döndüğü anda geri dönüş kaç saniye sürüyor?** Cevap
 "bir dağıtım" ise önce bunu düzelt.
 
-## 9. Bu projede özet — nerede duruyoruz
+## 9. Özet: bu projede nerede duruyoruz
 | Konu | Durum | Not |
 |---|---|---|
 | Gecikme ayrıştırması | Akışsız; kullanıcı E2E bekler; zaman bütçesi kodda (157 sn) | Rapor TPOT baskın |
-| Goodput | Veri var — `ai_kullanim.sure_ms` (E2E, yeniden denemeler dahil; ADR-0016); TTFT/TPOT yok (akışsız) | SLO hâlâ yazılmadı: `islem` başına E2E kısıtı |
+| Goodput | Veri var: `ai_kullanim.sure_ms` (E2E, yeniden denemeler dahil; ADR-0016); TTFT/TPOT yok (akışsız) | SLO hâlâ yazılmadı: `islem` başına E2E kısıtı |
 | Port/adaptör | Var, ArchUnit mühürlü | Port `ai/` paketinde (şerh §4) |
-| İki sağlayıcı | Yok — tek gateway, tek anahtar | ADR-0004 bilerek kabul eder |
-| Hata katmanları | Üçü de var (çevirici, toleranslı ayrıştırıcı, no-op düşüş) | 429 denenmez — bilinçli seçim gibi oku |
-| Yedek zinciri | Yok — bilinçli (ADR-0016 karar 4); sağlayıcı yedeği OpenRouter'da | Yeniden açma: tek modelin süreğen kesintisi `ai_kullanim`'da görünürse |
-| Yayın merdiveni | Yok — model property, yeniden başlatma | Bayrak eksik; cevaptaki model kimliği artık kayıtlı (`yanit_model`) |
+| İki sağlayıcı | Yok: tek gateway, tek anahtar | ADR-0004 bilerek kabul eder |
+| Hata katmanları | Üçü de var (çevirici, toleranslı ayrıştırıcı, no-op düşüş) | 429 denenmez; bunu bilinçli bir seçim olarak oku |
+| Yedek zinciri | Yok, bilinçli olarak (ADR-0016 karar 4); sağlayıcı yedeği OpenRouter'da | Yeniden açma: tek modelin süreğen kesintisi `ai_kullanim`'da görünürse |
+| Yayın merdiveni | Yok: model property'de, değişiklik yeniden başlatma ister | Bayrak eksik; cevaptaki model kimliği artık kayıtlı (`yanit_model`) |
 
 ## Öz-sınav (kendini test et)
 1. TTFT, TPOT ve E2E'yi tanımla. TTFT hangi üç bileşenden oluşur, hangisi prompt uzunluğuyla
@@ -594,8 +607,8 @@ Bir eğitim aracı için "property değiştir, yeniden başlat" yeterli olabilir
 5. Bir yük testi aynı prompt'u 10.000 kez gönderip "kapasitemiz 500 eşzamanlı kullanıcı" sonucunu
    veriyor. İki ayrı önbelleğin (sağlayıcı ve uygulama) bu sonucu nasıl şişirebileceğini bu depodan
    bir örnekle açıkla.
-6. Bu depoda AI gateway'in port'u, adaptörü ve dış gateway'i hangi sınıf/karar? ADR-0004'ün "servisler
-   değişmez" cümlesini hangi mimari öğe mümkün kılıyor, ve hangi test bunu zorluyor?
+6. Bu depoda AI gateway'in port'u, adaptörü ve dış gateway'i hangi sınıf ya da karara karşılık gelir?
+   ADR-0004'ün "servisler değişmez" cümlesini hangi mimari öğe mümkün kılıyor ve hangi test bunu zorluyor?
 7. "Aynı gateway üzerinden iki farklı model = iki sağlayıcı kuralını sağladık" iddiası neden
    yanlıştır?
 8. Üç hata katmanını say ve her birine bu depodan bir örnek ver. Model hatasında neden "aynı
@@ -605,11 +618,11 @@ Bir eğitim aracı için "property değiştir, yeniden başlat" yeterli olabilir
 10. Gölge modu neyi yakalar, neyi yakalayamaz? Gölgenin maliyet tarafındaki bedeli nedir?
 11. Eval ile A/B testi hangi farklı soruları cevaplar? SRM nedir, %50/%50 atama %47/%53 gelirse ne
     yaparsın?
-12. **Şerh sorusu:** Ders "gateway X, rakiplerinden %859 daha hızlı" ve "kanaryada koşudan koşuya
-    %15'e varan fark" diyor. Her iki rakamı bir mimari kararda nasıl kullanırsın — ya da neden
+12. **Şerh sorusu:** Ders "gateway X, rakiplerinden %859 daha hızlı" ve "kanaryada bir çalıştırmadan
+    ötekine %15'e varan fark" diyor. Her iki rakamı bir mimari kararda nasıl kullanırsın? Ya da neden
     kullanmazsın?
 13. ADR-0016 `ai_kullanim`'a `sure_ms` ve `yanit_model` ekledi. `sure_ms` neden yeniden denemeleri
-    **dahil** ölçer, ve bu sütunla bu depoda goodput'un hangi kısıtı hesaplanabilir, hangileri
+    **dahil** ederek ölçer? Bu sütunla bu depoda goodput'un hangi kısıtı hesaplanabilir, hangileri
     hesaplanamaz? `model` ile `yanit_model` farklı çıkarsa bu neyi gösterir? Uygulamada yedek model
     zinciri neden kurulmadı?
 
@@ -627,8 +640,8 @@ Bir eğitim aracı için "property değiştir, yeniden başlat" yeterli olabilir
    `RaporService` dosya önbelleği `yenile` olmadan modeli hiç çağırmaz. Test, var olmayan bir
    kapasiteyi ölçer. Prompt'u dağılımdan örnekle, önbellekleri test planında ayrı ele al.
 6. Port `OgretmenAiClient`, adaptör `SpringAiOgretmenClient` (+ `AiYapilandirma`), dış gateway
-   OpenRouter (ADR-0004). Servisler yalnız portu gördüğü için; `MimariTestleri` Spring AI'yı `ai/`
-   paketine mühürler.
+   OpenRouter (ADR-0004). Servisler yalnız portu gördüğü için değişmez; bunu `MimariTestleri` zorlar:
+   Spring AI'yı `ai/` paketine mühürler.
 7. İkisi aynı arıza alanını paylaşır: gateway (ya da tek anahtar) çökerse ikisi birlikte gider.
    "Bağımsız" sağlayıcı ayrı arıza alanı demektir.
 8. API: 5xx/429/zaman aşımı → `AiHataCevirici` + yeniden deneme şablonu. Model: bozuk JSON →
@@ -649,17 +662,17 @@ Bir eğitim aracı için "property değiştir, yeniden başlat" yeterli olabilir
     hesaplanır; TTFT ve TPOT ayrı ölçülmez. Veri var, ama `islem` başına SLO hâlâ yazılmadı. Fark,
     istenenle gerçekleşenin ayrıştığını (gateway'in arkada başka bir model kimliğine yönlendirdiğini)
     gösterir. Zincir kurulmadı, çünkü OpenRouter aynı model için sağlayıcı yedeğini zaten yapar; başka
-    bir modele sessizce düşmek quiz/değerlendirme JSON biçimini ve kaliteyi değiştirir. Yeniden açma
-    koşulu: veri tek modelin süreğen kesintisini gösterirse.
+    bir modele sessizce düşmek quiz/değerlendirme JSON biçimini ve kaliteyi değiştirir. Karar, veri tek
+    modelin süreğen kesintisini gösterirse yeniden açılır.
 
 ## Kaynak ve lisans
 Bu metin aşağıdaki derslerden **sentezlenmiştir** (çeviri değildir; ders kodları kopyalanmamış,
 rakamlar şerhlenmiş, bu deponun vakası eklenmiştir):
 
-- AI Engineering from Scratch — Faz 11 · 13 *Building a Production LLM Application* (üç hata katmanı,
+- AI Engineering from Scratch, Faz 11 · 13 *Building a Production LLM Application* (üç hata katmanı,
   yedek model zinciri, akış)
 - Faz 17 · 01 *Managed LLM Platforms* (iki sağlayıcı kuralı, rezerve kapasite)
-- Faz 17 · 08 *Inference Metrics — TTFT, TPOT, ITL, Goodput, P99*
+- Faz 17 · 08 *Inference Metrics: TTFT, TPOT, ITL, Goodput, P99* (çıkarım ölçüleri)
 - Faz 17 · 19 *AI Gateways* (yedi iş, kendin işlet / yönetilen)
 - Faz 17 · 20 *Shadow, Canary, Progressive Rollout* (LLM kanarya kapıları, bayrak + sabit kimlikle
   geri alma)
@@ -670,8 +683,8 @@ rakamlar şerhlenmiş, bu deponun vakası eklenmiştir):
 - Bu deponun vakası: ADR-0016 karar 4 (`ai_kullanim.sure_ms` / `yanit_model`, yedek model zinciri
   kurulmaması), `ai/SpringAiOgretmenClient.java`, `schema.sql` (2026-10-26'da okundu)
 
-Kaynak depo: <https://github.com/rohitg00/ai-engineering-from-scratch> — **MIT Lisansı**, Copyright
-(c) 2026 Rohit Ghumare. Uyarlama notu: satıcı/ürün karşılaştırmaları, araç sürüm listeleri ve
+Kaynak depo: <https://github.com/rohitg00/ai-engineering-from-scratch>. Lisans: **MIT Lisansı**,
+Copyright (c) 2026 Rohit Ghumare. Uyarlama notu: satıcı/ürün karşılaştırmaları, araç sürüm listeleri ve
 kaynaksız rakamlar ya çıkarıldı ya da metin içinde *Şerh* ile işaretlendi.
 
 Bu depodan birincil vaka: `ai/OgretmenAiClient`, `ai/SpringAiOgretmenClient`, `ai/AiYapilandirma`,
@@ -680,14 +693,14 @@ Bu depodan birincil vaka: `ai/OgretmenAiClient`, `ai/SpringAiOgretmenClient`, `a
 `docs/adr/0005-anlam-eslesmeli-baglam.md`, `docs/adr/0012-cok-kullanicili-site-profili.md`.
 
 ### Bu programdaki ilgili kaynaklar
-- [`finops-ai-tokenomics.md`](finops-ai-tokenomics.md) — aynı katmanın maliyet yüzü: önbellek,
+- [`finops-ai-tokenomics.md`](finops-ai-tokenomics.md): aynı katmanın maliyet yüzü; önbellek,
   toplu işleme, yönlendirme, maliyet damgası, harcama tavanı.
-- [`evals-llm-observability.md`](evals-llm-observability.md) — eval'ın kurulumu ve gözlem katmanı;
+- [`evals-llm-observability.md`](evals-llm-observability.md): eval'ın kurulumu ve gözlem katmanı;
   §7'deki "işi yapabiliyor mu?" sorusunun yöntemi.
-- [`arac-cagrisi-guvenilirligi.md`](arac-cagrisi-guvenilirligi.md) — yeniden deneme sınıfları,
+- [`arac-cagrisi-guvenilirligi.md`](arac-cagrisi-guvenilirligi.md): yeniden deneme sınıfları,
   idempotency, devre kesici (§6'nın ayrıntısı).
-- [`ajan-calisma-zamani-kontrolleri.md`](ajan-calisma-zamani-kontrolleri.md) — harcama tavanı, kill
-  switch, hız limiti.
-- [`hafta09-hexagonal-clean.md`](hafta09-hexagonal-clean.md) — port/adaptör ve "portu kim tanımlar".
-- [`hafta11-ddia-veri-yogun.md`](hafta11-ddia-veri-yogun.md) — yüzdelik dilimler ve SLO.
-- [`mikroservis-monolit-hatalar.md`](mikroservis-monolit-hatalar.md) — genel zaman aşımı / devre kesici.
+- [`ajan-calisma-zamani-kontrolleri.md`](ajan-calisma-zamani-kontrolleri.md): harcama tavanı, kill
+  switch (acil durdurma anahtarı), hız limiti.
+- [`hafta09-hexagonal-clean.md`](hafta09-hexagonal-clean.md): port/adaptör ve "portu kim tanımlar".
+- [`hafta11-ddia-veri-yogun.md`](hafta11-ddia-veri-yogun.md): yüzdelik dilimler ve SLO.
+- [`mikroservis-monolit-hatalar.md`](mikroservis-monolit-hatalar.md): genel zaman aşımı / devre kesici.

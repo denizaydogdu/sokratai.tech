@@ -12,17 +12,17 @@ baslik: "Prompt engineering'in mühendislik hali"
 ### Temel kavramlar
 - **Sistem promptu:** Modele "kim olduğunu ve hangi kurallara uyacağını" söyleyen, kullanıcının görmediği sabit talimat. Rolü, dili, yasakları burada tanımlarsın.
 - **Kullanıcı promptu:** O anki soru ya da görev. Değişken olan parça budur.
-- **Few-shot (birkaç örnekle yönlendirme):** Prompt'un içine 2-3 tane *girdi → istenen çıktı* örneği koymak. Model kuralı tarif etmenden çok, örneği taklit etmekte iyidir; biçim sorunlarının çoğu burada çözülür.
-- **Bağlam penceresi (context window):** Modelin tek seferde okuyabildiği toplam token sınırı. Sistem promptu, örnekler, sohbet geçmişi, eklenen belgeler — hepsi aynı pencereyi paylaşır. Taşan kısım **sessizce düşer**; model onu hiç görmemiş gibi davranır.
+- **Few-shot (birkaç örnekle yönlendirme):** Prompt'un içine 2-3 tane *girdi → istenen çıktı* örneği koymak. Model, tarif ettiğin kuralı izlemekten çok örneği taklit etmekte iyidir; biçim sorunlarının çoğu örnekle çözülür.
+- **Bağlam penceresi (context window):** Modelin tek seferde okuyabildiği toplam token sınırı. Sistem promptu, örnekler, sohbet geçmişi ve eklenen belgelerin hepsi aynı pencereyi paylaşır. Taşan kısım **sessizce düşer**; model onu hiç görmemiş gibi davranır.
 - **Sıcaklık (temperature):** Modelin tahmin ederken ne kadar risk alacağını ayarlayan sayı. Düşük değer (0'a yakın) en olası kelimeyi seçtirir: tekrarlanabilir, tutarlı, sıkıcı. Yüksek değer çeşitlilik getirir: yaratıcı, ama savrulma riski yüksek. Veri çıkarma ve sınıflandırmada düşük, fikir üretmede yüksek tutulur.
-- **Modelin hafızası yoktur.** Her çağrı sıfırdan okunur. "Hatırlıyor" gibi görünmesi, geçmiş konuşmanın her seferinde yeniden gönderilmesindendir — ve bu her seferinde yeniden ödediğin token demektir.
+- **Modelin hafızası yoktur.** Her çağrı sıfırdan okunur. "Hatırlıyor" gibi görünmesi, geçmiş konuşmanın her seferinde yeniden gönderilmesindendir. Bu da aynı token'lar için her seferinde yeniden ödeme yapman demektir.
 
 İyi bir prompt genelde şu sırayla kurulur: **rol → görev → kısıtlar → biçim → örnekler → asıl girdi.** Uzun belgeleri en sona ya da en başa koy; ortaya gömülen talimatların gözden kaçma ihtimali daha yüksektir. Kural sayısı arttıkça netlik düşer: on emir yerine üç net emir daha iyi çalışır.
 
-Asıl mühendislik kısmı şu: prompt **koddur.** Dosyada durur, sürüm kontrolüne girer, incelenir (review), ve değiştiğinde aynı örneklerle yeniden sınanır. "Şurayı biraz düzelttim" diyerek canlıdaki prompt'a dokunmak, teste sokulmadan üretime kod atmakla aynı şeydir.
+Asıl mühendislik kısmı şu: prompt **koddur.** Dosyada durur, sürüm kontrolüne girer, incelenir (review) ve değiştiğinde aynı örneklerle yeniden sınanır. "Şurayı biraz düzelttim" diyerek canlıdaki prompt'a dokunmak, teste sokulmadan üretime kod atmakla aynı şeydir.
 
 ### Somut örnek
-Bu projede tek bir prompt bile Java kodunun içinde yazılı değil; hepsi `prompts/` dizininde ayrı dosyalar hâlinde duruyor: `sistem-kimlik.st` ortak kimliği, `sokratik-sohbet.st` öğretme üslubunu, `quiz-uret.st` soru üretimini, `degerlendirme.st` puanlamayı taşır. Dosyaların içinde `{hafta_icerik}`, `{kaynaklar}`, `{hafiza}` gibi yer tutucular var — çalışma anında bunların yerine gerçek metin konur. Böylece prompt bir metin dosyası olarak incelenebilir, git geçmişinde değişimi görülebilir ve düzeltme yapmak için uygulamayı yeniden derlemek gerekmez.
+Bu projede tek bir prompt bile Java kodunun içinde yazılı değil; hepsi `prompts/` dizininde ayrı dosyalar hâlinde duruyor: `sistem-kimlik.st` ortak kimliği, `sokratik-sohbet.st` öğretme üslubunu, `quiz-uret.st` soru üretimini, `degerlendirme.st` puanlamayı taşır. Dosyaların içinde `{hafta_icerik}`, `{kaynaklar}`, `{hafiza}` gibi yer tutucular var; çalışma anında bunların yerine gerçek metin konur. Böylece prompt bir metin dosyası olarak incelenebilir, git geçmişinde değişimi görülebilir ve düzeltme yapmak için uygulamayı yeniden derlemek gerekmez.
 
 ### Sık yapılan hata
 - **Prompt'u koda gömmek.** Sürümlenemez, incelenemez, karşılaştırılamaz hâle gelir.
@@ -32,7 +32,7 @@ Bu projede tek bir prompt bile Java kodunun içinde yazılı değil; hepsi `prom
 - **İki değişikliği aynı anda yapmak.** Prompt'u ve modeli birlikte değiştirirsen, iyileşmenin hangisinden geldiğini asla bilemezsin.
 
 ### Görevlere geçmeden önce
-Görevde bir prompt'u dosyaya taşırken şunları da ekle: dosyanın başına **bir satır amaç yorumu**, sonuna **beklenen çıktı biçimi**, ve yanına 3-5 örnekten oluşan küçük bir sınama listesi. Prompt'u her değiştirdiğinde bu listeyi yeniden çalıştır — hafta 8'de bu listeye "altın küme" diyeceğiz.
+Görevde bir prompt'u dosyaya taşırken şunları da ekle: dosyanın başına **bir satır amaç yorumu**, sonuna **beklenen çıktı biçimi** ve yanına 3-5 örnekten oluşan küçük bir sınama listesi. Prompt'u her değiştirdiğinde bu listeyi yeniden çalıştır. Hafta 8'de bu listeye "altın küme" diyeceğiz.
 
 ## Görevler
 - [ ] Prompt bölümünü oku

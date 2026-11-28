@@ -1,8 +1,8 @@
 ---
 hafta: 3
 baslik: "Spec-Driven Akış ve Ajan Yönetimi"
-hedef: "İyi task spec yazmayı ve Research → Plan → Execute → Review → Ship akışını kurmayı öğren."
-kaynak: "Kaynak: OpenAI Codex best practices (Goal/Context/Constraints/Completion) + Anthropic plan modu"
+hedef: "İyi bir görev spec'i (task spec) yazmayı ve Research → Plan → Execute → Review → Ship (araştır → planla → uygula → incele → yayınla) akışını kurmayı öğren."
+kaynak: "Kaynak: OpenAI Codex en iyi uygulamaları (best practices: Goal/Context/Constraints/Completion) + Anthropic plan modu"
 ---
 
 ## Quiz
@@ -11,9 +11,9 @@ kaynak: "Kaynak: OpenAI Codex best practices (Goal/Context/Constraints/Completio
 - [ ] Problem tanımı, çözüm önerisi, maliyet ve süre tahmini
 - [x] Hedef, bağlam, kısıtlar ve bitiş kriteri
 - [ ] Kod, test, dokümantasyon ve dağıtım (deployment) adımları
-> Açıklama: OpenAI Codex best practices'in çekirdeği: Goal, Context, Constraints, Completion Criteria. Bitiş kriteri mekanik doğrulanabilir olmalı — "düzgün çalışsın" değil, "`./mvnw verify` yeşil". Her görevde geçerli olan kalıcı kurallar spec'e değil AGENTS.md'ye yazılır (Hafta 2); spec yalnız o göreve özgü kısıtları taşır.
+> Açıklama: OpenAI Codex en iyi uygulamalarının (best practices) çekirdeği: Goal, Context, Constraints, Completion Criteria (hedef, bağlam, kısıtlar, bitiş kriteri). Bitiş kriteri bir komutla otomatik doğrulanabilmeli: "düzgün çalışsın" değil, "`./mvnw verify` yeşil". Her görevde geçerli olan kalıcı kurallar spec'e değil AGENTS.md'ye yazılır (Hafta 2); spec yalnız o göreve özgü kısıtları taşır.
 
-### S2: Bağlam dolduğunda "compaction" ile "context reset" arasındaki fark nedir?
+### S2: Bağlam dolduğunda "compaction" (sıkıştırma) ile "context reset" (bağlamı sıfırlama) arasındaki fark nedir?
 - [x] Compaction aynı oturumu özetleyip sürdürür; reset devir notuyla yeni oturum açar
 - [ ] Compaction modelin bağlam penceresini büyütür; reset onu varsayılana döndürür
 - [ ] İkisi de aynı işlemin adıdır; biri araçların, diğeri kullanıcıların terimidir
@@ -25,18 +25,18 @@ kaynak: "Kaynak: OpenAI Codex best practices (Goal/Context/Constraints/Completio
 - [ ] Plan yalnız adımları taşır; kararların gerekçesi sohbet geçmişinde kalır
 - [ ] Doğrulama komutları plana yazılmaz, uygulama sırasında ekipçe belirlenir
 - [x] Hiçbir şey hatırlamayan yeni bir oturum yalnız planı okuyup devam edebilmeli
-> Açıklama: "Amnezi testi": planı hiçbir bağlamı olmayan bir ajana ver — kaldığın yerden devam edebiliyor mu? ExecPlan yaşayan belgedir: durum, adımlar ve karar gerekçeleri iş ilerledikçe güncellenir. Gerekçe planda değilse sonraki oturum aynı yanlışı yeniden yapar.
+> Açıklama: "Amnezi testi" şudur: planı hiçbir bağlamı olmayan bir ajana verirsin; ajan kaldığın yerden devam edebiliyor mu? ExecPlan yaşayan belgedir: durum, adımlar ve karar gerekçeleri iş ilerledikçe güncellenir. Gerekçe planda değilse sonraki oturum aynı yanlışı yeniden yapar.
 
 ### S4: İnceleyici (reviewer) ajana kapsam sınırı koymazsan ne olur?
 - [ ] Bulgu üretmez; yalnızca "onaylandı" der ve incelemeyi hızlandırır
 - [x] İş sağlam olsa bile bulgu üretir; aşırı mühendislik önerileri doğar
 - [ ] Yalnız biçim ve isimlendirme uyarıları verir, mantık hatalarını atlar
 - [ ] İnceleme daha uzun sürer ama bulguların içeriği yine de aynı kalır
-> Açıklama: Boşluk aramak üzere prompt'lanan inceleyici her zaman bir şey bulur — bulunacak bir şey olmasa bile. Çözüm sınırdır: "yalnız doğruluğu, güvenliği veya gereksinimleri etkileyen bulguları işaretle." Sınırsız inceleyici işi bitirmez, büyütür.
+> Açıklama: Kusur araması istenen inceleyici, bulunacak bir şey olmasa bile her zaman bir şey bulur. Çözüm sınırdır: "yalnız doğruluğu, güvenliği veya gereksinimleri etkileyen bulguları işaretle." Sınırsız inceleyici işi bitirmez, büyütür.
 
-### S5: Üç-ajanlı (plancı/üretici/değerlendirici) desende değerlendirici ne zaman değer katar?
+### S5: Üç ajanlı (plancı/üretici/değerlendirici) desende değerlendirici ne zaman değer katar?
 - [ ] Her görevde; ne kadar çok ajan varsa sonuç o kadar güvenilir olur
 - [ ] Yalnız birim testi yazılamayan görevlerde; test varsa gereksizdir
 - [x] Görev, modelin tek başına güvenilir yapabildiği sınırı aştığında
 - [ ] Bütçe elverdiğinde; maliyeti yoksa her akışa eklemek en iyisidir
-> Açıklama: Anthropic'in kuralı sabit bir "evet" değil, koşulludur: değerlendirici ekstra tur, ekstra token ve ekstra gecikme demektir. En basit akışla başla; görev modelin solo sınırını aşıyorsa (uzun-koşan, çok adımlı işler) değerlendiricinin maliyeti karşılığını verir.
+> Açıklama: Anthropic'in kuralı sabit bir "evet" değil, koşulludur: değerlendirici ekstra tur, ekstra token ve ekstra gecikme demektir. En basit akışla başla; görev modelin tek başına güvenilir yapabildiği sınırı aşıyorsa (uzun süren, çok adımlı işler) değerlendiricinin maliyeti karşılığını verir.

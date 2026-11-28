@@ -1,6 +1,6 @@
 ---
 baslik: "Hafta 5 Görsel Özet: Mimari Nitelikler, Modülerlik ve Trade-off"
-yazar: "FoSA 2e (Richards & Ford) — kavram özeti"
+yazar: "FoSA 2e (Richards & Ford): kavram özeti"
 tarih: "2026-07-11"
 dil: "Türkçe kavram özeti (diyagramlı)"
 etiketler: 5
@@ -8,7 +8,7 @@ etiketler: 5
 
 ### Bu metin ne anlatıyor?
 Bir programın "çalışması" tek başına yetmez. Hızlı mı, güvenli mi, yarın değiştirmesi kolay
-mı — bunlar da tasarımın parçasıdır. Bu metin dört şeyi anlatıyor: her tasarım kararının bir
+mı? Bunlar da tasarımın parçasıdır. Bu metin dört şeyi anlatıyor: her tasarım kararının bir
 bedeli olduğunu, "iyi sistem" ölçütlerinin birbiriyle yarıştığını, kodu düzenli tutmanın
 ölçülebilir bir yolu olduğunu ve bu düzenin otomatik testlerle korunabildiğini. Geçen her
 teknik terim ilk kullanıldığı yerde Türkçe tanımıyla ve parantez içinde İngilizcesiyle
@@ -24,48 +24,50 @@ veriliyor; önceden bilgi gerekmiyor.
 
 ## Neden bu özet
 Hafta 5, mimari düşünmenin temel refleksini kuruyor: "en iyi" mimari yoktur, yalnızca
-verili bağlamda "en az kötü" olan vardır. Bu özet dört fikri bir çırpıda bakılacak
-referans niyetiyle topluyor: iki yasa, mimari karakteristikler (nitelikler / -ility'ler),
+eldeki koşullarda "en az kötü" olan vardır. Bu özet, dört fikri tek bakışta hatırlanacak bir
+başvuru metni olarak bir araya getiriyor: iki yasa, mimari karakteristikler (nitelikler / -ility'ler),
 modülerlik (cohesion · coupling · connascence) ve uygunluk fonksiyonu (fitness function).
 
 ## 1. İki yasa
 FoSA 2e'nin başlangıç noktası iki cümleye sığar. Birincisi: **"Yazılım mimarisindeki her
-şey bir trade-off'tur."** Mimarın işi, mükemmel kararı bulmak değil, verili bağlamda en az
+şey bir trade-off'tur."** Mimarın işi, mükemmel kararı bulmak değil, eldeki koşullarda en az
 kötü olan uzlaşmayı seçmektir. İkincisi: **"Neden, nasıldan önemlidir."** İki mimar aynı
-çözüme (nasıl) varabilir ama biri gerekçesini (neden) bilir. İşte bu yüzden kararları
-Mimari Karar Kaydı (ADR — Architecture Decision Record: bir kararı, o günkü koşullarını ve
-gerekçesini anlatan bir–iki sayfalık kısa belge) ile yazıya döker: gelecekteki okuyucu
+çözüme (nasıl) varabilir ama biri gerekçesini (neden) bilir. İşte bu yüzden kararlar
+Mimari Karar Kaydı (ADR, Architecture Decision Record: bir kararı, o günkü koşullarını ve
+gerekçesini anlatan bir–iki sayfalık kısa belge) ile yazıya dökülür. Gelecekteki okuyucu
 "nasıl"ı koda bakıp görür, "neden"i ise ancak kayıttan öğrenir.
 
 ## 2. Mimari karakteristikler (nitelikler / -ility'ler)
-Bir sistemin **işlevsel gereksinim** (functional requirement — sistemin *ne yapacağı*, ör.
-"kullanıcı sipariş verebilsin") dışındaki, "*ne kadar iyi* yapacağı" boyutlarıdır. Türkçede
+Mimari karakteristikler, bir sistemin **işlevsel gereksinimleri** (functional requirement:
+sistemin *ne yapacağı*, ör. "kullanıcı sipariş verebilsin") dışında kalan, işi "*ne kadar iyi*
+yapacağı" ile ilgili boyutlarıdır. Türkçede
 kısaca **nitelik** deniyor; İngilizcede çoğu *-ility* ekiyle bittiği için "-ility'ler" diye
 anılırlar. Üç öbekte toplanır:
 
-- **Operasyonel (çalışma zamanı):** ölçeklenebilirlik (scalability — artan yükü kaldırma),
-  elastikiyet (elasticity), erişilebilirlik (availability — ayakta kalma süresi).
-- **Yapısal (kod / iç düzen):** sürdürülebilirlik (maintainability — değiştirme kolaylığı),
-  dağıtılabilirlik (deployability — sık ve düşük riskli dağıtım).
+- **Operasyonel (çalışma zamanı):** ölçeklenebilirlik (scalability: artan yükü kaldırma),
+  elastikiyet (elasticity), erişilebilirlik (availability: ayakta kalma süresi).
+- **Yapısal (kod / iç düzen):** sürdürülebilirlik (maintainability: değiştirme kolaylığı),
+  dağıtılabilirlik (deployability: sık ve düşük riskli dağıtım).
 - **Çapraz kesen (cross-cutting):** güvenlik (security) gibi tek öbeğe sığmayan, sistemin
   her yerine dokunan nitelikler.
 
-**Kritik ayrım — scalability ≠ elasticity:** Ölçeklenebilirlik, yükün *zamanla, kademeli*
+**Kritik ayrım (scalability ≠ elasticity):** Ölçeklenebilirlik, yükün *zamanla, kademeli*
 artışını (ör. kullanıcı sayısı aylar içinde 10 kat) kaldırabilmektir. Elastikiyet ise
 yükün *ani sıçramasına* (ör. saniyeler içinde bilet satışı patlaması) hızla uyum
-sağlayabilmektir. Biri düzgün rampa, diğeri ani maça hazırlıktır.
+sağlayabilmektir. Biri yavaş yavaş yükselen bir rampaya, öbürü ani bir sıçramaya hazırlıktır.
 
-**Altın kural:** Hepsini birden optimize edemezsin. Nitelikler birbiriyle yarışır — biri
-artınca çoğu zaman diğeri düşer (ör. yüksek güvenlik, başarımı ve kolaylığı geriletir).
+**Altın kural:** Hepsini birden optimize edemezsin. Nitelikler birbiriyle yarışır: biri
+artınca çoğu zaman diğeri düşer (ör. yüksek güvenlik, başarımı ve kullanım kolaylığını geriletir).
 Bu yüzden mimar, sistemin başarısı için gerçekten kritik olan **en fazla birkaç** karakteristik
-seçer ("architecture characteristics" seçimi) ve gerisini bilinçli olarak feda eder.
+seçer (mimari karakteristik seçimi, İngilizcesiyle "architecture characteristics") ve gerisini
+bilinçli olarak feda eder.
 
 Aşağıdaki görsel, tek bir sistem hedefinin etrafındaki nitelikleri ve aralarındaki gerilimi
 özetliyor: dıştaki oklar "birini çekersen öbürü sarkar" trade-off'unu anlatır.
 
 ```svg
 <svg viewBox="0 0 640 320" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Mimari karakteristik seçimi: ortadaki sistem hedefi etrafında ölçeklenebilirlik, elastikiyet, sürdürülebilirlik ve güvenlik nitelikleri; hepsini değil birkaçını seç">
-  <text x="320" y="26" text-anchor="middle" font-size="15" font-weight="700" fill="#1C3247" font-family="system-ui">Her şey bir trade-off — hepsini değil, birkaçını seç</text>
+  <text x="320" y="26" text-anchor="middle" font-size="15" font-weight="700" fill="#1C3247" font-family="system-ui">Her şey bir trade-off: hepsini değil, birkaçını seç</text>
   <rect x="240" y="128" width="160" height="64" rx="14" fill="#EEF0FF" stroke="#4F46E5" stroke-width="2"/>
   <text x="320" y="156" text-anchor="middle" font-size="13" font-weight="700" fill="#4F46E5" font-family="system-ui">Sistem hedefi</text>
   <text x="320" y="174" text-anchor="middle" font-size="10.5" fill="#5D7789" font-family="system-ui">bağlama göre öncelik</text>
@@ -85,19 +87,19 @@ Aşağıdaki görsel, tek bir sistem hedefinin etrafındaki nitelikleri ve arala
   <line x1="418" y1="94" x2="392" y2="132" stroke="#5D7789" stroke-width="1.6"/>
   <line x1="222" y1="226" x2="248" y2="188" stroke="#5D7789" stroke-width="1.6"/>
   <line x1="418" y1="226" x2="392" y2="188" stroke="#5D7789" stroke-width="1.6"/>
-  <text x="320" y="292" text-anchor="middle" font-size="11" font-weight="600" fill="#1C3247" font-family="system-ui">Birini yukarı çekersen çoğu zaman öbürü sarkar — bilinçli olarak feda et.</text>
+  <text x="320" y="292" text-anchor="middle" font-size="11" font-weight="600" fill="#1C3247" font-family="system-ui">Birini yukarı çekersen çoğu zaman öbürü sarkar. Gerisini bilinçle feda et.</text>
   <text x="320" y="310" text-anchor="middle" font-size="10.5" fill="#5D7789" font-family="system-ui">Operasyonel (üst) · Yapısal (sol-alt) · Çapraz kesen (sağ-alt)</text>
 </svg>
 ```
 
 ## 3. Modülerlik: cohesion, coupling ve connascence
-İyi bir yapının iki ölçütü vardır: **yüksek cohesion (bağlılık)** — bir modülün içindeki
-parçalar aynı işe hizmet eder, dağınık değildir; ve **düşük coupling (bağlaşım)** — modüller
-birbirine az bağlıdır, biri değişince öbürü kolayca kırılmaz. Hedef ikisini birlikte tutmaktır.
+İyi bir yapının iki ölçütü vardır. **Yüksek cohesion (bağlılık):** bir modülün içindeki
+parçalar aynı işe hizmet eder, dağınık değildir. **Düşük coupling (bağlaşım):** modüller
+birbirine az bağlıdır, biri değişince öbürü kolayca kırılmaz. Hedef, ikisini birlikte sağlamaktır.
 
 "Coupling" soyut kalabilir; **connascence (birlikte-değişim)** onu ölçülebilir kılar. İki
-kod parçası, birinin değişmesi ötekinin de değişmesini gerektiriyorsa "connascent"tir. İki
-eksende sınıflanır:
+kod parçası, birinin değişmesi ötekinin de değişmesini gerektiriyorsa "connascent"tir. Connascence
+türleri gücüne (strength) göre iki gruba ayrılır:
 
 - **Statik türler (koda bakıp görülür, daha zayıf):** Ad (Name), Tür/Tip (Type), Anlam/Uzlaşı
   (Meaning), Konum/Sıra (Position), Algoritma (Algorithm).
@@ -105,7 +107,7 @@ eksende sınıflanır:
   (Execution), Zamanlama (Timing), Değer (Value), Kimlik (Identity).
 
 Somut örnek: bir fonksiyonu `hesapla(3, "TL", true)` diye çağırıyorsan, argümanların **sırasını**
-bilmek zorundasın — sıra değişirse çağıran her yer bozulur (konum connascence'ı). Aynı çağrıyı
+bilmek zorundasın: sıra değişirse çağıran her yer bozulur (konum connascence'ı). Aynı çağrıyı
 `hesapla(tutar: 3, para: "TL", vergiDahil: true)` biçimine çevirirsen sıra artık önemli değildir;
 bağımlılık isme taşınmıştır ve isim değişikliği derleyicinin/derleme aşamasının gözünden kaçmaz.
 
@@ -113,7 +115,8 @@ bağımlılık isme taşınmıştır ve isim değişikliği derleyicinin/derleme
 taşı, ör. yukarıdaki gibi konum bağımlılığını isimli parametreye çevir), sonra **yerelleştir**
 (kalan bağımlılığı aynı modül içine hapset ki modüller arası değil, modül içi kalsın).
 
-Bir üçüncü boyut daha vardır: **derece (degree)** — aynı bağımlılığın *kaç* yeri etkilediği.
+Güç (tür) ve yerellik (locality: bağımlılık modül içinde mi, modüller arasında mı) dışında üçüncü bir
+boyut daha vardır: **derece (degree)**, yani aynı bağımlılığın *kaç* yeri etkilediği.
 Üç yeri etkileyen bir bağımlılık, üç yüz yeri etkileyenle aynı şey değildir. Pratikte sıra
 şudur: dereceyi küçült, türü zayıflat, kalanı yerelleştir.
 
@@ -152,23 +155,25 @@ Bir üçüncü boyut daha vardır: **derece (degree)** — aynı bağımlılığ
 ```
 
 ## 4. Uygunluk fonksiyonu (fitness function)
-Bir mimari karakteristiği **objektif olarak ölçen** (yani kişisel görüşe değil, ölçüme dayanan)
-herhangi bir kontroldür. Amaç, "sistem sürdürülebilir mi?" gibi öznel bir yargıyı otomatik bir
+Uygunluk fonksiyonu, bir mimari karakteristiği **objektif olarak ölçen** (yani kişisel görüşe
+değil, ölçüme dayanan) herhangi bir kontroldür. Amaç, "sistem sürdürülebilir mi?" gibi öznel bir yargıyı otomatik bir
 sınava dönüştürmektir: geçerse karakteristik korunuyor, kalırsa **mimari erozyon** (architectural
-erosion — tasarımın zamanla, küçük küçük ödünlerle bozulması) başlamış demektir. Çoğu otomatiktir
-(bir test gibi), ama bazıları manuel olabilir (ör. gözden geçirme adımı).
+erosion: tasarımın zamanla, küçük küçük ödünlerle bozulması) başlamış demektir. Uygunluk
+fonksiyonlarının çoğu otomatiktir (bir test gibi), ama bazıları manuel olabilir (ör. gözden
+geçirme adımı).
 
 Bu projedeki **ArchUnit** bir örnektir. ArchUnit, kodun yapısı hakkında kural yazmayı sağlayan
 bir Java test kütüphanesidir: "katman yönü (types → config → repo → service → ai → web)
-bozulmasın" cümlesini çalışan bir teste çevirir. Bu test **CI kapısı** olarak koşar —
+bozulmasın" cümlesini çalışan bir teste çevirir. Bu test **CI kapısı** olarak koşar.
 CI (continuous integration / sürekli entegrasyon), her kod gönderiminde testleri otomatik
 çalıştıran sunucu düzenidir; "kapı" ise testler geçmeden değişikliğin ana koda katılamaması
-demektir. Kural bozulursa yapı kırmızı yanar ve sapma daha birleşmeden yakalanır.
+demektir. Kural bozulursa CI derlemesi kırmızı yanar (başarısız olur) ve sapma, değişiklik ana
+koda birleşmeden yakalanır.
 
 **Şerh (abartıya karşı):** Uygunluk fonksiyonu sihirli bir kalite ölçeri değildir. Yalnızca
 *senin yazdığın* kuralı ölçer; yazmadığın hiçbir şeyi korumaz. Tüm testlerin yeşil olması
 "mimari iyidir" demek değil, "kodladığım kurallar henüz bozulmadı" demektir. Ayrıca yanlış
-kurulmuş bir kural gereksiz alarm üretip ekibi kuralı devre dışı bırakmaya iter — bu da
+kurulmuş bir kural gereksiz alarm üretip ekibi kuralı devre dışı bırakmaya iter. Bu da
 korumanın kendisini yok eder.
 
 ```svg
@@ -205,11 +210,11 @@ korumanın kendisini yok eder.
    birine gündelik bir örnek ver.
 3. Bir mimar neden tüm karakteristikleri aynı anda optimize edemez? "En fazla birkaçını seç"
    kuralının arkasındaki mantık nedir?
-4. Yüksek cohesion + düşük coupling neden hedeftir, ve connascence bu hedefi ölçmeye nasıl
+4. Yüksek cohesion + düşük coupling neden hedeftir ve connascence bu hedefi ölçmeye nasıl
    yardım eder? Dinamik türler neden statik türlerden daha tehlikelidir?
 5. Bir uygunluk fonksiyonu (fitness function) tam olarak neyi otomatikleştirir? ArchUnit'in
    CI kapısı olarak çalışması, mimari erozyonu nasıl önler?
 6. Bütün uygunluk fonksiyonları yeşil yanıyor. Buradan "mimarimiz iyi" sonucunu çıkarabilir
    misin? Çıkaramıyorsan, yeşil ışık tam olarak neyi kanıtlar?
 7. `hesapla(3, "TL", true)` çağrısını `hesapla(tutar: 3, para: "TL", vergiDahil: true)`
-   biçimine çevirmek hangi connascence türünü hangisine dönüştürür — ve bu neden ilerlemedir?
+   biçimine çevirmek hangi connascence türünü hangisine dönüştürür? Bu neden bir ilerlemedir?

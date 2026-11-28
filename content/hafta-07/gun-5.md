@@ -12,12 +12,12 @@ Bugün yeni kavram yok; dört günü tek bir zincire dizip **kendi cümlelerinle
 ### Temel kavramlar
 Haftanın zinciri şu:
 
-- **Gün 1 — AI mühendisliği nedir:** Model artık senin eğittiğin değil, kiraladığın bir bileşen. İş, "eğitmek"ten "adapte etmek + değerlendirmek"e kaydı. Üç adaptasyon yolu: prompt (kötü talimat), RAG (eksik bilgi), fine-tune (yanlış davranış).
-- **Gün 2 — Model seçimi:** Kalite ↔ gecikme ↔ maliyet üçgeni. Lider tabloları eleme yapar, karar vermez; kararı kendi 20-50 örneğinden oluşan değerlendirme kümen verir. Seçim, ayar dosyasında durursa geri alınabilir kalır.
-- **Gün 3 — Prompt disiplini:** Sistem promptu + görev + kısıt + biçim + örnekler. Sıcaklık tutarlılığı, bağlam penceresi ise neyin görüldüğünü belirler. Prompt koddur: dosyada durur, sürümlenir, sınanır.
-- **Gün 4 — Halüsinasyon:** Uydurma bir arıza değil, "en olası devamı üret" tasarımının yan ürünü. Savunma katmanlıdır ve katman sayısı, yanlış cevabın maliyetine göre belirlenir.
+- **Gün 1: AI mühendisliği nedir?** Model artık senin eğittiğin değil, kiraladığın bir bileşen. İş, "eğitmek"ten "adapte etmek + değerlendirmek"e kaydı. Üç adaptasyon yolu: prompt (kötü talimat), RAG (eksik bilgi), fine-tune (yanlış davranış).
+- **Gün 2: Model seçimi.** Kalite ↔ gecikme ↔ maliyet üçgeni. Lider tabloları eleme yapar, karar vermez; kararı kendi 20-50 örneğinden oluşan değerlendirme kümen verir. Seçim, ayar dosyasında durursa geri alınabilir kalır.
+- **Gün 3: Prompt disiplini.** Sistem promptu + görev + kısıt + biçim + örnekler. Sıcaklık çıktının ne kadar tutarlı olacağını, bağlam penceresi ise modelin neyi görebileceğini belirler. Prompt koddur: dosyada durur, sürümlenir, sınanır.
+- **Gün 4: Halüsinasyon.** Uydurma bir arıza değil, "en olası devamı üret" tasarımının yan ürünü. Savunma katmanlıdır ve katman sayısı, yanlış cevabın maliyetine göre belirlenir.
 
-Ortak iplik tek cümlede: **hazır modeli al, disiplinli adapte et, sıkı değerlendir.** Dikkat et — dördünde de tekrar eden şey ölçüm. Model seçiminde ölçüm, prompt değişikliğinde ölçüm, halüsinasyon savunmasında ölçüm. Hafta 8 bu ipliği alıp merkeze koyacak.
+Ortak iplik tek cümlede: **hazır modeli al, disiplinli adapte et, sıkı değerlendir.** Dikkat et: dört günde de tekrar eden şey ölçüm. Model seçiminde ölçüm, prompt değişikliğinde ölçüm, halüsinasyon savunmasında ölçüm. Hafta 8 bu ipliği alıp merkeze koyacak.
 
 Özeti yazarken kendini şu dört soruyla sına: (1) LLM ne yapan bir programdır? (2) Prompt/RAG/fine-tune arasındaki karar hangi tek soruyla verilir? (3) Bir modeli neye göre seçerim? (4) Yanlış cevabın maliyeti yükselince ne değişir?
 

@@ -1,8 +1,8 @@
 ---
 hafta: 10
 baslik: "Mimari Kararları Kolaylaştırmak (Advice Process)"
-hedef: "Facilitating Software Architecture: Advice Process, ADR ve merkeziyetsiz mimari karar verme — insan VE ajan kararlarını hizalayan liderlik."
-kaynak: "Kitap: Facilitating Software Architecture (Harmel-Law, O'Reilly 2024) — Advice Process, ADR, technology radar"
+hedef: "Facilitating Software Architecture: Advice Process, ADR ve merkeziyetsiz mimari karar verme: insan VE ajan kararlarını hizalayan liderlik."
+kaynak: "Kitap: Facilitating Software Architecture (Harmel-Law, O'Reilly 2024): Advice Process, ADR, technology radar"
 ---
 
 ## Quiz
@@ -39,4 +39,4 @@ kaynak: "Kitap: Facilitating Software Architecture (Harmel-Law, O'Reilly 2024) �
 - [ ] Adopt / Trial / Deprecate / Retire
 - [x] Adopt / Trial / Assess / Hold
 - [ ] Assess / Approve / Audit / Adopt
-> Açıklama: Adopt (benimse, varsayılan seçim), Trial (riski kaldırılabilir bir işte dene), Assess (araştır, henüz üretime koyma), Hold (yeni yerde kullanma). Halkalar bir onay/ret makamı değil, ekibin ortak duruş beyanıdır.
+> Açıklama: Adopt (benimse, varsayılan seçim), Trial (riski göze alınabilecek bir işte dene), Assess (araştır, henüz üretime koyma), Hold (yeni yerde kullanma). Halkalar bir onay/ret makamı değil, ekibin ortak duruş beyanıdır.

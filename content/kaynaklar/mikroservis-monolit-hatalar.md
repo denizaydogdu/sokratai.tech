@@ -1,6 +1,6 @@
 ---
 baslik: "Monolit → Mikroservis: Ne Zaman ve Genel Hatalar"
-yazar: "Serpiştirme — Mimari stiller (Hard Parts özü)"
+yazar: "AI Öğretmen ek okuma metni: mimari stiller (Software Architecture: The Hard Parts özü)"
 tarih: "2026-07-11"
 dil: "Türkçe kavram özeti (diyagramlı)"
 etiketler: 6
@@ -9,7 +9,7 @@ etiketler: 6
 ### Bu metin ne anlatıyor?
 Bir programı tek parça hâlinde mi yazmalı, yoksa küçük parçalara bölüp her birini ayrı ayrı
 mı çalıştırmalı? Bu metin bu kararı anlatıyor. Bölmek kulağa modern gelir ama bedava
-değildir: parçalar artık birbirini ağ üzerinden çağırır ve ağ yavaşlar, kopar, yanılır. Metin
+değildir: parçalar artık birbirini ağ üzerinden çağırır; ağ ise yavaşlayabilir, kopabilir, hata verebilir. Metin
 önce seçenekleri sıralıyor, sonra "ne zaman bölmeli", en sonda da en sık yapılan altı hatayı
 gösteriyor.
 
@@ -19,12 +19,12 @@ gösteriyor.
 - **Mikroservis** (microservice): Programın küçük, ayrı ayrı yayına alınabilen, kendi
   verisine sahip parçalara bölünmesi.
 - **Dağıtım birimi** (deployment unit): Yayına alınan tek paket. Monolitte bir tane vardır.
-- **Alan / sınırlı bağlam** (domain / bounded context): İşin anlamlı bir bütünlük oluşturan
-  parçası — ör. "sipariş", "ödeme", "stok". Sınırlı bağlam, o parçanın kendi terimlerinin
-  geçerli olduğu çitin adıdır: "müşteri" kelimesi faturalama bağlamında başka, kargo
+- **Alan / sınırlı bağlam** (domain / bounded context): İşin kendi içinde anlamlı bir bütün
+  oluşturan parçası (ör. "sipariş", "ödeme", "stok"). Sınırlı bağlam, o parçanın kendi
+  terimlerinin geçerli olduğu alanın sınırıdır: "müşteri" kelimesi faturalama bağlamında başka, kargo
   bağlamında başka bir şey ifade edebilir.
 - **Bağlaşım** (coupling): İki parçanın birbirine ne kadar yapışık olduğu. Biri değişince
-  öteki de değişmek zorundaysa bağlaşım yüksektir — istenmeyen durum.
+  öteki de değişmek zorundaysa bağlaşım yüksektir. Bu istenmeyen bir durumdur.
 - **Senkron / asenkron çağrı**: Senkron = çağıran taraf yanıt gelene kadar bekler.
   Asenkron = mesajı bırakır, beklemez; yanıt sonra gelir.
 
@@ -101,12 +101,12 @@ gerekir, tahmin değil):
   ya da özel bir veri deposu gerçekten gerekli.
 
 **Gerekmediğinde ödediğin bedel:** Dağıtık sistem karmaşıklığı, ağ gecikmesi (latency)
-ve ağ hataları, veri tutarlılığı problemleri (ACID transaction kaybı — *ACID*, bir
-veritabanı işleminin ya tamamen olup ya hiç olmamasını garanti eden kurallar bütünüdür), ve
-gözlemlenebilirlik (observability) yükü — dağıtık izleme (tracing), log toplama,
+ve ağ hataları, veri tutarlılığı problemleri (ACID transaction kaybı; *ACID*, bir
+veritabanı işleminin ya tamamen olup ya hiç olmamasını garanti eden kurallar bütünüdür) ve
+gözlemlenebilirlik (observability) yükü: dağıtık izleme (tracing), log toplama,
 servisler arası hata ayıklama. Bu bedeli ihtiyaç olmadan ödemek net zarardır.
 
-#### (b1) Kullanılabilirlik çarpımı — kimsenin baştan hesaplamadığı matematik
+#### (b1) Kullanılabilirlik çarpımı: kimsenin baştan hesaplamadığı matematik
 Servisleri bölmek, sistemin ayakta kalma oranını **kendiliğinden artırmaz**; yanlış
 kurarsan düşürür. Sebep basit bir çarpma işlemidir.
 
@@ -128,7 +128,7 @@ Bunun üç sonucu var:
 2. **Zorunlu olmayan çağrıyı asenkrona çevir.** Mesaj kuyruğuna bırakılan iş, alıcı o an
    ayakta değilse bile kaybolmaz; zinciri kırar.
 3. **Her çağrıya arıza planı koy.** Zaman aşımı (timeout), yeniden deneme (retry) ve
-   **devre kesici** (circuit breaker — sürekli hata veren bir servise çağrı yapmayı bir
+   **devre kesici** (circuit breaker: sürekli hata veren bir servise çağrı yapmayı bir
    süre tamamen durduran, böylece çöküşün yayılmasını engelleyen desen). Yedek yanıt
    (fallback) verebiliyorsan, o servisin çökmesi tüm isteği düşürmez.
 
@@ -136,21 +136,21 @@ Bunun üç sonucu var:
 > çalışabildiğinde** artırır. Zincirleme senkron bağımlılık, bölmenin faydasını yiyip
 > bitirir.
 
-#### (b2) Conway yasası — sınırı çizen aslında ekip yapısıdır
+#### (b2) Conway yasası: sınırı çizen aslında ekip yapısıdır
 1967'de Melvin Conway'in ortaya koyduğu gözlem şudur: **bir kurum, ürettiği sistemi kendi
 iletişim yapısının kopyası olarak tasarlar.** Yani ekipler nasıl bölünmüşse, yazılım da o
 sınırlardan bölünmeye meyleder.
 
 Somut hâli: Üç ekibin varsa (ön yüz ekibi, arka uç ekibi, veritabanı ekibi) sistem büyük
-olasılıkla "UI servisi + iş mantığı servisi + veri servisi" diye bölünür — yani (c)
-bölümündeki **2 numaralı hataya** (teknik katmana göre bölme) organizasyon eliyle sürüklenir.
+olasılıkla "UI servisi + iş mantığı servisi + veri servisi" diye bölünür. Yani kurumun yapısı
+sistemi (c) bölümündeki **2 numaralı hataya** (teknik katmana göre bölme) kendiliğinden sürükler.
 Kimse bunu tercih etmemiştir; yapı kendini dayatmıştır.
 
 Bunun iki pratik sonucu var:
 
 - **Ters Conway manevrası** (inverse Conway maneuver): İstediğin mimariyi almak için önce
   **ekipleri** o mimariye göre böl. Sipariş, ödeme ve stok servisleri istiyorsan sipariş,
-  ödeme ve stok ekipleri kur — mimari peşinden gelir.
+  ödeme ve stok ekipleri kur; mimari peşinden gelir.
 - **Ekip yapısına aykırı mimari yaşamaz.** Beş servisi tek bir ekip sahiplenmek zorunda
   kalıyorsa, o beş servis pratikte tek bir birim gibi yayına alınmaya başlar; dağıtık
   monolite (c/1) giden en sessiz yol budur.
@@ -161,37 +161,37 @@ Bunun iki pratik sonucu var:
 ### (c) Genel hatalar (pitfalls)
 Her biri: **ne olduğu · neden kötü · nasıl kaçınılır.**
 
-1. **Dağıtık monolit (distributed monolith)** — *Ne:* Servisler ayrı süreçlere
+1. **Dağıtık monolit (distributed monolith).** *Ne:* Servisler ayrı süreçlere
    bölünmüş ama o kadar sıkı bağlı ki birini değiştirince ötekiler de değişmek ve
-   birlikte deploy edilmek zorunda. *Neden kötü:* İki dünyanın en kötüsü — monolitin
-   kırılganlığı + dağıtık sistemin ağ/işletim bedeli, faydası yok. *Kaçın:* Sınırları
+   birlikte deploy edilmek zorunda. *Neden kötü:* İki dünyanın en kötüsünü birleştirir: monolitin
+   kırılganlığı + dağıtık sistemin ağ/işletim bedeli; karşılığında bir fayda yok. *Kaçın:* Sınırları
    iş yeteneğine göre çiz; servisler birbirinden bağımsız deploy edilemiyorsa henüz
    ayrılmaya hazır değildir.
-2. **Yanlış servis sınırları** — *Ne:* Sistemi alan/bağlam (domain / bounded context)
+2. **Yanlış servis sınırları.** *Ne:* Sistemi alan/bağlam (domain / bounded context)
    yerine teknik katmana göre bölmek (ör. "UI servisi", "iş mantığı servisi",
    "veri servisi"). *Neden kötü:* Tek bir iş değişikliği tüm katman servislerine
    yayılır; bağımsızlık kazanılmaz. *Kaçın:* Sınırı iş yeteneği/bounded context
-   boyunca çiz — bir servis bir işi baştan sona sahiplenmeli.
-3. **Paylaşılan veritabanı (shared database)** — *Ne:* Birden çok servisin aynı
-   veritabanına/şemaya doğrudan yazması. *Neden kötü:* Şema bir servise bağlar,
-   bağımsız deploy ölür, gizli kuplaj (coupling) oluşur. *Kaçın:* Her servis kendi
+   boyunca çiz; bir servis bir işi baştan sona sahiplenmeli.
+3. **Paylaşılan veritabanı (shared database).** *Ne:* Birden çok servisin aynı
+   veritabanına/şemaya doğrudan yazması. *Neden kötü:* Ortak şema servisleri birbirine bağlar,
+   bağımsız deploy imkânsızlaşır, gizli bağlaşım (coupling) oluşur. *Kaçın:* Her servis kendi
    verisine sahip olsun; başka servisin verisine yalnızca onun API'si üzerinden eriş.
-4. **Nano-servis (aşırı ince granülerlik)** — *Ne:* Servisleri gereğinden çok küçük
+4. **Nano-servis (aşırı ince granülerlik).** *Ne:* Servisleri gereğinden çok küçük
    parçalara (tek fonksiyon başına servis) bölmek. *Neden kötü:* Basit bir iş için
-   onlarca ağ çağrısı; yönetim, dağıtım ve hata ayıklama patlar. *Kaçın:* Servis
+   onlarca ağ çağrısı gerekir; yönetim, dağıtım ve hata ayıklama yükü katlanarak artar. *Kaçın:* Servis
    sınırını iş yeteneği belirlesin; birlikte değişen şeyler birlikte kalsın.
-5. **Dağıtık veri tutarlılığı** — *Ne:* Bir iş birden çok servisin verisini
+5. **Dağıtık veri tutarlılığı.** *Ne:* Bir iş birden çok servisin verisini
    değiştirdiğinde tek ACID transaction artık yok. *Neden kötü:* Tutarlılığı elle
-   yönetmek zorundasın — **saga** (işi küçük adımlara bölüp her adımın bir "geri alma"
-   adımı olduğu desen), **telafi işlemi** (compensation — yarıda kalan işin yaptığını
-   geri alan ters adım, ör. "parayı iade et"), **nihai tutarlılık** (eventual consistency —
-   veri bir süre için servisler arasında farklı görünür, sonunda aynılaşır) karmaşıklığı.
+   yönetmek zorundasın. **Saga** (işi küçük adımlara bölüp her adımın bir "geri alma"
+   adımı olduğu desen), **telafi işlemi** (compensation: yarıda kalan işin yaptığını
+   geri alan ters adım, ör. "parayı iade et") ve **nihai tutarlılık** (eventual consistency:
+   veri bir süre için servisler arasında farklı görünür, sonunda aynılaşır) karmaşıklığı sana kalır.
    *Kaçın:* Bir transaction'da
    olması gereken veriyi aynı servis sınırının içinde tut; ayırmak zorundaysan
    saga/olay tabanlı yaklaşımı bilinçli seç.
-6. **Gevezelik (chatty calls)** — *Ne:* Tek bir kullanıcı isteğini karşılamak için
+6. **Gevezelik (chatty calls).** *Ne:* Tek bir kullanıcı isteğini karşılamak için
    servislerin birbirine çok sık, senkron çağrı yapması. *Neden kötü:* Gecikmeler
-   üst üste yığılır (her çağrı ağ turu), bir servisin yavaşlığı zincire yayılır.
+   üst üste yığılır (her çağrı bir ağ gidiş-dönüşü demek), bir servisin yavaşlığı zincire yayılır.
    *Kaçın:* Sınırları çağrıyı azaltacak şekilde çiz; kaba taneli çağrı, asenkron
    mesajlaşma ve gerektiğinde veri çoğaltma (replication) kullan.
 
@@ -221,7 +221,7 @@ sonra altı hatayı kart olarak özetler.
   <line x1="164" y1="112" x2="164" y2="150" stroke="#C77A17" stroke-width="1.3"/>
   <line x1="254" y1="112" x2="208" y2="150" stroke="#C77A17" stroke-width="1.3"/>
   <text x="164" y="206" text-anchor="middle" font-size="10.5" font-weight="600" fill="#C77A17" font-family="system-ui">Sıkı bağlı · birlikte deploy zorunlu</text>
-  <text x="164" y="222" text-anchor="middle" font-size="10" fill="#5D7789" font-family="system-ui">paylaşılan DB · gizli kuplaj</text>
+  <text x="164" y="222" text-anchor="middle" font-size="10" fill="#5D7789" font-family="system-ui">paylaşılan DB · gizli bağlaşım</text>
   <rect x="326" y="34" width="300" height="200" rx="12" fill="#E9F4EE" stroke="#25804C" stroke-width="1.5"/>
   <text x="476" y="56" text-anchor="middle" font-size="12.5" font-weight="700" fill="#25804C" font-family="system-ui">Gerçek mikroservis</text>
   <rect x="346" y="72" width="80" height="40" rx="8" fill="#ffffff" stroke="#25804C" stroke-width="1.3"/>
@@ -263,7 +263,7 @@ sonra altı hatayı kart olarak özetler.
   <text x="472" y="64" text-anchor="start" font-size="12" font-weight="700" fill="#186399" font-family="system-ui">3 · Paylaşılan DB</text>
   <text x="472" y="86" text-anchor="start" font-size="10" fill="#1C3247" font-family="system-ui">Servisler aynı DB'yi paylaşınca</text>
   <text x="472" y="100" text-anchor="start" font-size="10" fill="#1C3247" font-family="system-ui">bağımsız deploy ölür →</text>
-  <text x="472" y="114" text-anchor="start" font-size="10" fill="#5D7789" font-family="system-ui">gizli kuplaj.</text>
+  <text x="472" y="114" text-anchor="start" font-size="10" fill="#5D7789" font-family="system-ui">gizli bağlaşım.</text>
   <rect x="16" y="146" width="208" height="94" rx="10" fill="#EEF0FF" stroke="#4F46E5" stroke-width="1.4"/>
   <text x="32" y="170" text-anchor="start" font-size="12" font-weight="700" fill="#4F46E5" font-family="system-ui">4 · Nano-servis</text>
   <text x="32" y="192" text-anchor="start" font-size="10" fill="#1C3247" font-family="system-ui">Aşırı ince granülerlik → basit</text>
@@ -287,28 +287,28 @@ sonra altı hatayı kart olarak özetler.
 
 Sam Newman ve *Software Architecture: The Hard Parts* çizgisi aynı yeri işaret eder:
 Mikroservis bir hedef değil, belirli bir problemi (ölçek, bağımsız deploy, ekip
-özerkliği) çözmek için ödenen bir bedeldir. Problem yoksa bedel de yoktur. Sınırları
-kodun içinde ucuzken (modül olarak) çiz, taşımayı gerçekten gerektiren kanıt gelince
+özerkliği) çözmek için ödenen bir bedeldir. Problem yoksa bu bedeli ödemenin de anlamı yoktur.
+Sınırları kodun içinde ucuzken (modül olarak) çiz, servise taşımayı gerçekten gerektiren kanıt gelince
 o sınırdan bir servis kes.
 
 ## Öz-sınav (kendini test et)
 1. Üç "mikroservisin" var ama birini değiştirince ötekileri de yeniden deploy etmek
-   zorunda kalıyorsun. Hangi hata bu, ve kök nedeni ne olabilir?
+   zorunda kalıyorsun. Bu hangi hata ve kök nedeni ne olabilir?
 2. Yeni bir ürüne 4 kişilik bir ekiple başlıyorsun, alan sınırları henüz belirsiz.
    Eksenin neresinden başlarsın ve neden?
 3. Sipariş servisi ile stok servisi aynı veritabanı tablosuna yazıyor. Hangi ilke
-   çiğnenmiş, ve bağımsızlık için ne değişmeli?
+   çiğnenmiş ve bağımsızlık için ne değişmeli?
 4. Tek bir "ürün sayfasını göster" isteği, servisler arası 12 senkron çağrı tetikliyor
    ve sayfa yavaş. Bu hangi hata, sınırları nasıl yeniden düşünürsün?
 5. Bir iş, iki farklı servisin verisini aynı anda tutarlı değiştirmek zorunda. Tek
    ACID transaction yokken hangi seçeneklerin var ve bunları seçmeden önce hangi
    soruyu sormalısın?
 6. Her biri %99,9 ayakta olan 5 servis, bir isteği karşılamak için senkron zincir hâlinde
-   birbirini çağırıyor. Zincirin kullanılabilirliği kabaca ne olur, ve bu sayıyı iyileştirmek
+   birbirini çağırıyor. Zincirin kullanılabilirliği kabaca ne olur ve bu sayıyı iyileştirmek
    için hangi üç hamleyi yaparsın?
 7. Conway yasası ne der? Şirketinde ön yüz, arka uç ve veritabanı diye üç ayrı ekip varsa
-   mimarinin hangi hataya kayması beklenir — ve "ters Conway manevrası" bunu nasıl önler?
+   mimarinin hangi hataya kayması beklenir? "Ters Conway manevrası" bunu nasıl önler?
 8. "Servisleri böldük, artık sistem daha güvenilir" diyen bir ekip arkadaşına
    kullanılabilirlik çarpımını nasıl anlatırsın? Hangi koşulda haklı olabilir?
 9. Devre kesici (circuit breaker) hangi problemi çözer? Yeniden denemeden (retry) farkı
-   nedir, ve yalnızca yeniden deneme kullanmak durumu ne zaman kötüleştirir?
+   nedir? Yalnızca yeniden deneme kullanmak durumu ne zaman kötüleştirir?

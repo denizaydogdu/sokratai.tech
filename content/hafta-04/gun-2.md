@@ -7,7 +7,7 @@ baslik: "ArchUnit ile katman testi (Java)"
 ## Ders
 
 ### Bugün ne öğreneceksin?
-Dün "kuralı mekanikleştir" dedik. Bugün bunu Java'da gerçekten yapacaksın: **ArchUnit** ile mimari kuralı normal bir birim testi hâline getireceksin. İş bitince katman diyagramın duvarda asılı bir resim değil, `./mvnw verify` her çalıştığında sınanan bir **çit** olacak.
+Dün "kuralı otomatik denetime bağla" dedik. Bugün bunu Java'da gerçekten yapacaksın: **ArchUnit** ile mimari kuralı normal bir birim testi hâline getireceksin. İş bitince katman diyagramın duvarda asılı bir resim değil, `./mvnw verify` her çalıştığında sınanan bir **çit** olacak.
 
 ### Temel kavramlar
 - **ArchUnit:** Java kodunun **yapısını** test eden kütüphane. Normal testler davranışı ("2+2=4 mü?") sınar; ArchUnit yapıyı ("web katmanı repo'ya erişiyor mu?") sınar. JUnit ile aynı yerde, test kapsamında (test scope) çalışır.
@@ -15,11 +15,11 @@ Dün "kuralı mekanikleştir" dedik. Bugün bunu Java'da gerçekten yapacaksın:
 - **Katman yönü:** bağımlılığın hangi yöne akabileceği. Üst katman alta bakar; alt katman üstü **tanımaz**.
 - **Döngüsel bağımlılık (cycle):** A paketi B'ye, B de A'ya bağımlıysa oluşan halka. Test etmeyi, taşımayı ve anlamayı zorlaştırır; ajanın da bağlamını şişirir.
 - **`layeredArchitecture()`:** katman yönünü zorlayan ArchUnit kuralı.
-- **`slices().beFreeOfCycles()`:** paketleri dilimlere bölüp aralarındaki grafikte halka arayan kural.
+- **`slices().beFreeOfCycles()`:** paketleri dilimlere bölüp aralarındaki bağımlılık grafiğinde döngü arayan kural.
 - **Bloklayıcı kapı (blocking gate):** kırmızı yandığında birleştirmeyi (merge) durduran kontrol.
 
 ### Somut örnek
-Bu projede kural `src/test/java/tr/velzon/aiogretmen/MimariTestleri.java` içinde yaşıyor. Çekirdeği şudur:
+Bu projede kural `src/test/java/tr/velzon/aiogretmen/MimariTestleri.java` içinde duruyor. Çekirdeği şudur:
 
 ```java
 @ArchTest
@@ -49,9 +49,9 @@ Bu dosyada başka çitler de var: `claude_yalniz_ai_paketinden` (LLM çağrısı
 İlk çalıştırmada **kırmızı** almak normaldir; mevcut kodda birikmiş ihlaller vardır. Buradaki tuzak, kuralı ihlallere uydurmaktır: erişimi gevşetmek, katmanı silmek, testi `@Disabled` yapmak. Bu, kuralı yazmamış olmakla aynı kapıya çıkar. Doğru refleks: kuralı **doğru hâliyle bırak**, ihlalleri listele, `docs/tech-debt-tracker.md`'ye kaydet ve planlı biçimde kapat. İkinci tuzak, ArchUnit'i uygulama kapsamına (main scope) eklemektir; ArchUnit yalnız **test** kapsamına girer, ürün koduyla dağıtılmaz.
 
 ### Görevlere geçmeden önce
-Sırayla git: önce bağımlılığı test kapsamına ekle, sonra kuralı yaz ve çalıştır — ihlaller listelensin. Bugün ihlalleri **düzeltmeyeceksin**, yalnız kaydedeceksin; bunlar sonraki günlerin planlı işidir. Yarın aynı fikrin Python'daki karşılığını (import-linter) göreceksin ve aletin değişse bile ilkenin değişmediğini fark edeceksin.
+Sırayla git: önce bağımlılığı test kapsamına ekle, sonra kuralı yaz ve çalıştır; ihlaller listelensin. Bugün ihlalleri **düzeltmeyeceksin**, yalnız kaydedeceksin; bunlar sonraki günlerin planlı işidir. Yarın aynı fikrin Python'daki karşılığını (import-linter) göreceksin ve araç değişse bile ilkenin değişmediğini fark edeceksin.
 
 ## Görevler
-- [ ] ArchUnit bağımlılığını test scope'a ekle
-- [ ] Katman testini yaz ve çalıştır — ihlaller listelensin
+- [ ] ArchUnit bağımlılığını test kapsamına (test scope) ekle
+- [ ] Katman testini yaz ve çalıştır; ihlaller listelensin
 - [ ] İhlalleri tech-debt-tracker.md'ye kaydet (hemen düzeltme)

@@ -7,20 +7,20 @@ baslik: "Ajan okunabilirliği (agent legibility)"
 ## Ders
 
 ### Bugün ne öğreneceksin?
-Bugünün tek cümlesi: **ajanın çalışırken bağlamında göremediği bilgi, fiilen yoktur.** Bu, dün öğrendiğin guide ve sensor'ların önkoşuludur — repoda yaşamayan bir guide, guide değildir. Kavramın adı **ajan okunabilirliği**.
+Bugün tek bir cümleyi kavrayacaksın: **ajanın çalışırken bağlamında göremediği bilgi, fiilen yoktur.** Bu ilke, dün öğrendiğin guide ve sensor'ların önkoşuludur: repoda yazılı olmayan bir guide, guide sayılmaz. Kavramın adı **ajan okunabilirliği**.
 
 ### Temel kavramlar
-- **Bağlam (context):** ajanın o an önünde duran metnin tamamı — senin isteğin, okuduğu dosyalar, kurallar, buraya kadarki konuşma. Ajanın "gördüğü" tek yer burasıdır; bağlamın dışı onun için karanlıktır.
+- **Bağlam (context):** ajanın o an önünde duran metnin tamamı: senin isteğin, okuduğu dosyalar, kurallar, buraya kadarki konuşma. Ajanın "gördüğü" tek yer burasıdır; bağlamın dışı onun için karanlıktır.
 - **Ajan okunabilirliği (agent legibility):** bir bilginin ajan tarafından bulunabilir ve okunabilir olması. Ölçüsü basit: bilgi depoda, düz metin/markdown olarak duruyor mu?
-- **Artefakt (artifact):** repoya işlenmiş, sürüm takibi yapılan somut dosya. Konuşma artefakt değildir; markdown dosyası artefakttır.
+- **Artefakt (artifact):** repoya kaydedilmiş (commit edilmiş), sürüm takibi yapılan somut dosya. Konuşma artefakt değildir; markdown dosyası artefakttır.
 - **Kurumsal örtük bilgi (tribal knowledge):** yalnız insanların kafasında ve sohbetlerde yaşayan, hiçbir yere yazılmamış bilgi. Ekip büyüdükçe en pahalı kayıp kalemi budur.
 
 ### Somut örnek
 Bu depoda gerçek bir karar var: model erişimi doğrudan Anthropic API yerine **OpenRouter** üzerinden yapılıyor. Karar bir konuşmada alındı. İki senaryoyu karşılaştır:
-- **Yazılmasaydı:** Ajan yapılandırmada `base-url: https://openrouter.ai/api` satırını görür, "bu garip, resmi Anthropic starter'ına geçireyim" der ve **iyi niyetle** kararı bozar. Sen fark edene kadar da geri döner; fark edince yeniden anlatırsın, sonraki oturumda yine bozar.
-- **Yazıldığı için:** Karar `docs/adr/0004-openrouter-saglayici.md` dosyasında yaşıyor — bağlamı ("tek anahtarla çok sağlayıcı, harcama limiti"), kararı, elenen alternatifi ve artı/eksi sonuçlarıyla. Ajan dosyayı okur, kararın **gerekçesini** görür ve bozmaz; gerçekten değişmesi gerekiyorsa yeni bir karar kaydı önerir.
+- **Yazılmasaydı:** Ajan yapılandırmada `base-url: https://openrouter.ai/api` satırını görür, "bu garip, resmi Anthropic başlangıç paketine (starter) geçireyim" der ve **iyi niyetle** kararı bozar. Sen fark edene kadar karar bozuk kalır; fark edince ajana yeniden anlatırsın, ama sonraki oturumda yine bozar.
+- **Yazıldığı için:** Karar `docs/adr/0004-openrouter-saglayici.md` dosyasında yazılı duruyor: bağlamı ("tek anahtarla çok sağlayıcı, harcama limiti"), kararın kendisi, elenen alternatif ve artı/eksi sonuçlarıyla birlikte. Ajan dosyayı okur, kararın **gerekçesini** görür ve bozmaz; gerçekten değişmesi gerekiyorsa yeni bir karar kaydı önerir.
 
-Sınama cümlesi şu: *"Üç ay sonra işe girecek birine bu bilgi görünür mü?"* Cevap hayırsa ajana da görünmez. Aynı ölçüt bu depoda kural olarak yazılıdır: anlamlı iş bitince yaz — eşik, *"3 ay sonraki okuyucu bunu bilmek ister mi?"*.
+Sınama cümlesi şu: *"Üç ay sonra işe girecek birine bu bilgi görünür mü?"* Cevap hayırsa ajana da görünmez. Aynı ölçüt bu depoda kural olarak yazılıdır: anlamlı bir iş bitince onu yaz. Neyin yazmaya değer olduğunu şu soru belirler: *"3 ay sonraki okuyucu bunu bilmek ister mi?"*
 
 ### Sık yapılan hata
 Üç tuzak var, üçü de yaygın:
@@ -31,7 +31,7 @@ Sınama cümlesi şu: *"Üç ay sonra işe girecek birine bu bilgi görünür m�
 Bir de tersi: bu ilke "her şeyi yaz" demek değildir. Yazılacak olan **kararlar ve gerekçeleri**dir; kodun kendisinden okunabilen şeyi tekrar yazmak yalnızca bakım yükü üretir.
 
 ### Görevlere geçmeden önce
-Aşağıdaki iki görev ilkeyi doğrudan uygulatır: önce yalnız kafalarda/sohbette yaşayan üç kritik bilgiyi avlayacaksın (bunları bulmanın en kolay yolu, yeni gelen birine ilk hafta ne anlattığını hatırlamaktır), sonra bir tanesini gerçekten markdown'a çevirip repoya koyacaksın. Yazma alışkanlığı ancak bir kez yaparak başlar.
+Aşağıdaki iki görev ilkeyi doğrudan uygulatır: önce yalnız insanların aklında ya da sohbetlerde kalan üç kritik bilgiyi bulacaksın (bunları bulmanın en kolay yolu, yeni gelen birine ilk hafta ne anlattığını hatırlamaktır), sonra bir tanesini gerçekten markdown'a çevirip repoya koyacaksın. Yazma alışkanlığı, bunu bir kez gerçekten yapınca başlar.
 
 ## Görevler
 - [ ] Kendi ekibinde (ya da bildiğin bir projede) 'sadece Slack/kafalarda yaşayan' 3 kritik bilgiyi tespit et

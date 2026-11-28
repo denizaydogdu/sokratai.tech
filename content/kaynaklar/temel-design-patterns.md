@@ -1,6 +1,6 @@
 ---
 baslik: "Temeller Tazeleme: Tasarım Kalıpları (Factory, Strategy, Proxy)"
-yazar: "Faz 0 — Mühendislik Temelleri"
+yazar: "Faz 0: Mühendislik Temelleri"
 tarih: "2026-07-10"
 dil: "Türkçe kavram özeti (diyagramlı)"
 etiketler: 5,6
@@ -18,12 +18,12 @@ Tasarım kalıbı (design pattern) = **tekrar eden bir tasarım sorununa verilmi
 ve denenmiş çözüm.** Yeni bir icat değil; usta yazılımcıların defalarca karşılaştığı
 problemlere buldukları ortak çözümlerin bir isim altında toplanmış hâlidir. İsimli
 olması iletişimi kısaltır: "burada bir Factory kullandım" demek, on satır açıklamanın
-yerine geçer. Bu özet üç temel kalıbı — Factory, Strategy, Proxy — hangi problemi
-çözdükleri, iskeletleri ve **ne zaman KULLANMAMAK gerektiği** ile birlikte tazeler.
+yerine geçer. Bu özet, üç temel kalıp hakkındaki bilgini tazeler: Factory, Strategy ve
+Proxy'nin hangi problemi çözdüğünü, iskeletini ve **ne zaman KULLANMAMAK gerektiğini** hatırlatır.
 Amaç kalıp ezberlemek değil; problemi görüp doğru kalıbı (veya hiç kalıp olmamasını)
 seçebilmektir. Kalıpların bugün kullanılan ortak adları büyük ölçüde 1994'te yayımlanan
-*Design Patterns* kitabından gelir; dört yazarı yüzünden literatürde **GoF (Gang of Four —
-Dörtlü Çete)** kalıpları diye anılır.
+*Design Patterns* kitabından gelir; kitabın dört yazarı olduğu için bu kalıplar literatürde
+**GoF (Gang of Four, Dörtlü Çete)** kalıpları diye anılır.
 
 ### Bu metinde geçen temel terimler
 - **Nesne (object):** Programın çalışırken bellekte tuttuğu, verisi ve davranışı olan somut
@@ -40,9 +40,9 @@ Dörtlü Çete)** kalıpları diye anılır.
 - **Sarmalama (wrapping):** Bir nesneyi başka bir nesnenin içine koyup çağrıları onun
   üzerinden geçirmek; araya davranış eklemenin standart yolu.
 
-## 1. Factory (Fabrika) — nesne yaratımını merkezileştir
+## 1. Factory (Fabrika): nesne yaratımını merkezileştir
 
-**Hangi problemi çözer?** `new` çağrısı sınıfın adını sabitler. Yaratılacak somut
+**Hangi problemi çözer?** `new` çağrısı, yaratılacak sınıfın adını koda sabit olarak yazar. Yaratılacak somut
 sınıf koşula göre değişiyorsa (girdiye, ayara, ortama göre) ve bu karar kodun her
 yerine `if/else new ...` olarak dağılıyorsa, tek bir tip eklemek onlarca yeri
 değiştirmeyi gerektirir. Factory bu "hangi somut sınıfı yaratayım?" kararını **tek bir
@@ -59,14 +59,14 @@ class OdemeFabrikasi {
 }
 ```
 
-Not: Yukarıdaki, günlük dilde "fabrika" denen en yalın biçimdir — **basit fabrika (simple
-factory)**: kararı veren tek bir statik metot. GoF kitabındaki *Factory Method* ve *Abstract
-Factory* kalıpları bunun daha yapılı akrabalarıdır; farkları aşağıdaki 5. bölümde.
+Not: Yukarıdaki örnek, günlük dilde "fabrika" denen en yalın biçimdir: **basit fabrika (simple
+factory)**, yani kararı veren tek bir statik metot. GoF kitabındaki *Factory Method* ve *Abstract
+Factory* kalıpları bunun daha yapılı akrabalarıdır; farklarını 5. bölümde bulacaksın.
 
 **Ne zaman KULLANMA:** Tek bir somut sınıfın varsa ve ileride çeşitlenme belirtisi
 yoksa, düz `new` daha okunaklıdır. "İleride belki gerekir" diye fabrika koymak aşırı
-mühendisliktir (over-engineering) — bir katman soyutlama borcu ekler, karşılığında
-hiçbir esneklik alamazsın. Kalıbı, ikinci somut tip gerçekten belirdiğinde ekle.
+mühendisliktir (over-engineering): koda fazladan bir soyutlama katmanı, yani bir borç eklersin;
+karşılığında hiçbir esneklik alamazsın. Kalıbı, ikinci somut tip gerçekten belirdiğinde ekle.
 
 Aşağıdaki diyagram istemcinin somut sınıfları hiç tanımadan yalnızca arayüz + fabrika
 üzerinden çalıştığını gösterir.
@@ -77,7 +77,7 @@ Aşağıdaki diyagram istemcinin somut sınıfları hiç tanımadan yalnızca ar
     <marker id="dp-fok" markerWidth="10" markerHeight="10" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#186399"/></marker>
   </defs>
   <text x="320" y="24" text-anchor="middle" font-size="15" font-weight="700" fill="#1C3247" font-family="system-ui">Factory (Fabrika): nesne yaratmayı tek yerde topla</text>
-  <text x="320" y="43" text-anchor="middle" font-size="11.5" fill="#5D7789" font-family="system-ui">İstemci somut sınıfı bilmez — yalnız arayüzü ve fabrikayı tanır</text>
+  <text x="320" y="43" text-anchor="middle" font-size="11.5" fill="#5D7789" font-family="system-ui">İstemci somut sınıfı bilmez; yalnız arayüzü ve fabrikayı tanır</text>
   <rect x="16" y="106" width="104" height="52" rx="10" fill="#EAF1F7" stroke="#186399" stroke-width="1.5"/>
   <text x="68" y="138" text-anchor="middle" font-size="13" font-weight="700" fill="#186399" font-family="system-ui">İstemci</text>
   <rect x="156" y="106" width="122" height="52" rx="10" fill="#FBF0DE" stroke="#C77A17" stroke-width="1.5"/>
@@ -99,7 +99,7 @@ Aşağıdaki diyagram istemcinin somut sınıfları hiç tanımadan yalnızca ar
 </svg>
 ```
 
-## 2. Strategy (Strateji) — davranışı çalışma anında değiştir
+## 2. Strategy (Strateji): davranışı çalışma anında değiştir
 
 **Hangi problemi çözer?** Aynı işi yapmanın birden fazla yolu (algoritma) vardır ve
 hangisinin kullanılacağı çalışma anında (runtime) belirlenir. Bunu dev bir `if/else`
@@ -125,7 +125,8 @@ seçim aslında derleme anında (compile time) sabitse strateji nesnesi gereksiz
 Kalıbı, dallar çoğalıp bağımsız test edilmesi/değiştirilmesi gereken gerçek
 algoritmalara dönüştüğünde uygula.
 
-Diyagram: tek Context, arayüz üzerinden birbirinin yerine geçebilen üç stratejiye bakar.
+Diyagram: tek bir Context, arayüz üzerinden birbirinin yerine geçebilen üç stratejiden birini
+kullanır.
 
 ```svg
 <svg viewBox="0 0 640 250" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Strategy kalıbı: Context bir strateji arayüzüne bağlıdır, üç somut strateji bu arayüzü gerçekleştirir">
@@ -155,10 +156,11 @@ Diyagram: tek Context, arayüz üzerinden birbirinin yerine geçebilen üç stra
 </svg>
 ```
 
-## 3. Proxy (Vekil) — araya kontrol / önbellek / erişim koy
+## 3. Proxy (Vekil): araya kontrol / önbellek / erişim koy
 
 **Hangi problemi çözer?** Bir nesneye erişimi doğrudan vermek istemediğin durumlar
-vardır: pahalı olduğu için tembel yüklemek (lazy loading), sonucu önbelleğe almak
+vardır: yaratması pahalı olduğu için nesneyi ancak gerektiğinde yüklemek (tembel yükleme,
+lazy loading), sonucu önbelleğe almak
 (cache), erişim iznini denetlemek, ya da çağrıları loglamak istersin. Proxy, gerçek
 nesneyle **aynı arayüzü** uygulayan bir "vekil" nesnedir; istemci onu gerçeğinden
 ayırt edemez ama vekil çağrıyı sarmalayıp araya davranış ekler.
@@ -175,14 +177,14 @@ class OnbellekliServis implements Servis {              // Servis: ortak arayüz
 ```
 
 **Ne zaman KULLANMA:** Araya koyacağın gerçek bir sorumluluk (önbellek, erişim, tembel
-yükleme) yoksa, proxy yalnızca çağrıyı olduğu gibi ileten boş bir katmandır — okumayı
+yükleme) yoksa, proxy yalnızca çağrıyı olduğu gibi ileten boş bir katmandır: okumayı
 ve hata ayıklamayı (debugging) zorlaştırır, hiçbir şey kazandırmaz. Ayrıca loglama, önbellek,
-yetki gibi **çapraz kesen** (cross-cutting — tek bir sınıfa ait olmayıp uygulamanın her yerinde
-tekrarlanan) ihtiyaçlar için çoğu zaman kullandığın çatının (framework — hazır iskelet
+yetki gibi **çapraz kesen** (cross-cutting: tek bir sınıfa ait olmayıp uygulamanın her yerinde
+tekrarlanan) ihtiyaçlar için çoğu zaman kullandığın çatının (framework: hazır iskelet
 kütüphanesi) hazır çözümü, örneğin Spring'in `@Cacheable` işaretlemesi, elle proxy yazmaktan
 daha temizdir.
 
-Diyagram: istemci vekili çağırır, vekil gerektiğinde gerçeğe iletir.
+Diyagram: istemci vekili çağırır, vekil gerektiğinde çağrıyı gerçek nesneye iletir.
 
 ```svg
 <svg viewBox="0 0 640 230" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Proxy kalıbı: istemci proxy'yi çağırır, proxy kontrol veya önbellek ekleyip gerçek nesneye iletir">
@@ -190,7 +192,7 @@ Diyagram: istemci vekili çağırır, vekil gerektiğinde gerçeğe iletir.
     <marker id="dp-pok" markerWidth="10" markerHeight="10" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#186399"/></marker>
   </defs>
   <text x="320" y="24" text-anchor="middle" font-size="15" font-weight="700" fill="#1C3247" font-family="system-ui">Proxy (Vekil): araya kontrol / önbellek / erişim koy</text>
-  <text x="320" y="43" text-anchor="middle" font-size="11.5" fill="#5D7789" font-family="system-ui">İstemci farkı görmez — Proxy ve Gerçek Nesne aynı arayüzü paylaşır</text>
+  <text x="320" y="43" text-anchor="middle" font-size="11.5" fill="#5D7789" font-family="system-ui">İstemci farkı görmez: Proxy ve Gerçek Nesne aynı arayüzü paylaşır</text>
   <rect x="20" y="118" width="132" height="54" rx="10" fill="#EAF1F7" stroke="#186399" stroke-width="1.5"/>
   <text x="86" y="150" text-anchor="middle" font-size="13" font-weight="700" fill="#186399" font-family="system-ui">İstemci</text>
   <rect x="252" y="118" width="136" height="54" rx="10" fill="#FBF0DE" stroke="#C77A17" stroke-width="1.5"/>
@@ -207,7 +209,7 @@ Diyagram: istemci vekili çağırır, vekil gerektiğinde gerçeğe iletir.
 </svg>
 ```
 
-## 4. Ne zaman hangisi? — karar rehberi
+## 4. Ne zaman hangisi: karar rehberi
 
 Kalıbı problem seçer, moda değil. Üç temel soru üç farklı kalıba götürür:
 
@@ -220,7 +222,7 @@ Kalıbı problem seçer, moda değil. Üç temel soru üç farklı kalıba göt�
   <defs>
     <marker id="dp-dok" markerWidth="10" markerHeight="10" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#5D7789"/></marker>
   </defs>
-  <text x="320" y="24" text-anchor="middle" font-size="15" font-weight="700" fill="#1C3247" font-family="system-ui">Ne zaman hangisi? — hızlı karar rehberi</text>
+  <text x="320" y="24" text-anchor="middle" font-size="15" font-weight="700" fill="#1C3247" font-family="system-ui">Ne zaman hangisi? Hızlı karar rehberi</text>
   <rect x="222" y="40" width="196" height="50" rx="12" fill="#EAF1F7" stroke="#186399" stroke-width="1.5"/>
   <text x="320" y="63" text-anchor="middle" font-size="12.5" font-weight="700" fill="#186399" font-family="system-ui">Tasarım sorunun ne?</text>
   <text x="320" y="80" text-anchor="middle" font-size="10.5" fill="#5D7789" font-family="system-ui">önce problemi adlandır</text>
@@ -250,28 +252,28 @@ neredeyse hiçbir zaman sınıf şemasında değil, **niyette**dir.
 
 ### Factory Method mu, Abstract Factory mi, basit fabrika mı?
 - **Basit fabrika (simple factory):** Tek bir metot, bir koşula bakıp hangi somut ürünü
-  yaratacağına karar verir — yukarıdaki `OdemeFabrikasi` örneği. GoF listesinde yer almaz,
+  yaratacağına karar verir. Yukarıdaki `OdemeFabrikasi` örneği budur. GoF listesinde yer almaz,
   ama pratikte en sık kullanılan biçimdir.
 - **Factory Method (Fabrika Metodu):** Üst sınıf "burada bir ürün yaratılacak" diyen bir metot
-  tanımlar, o metodun gövdesini **alt sınıflara** bıraktırır. Ayırt edici işareti: **kalıtım**
+  tanımlar, o metodun gövdesini **alt sınıflara** bırakır. Ayırt edici işareti: **kalıtım**
   kullanır ve **tek bir ürün** üretir.
 - **Abstract Factory (Soyut Fabrika):** Birbiriyle uyumlu olması gereken **bir ürün ailesini**
   birlikte üretir; örneğin `KoyuTemaFabrikasi` düğmeyi, menüyü ve kaydırma çubuğunu hep aynı
   temada verir. Ayırt edici işareti: **birden çok ilişkili ürün** ve fabrikanın kendisinin bir
   nesne olarak dolaştırılması.
-- Tek cümlelik ayraç: kararı **alt sınıf** mı veriyor (Factory Method), yoksa birlikte
+- Tek cümlelik ayırt edici soru: kararı **alt sınıf** mı veriyor (Factory Method), yoksa birlikte
   kullanılacak bir **ürün grubu** mu üretiliyor (Abstract Factory)?
 
 ### Proxy mi, Decorator mı?
 İkisi de gerçek nesneyle aynı arayüzü uygular ve çağrıyı sarmalar; şemaları neredeyse
 aynıdır. Fark niyettedir:
-- **Proxy (Vekil):** Aynı işi sunar ama erişimi **yönetir** — izin ver/verme, geciktir (tembel
-  yükleme), önbellekten dön, uzaktaki nesneye ilet. Sarmaladığı nesneyi çoğunlukla kendisi
+- **Proxy (Vekil):** Aynı işi sunar ama erişimi **yönetir**: izin verir ya da vermez, yüklemeyi
+  geciktirir (tembel yükleme), önbellekten döner, çağrıyı uzaktaki nesneye iletir. Sarmaladığı nesneyi çoğunlukla kendisi
   yaratır ve tek katman kalır.
-- **Decorator (Dekoratör / Süsleyici):** Erişimi kısıtlamaz, davranışı **zenginleştirir** —
-  bir veri akışına önce sıkıştırma, sonra şifreleme ekle. Sarmalanacak nesne dışarıdan verilir
+- **Decorator (Dekoratör / Süsleyici):** Erişimi kısıtlamaz, davranışı **zenginleştirir**.
+  Örneğin bir veri akışına önce sıkıştırma, sonra şifreleme ekler. Sarmalanacak nesne dışarıdan verilir
   ve dekoratörler **üst üste** takılabilir.
-- Ayraç sorusu: "araya girip erişimi denetliyor mu" → Proxy; "aynı işi yapıp üstüne özellik
+- Ayırt edici soru: "araya girip erişimi denetliyor mu" → Proxy; "aynı işi yapıp üstüne özellik
   katıyor ve katmanlar üst üste binebiliyor mu" → Decorator.
 
 ### Strategy mi, State mi?
@@ -282,8 +284,8 @@ Fark, **değişimi kimin tetiklediğidir**:
 - **State (Durum):** Nesnenin davranışı içinde bulunduğu duruma göre değişir ve durumlar arası
   geçişi **sistemin kendisi** yapar (`Yeni → Ödendi → Kargolandı`). Durum nesneleri bir sonraki
   duruma nasıl geçileceğini bilir.
-- Ayraç sorusu: seçimi dışarıdan biri mi yapıyor (Strategy), yoksa nesnenin kendi yaşam döngüsü
-  mü sürüklüyor (State)?
+- Ayırt edici soru: seçimi dışarıdan biri mi yapıyor (Strategy), yoksa değişimi nesnenin kendi
+  yaşam döngüsü mü yönlendiriyor (State)?
 
 ## Öz-sınav (kendini test et)
 
@@ -305,7 +307,7 @@ gerekçesini bir cümleyle yaz.
    farklı davranıyor ve bir sonraki duruma geçişi siparişin kendisi yapıyor. Strategy mi
    State mi?
 
-*İpucu (cevap değil): Her senaryoda tek soru sor — problem bir nesnenin YARATIMI mı, bir işin
+*İpucu (cevap değil): Her senaryoda tek bir soru sor: problem bir nesnenin YARATIMI mı, bir işin
 YAPILIŞ YOLU (aynı görev, değişen/seçmeli algoritma) mı, yoksa bir nesneye ERİŞİMİN denetimi
-(araya önbellek/yetki/log) mi? Cevabını yukarıdaki "Karar rehberi" diyagramının üç ekseniyle
-eşleştir; iki kalıp arasında kaldığında 5. bölümdeki niyet ayraçlarına bak.*
+(araya önbellek/yetki/log) mi? Cevabını yukarıdaki "Karar rehberi" diyagramının üç dalıyla
+eşleştir; iki kalıp arasında kaldığında 5. bölümdeki ayırt edici sorulara bak.*

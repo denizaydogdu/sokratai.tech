@@ -11,7 +11,7 @@ kaynak: "Kaynak: Anthropic 'AI assistance & coding skills' RCT (29 Oca 2026) öz
 - [ ] Göreve harcanan toplam süre; aynı işe daha çok saat ayıranlar daha iyi kavradı
 - [x] AI'ın kullanılma biçimi; çıktıyı sorgulayanlar tam delege edenleri geride bıraktı
 - [ ] Seçilen modelin gücü; daha yetenekli modeli kullananlar konuyu daha iyi kavradı
-> Açıklama: Tam delege edenlerde kavrama %40'ın altı, kavramsal sorgulama (Conceptual Inquiry) yapanlarda %65 ve üzeri. Belirleyici olan AI'ı kullanıp kullanmadığın ya da hangi modeli seçtiğin değil, nasıl kullandığın: cevap makinesi mi, düşündüren öğretmen mi?
+> Açıklama: Kavrama puanı tam delege edenlerde %40'ın altında, kavramsal sorgulama (Conceptual Inquiry) yapanlarda %65 ve üzerindeydi. Belirleyici olan AI'ı kullanıp kullanmadığın ya da hangi modeli seçtiğin değil, nasıl kullandığın: cevap makinesi mi, düşündüren öğretmen mi?
 
 ### S2: 'Commit eden sahiptir' kuralı pratikte ne anlama gelir?
 - [x] Kodu gönderen kişi, üreteni AI olsa bile sonucun tüm sorumluluğunu taşır
@@ -32,11 +32,11 @@ kaynak: "Kaynak: Anthropic 'AI assistance & coding skills' RCT (29 Oca 2026) öz
 - [x] Şema göçü, dış sözleşme değişikliği, veri silme gibi geri dönüşü zor işler
 - [ ] Değişken adlandırma ve biçimlendirme gibi okunabilirliği etkileyen işler
 - [ ] Bağımlılık sürümü yükseltmek gibi derleme çıktısını değiştirebilen işler
-> Açıklama: Ölçüt "önemli mi" değil, GERİ ALINABİLİR Mİ. Geri alınabilen hata ucuzdur, geri alınamayan hata pahalıdır. Ayrıca AGENTS.md gibi talimatlar yanlış işin ihtimalini azaltır, imkânını kaldırmaz; imkânı kaldıran şey politika ve sandbox'tır.
+> Açıklama: Ölçüt "önemli mi" değil, GERİ ALINABİLİR Mİ. Geri alınabilen hata ucuzdur, geri alınamayan hata pahalıdır. Ayrıca AGENTS.md gibi talimatlar yanlış işin ihtimalini azaltır, imkânını kaldırmaz; imkânı kaldıran şey politika ve sandbox'tır (yalıtılmış çalışma ortamı).
 
 ### S5: Mimari kata'nın temel eğitim değeri nedir?
 - [ ] Kod yazma hızını artırması; aynı problemi tekrarlayıp yazma refleksi kazandırması
 - [ ] Doğru mimari desenleri ezberletip standart çözümü hatırlamayı kolaylaştırması
 - [x] Belirsizlik altında trade-off tartışıp verilen kararı savunma pratiği yaptırması
 - [ ] Gerçek projedeki mimari kararları düşük riskle önceden onaylatma imkânı vermesi
-> Açıklama: Kata'da kod yazılmaz: eksik bilgiyle karar verilir, sonra o karar çapraz sorguya karşı savunulur — mimarın gerçek işi budur. Gerçek proje kararını onaylatmak için değil, düşük riskli ortamda tekrar tekrar pratik yapmak için kullanılır.
+> Açıklama: Kata'da kod yazılmaz: eksik bilgiyle karar verilir, sonra o karar çapraz sorguya karşı savunulur. Mimarın gerçek işi de budur. Gerçek proje kararını onaylatmak için değil, düşük riskli ortamda tekrar tekrar pratik yapmak için kullanılır.

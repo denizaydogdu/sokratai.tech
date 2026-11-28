@@ -1,8 +1,8 @@
 ---
 hafta: 5
 baslik: "Mimari Düşünme I: Nitelikler ve Trade-off"
-hedef: "Fundamentals of Software Architecture (2e) Bölüm 1–8: mimari karakteristikler, trade-off analizi, modülerlik."
-kaynak: "Kitap: Fundamentals of Software Architecture 2e (Richards & Ford) — ilk yarı"
+hedef: "Fundamentals of Software Architecture kitabı (2. baskı), Bölüm 1–8: mimari karakteristikler, ödünleşim (trade-off) analizi, modülerlik."
+kaynak: "Kitap: Fundamentals of Software Architecture, 2. baskı (Richards & Ford), ilk yarı"
 ---
 
 ## Quiz
@@ -25,7 +25,7 @@ kaynak: "Kitap: Fundamentals of Software Architecture 2e (Richards & Ford) — i
 - [ ] Scalability (ölçeklenebilirlik): kullanıcı sayısının yıllar içinde kademeli olarak büyümesi
 - [x] Elasticity (esneklik): ani yük sıçramasına kısa sürede uyum sağlayabilmek
 - [ ] Maintainability (bakım kolaylığı): değişikliği ucuz ve güvenli biçimde yapabilmek
-> Açıklama: Anahtar sözcük "kampanya günü": yük kalıcı değil, ani ve kısa sürelidir. Kademeli büyüme scalability ister, ani sıçrama elasticity ister. İş birimi niteliğin adını hiç söylemez; adını koymak mimarın işidir — adlandırılmayan nitelik ölçülemez, ölçülemeyen nitelik korunamaz.
+> Açıklama: Anahtar sözcük "kampanya günü": yük kalıcı değil, ani ve kısa sürelidir. Kademeli büyüme scalability ister, ani sıçrama elasticity ister. İş birimi niteliğin adını hiç söylemez; adını koymak mimarın işidir. Adlandırılmayan nitelik ölçülemez, ölçülemeyen nitelik korunamaz.
 
 ### S4: Mimari fitness function (uygunluk fonksiyonu) nedir?
 - [ ] Kod stilini ve girintileri otomatik düzelten biçimlendirme aracı
@@ -39,4 +39,4 @@ kaynak: "Kitap: Fundamentals of Software Architecture 2e (Richards & Ford) — i
 - [ ] Dinamik bağ her zaman daha çok sınıfı etkiler, statik bağ tek sınıfta kalır
 - [ ] Dinamik bağ yalnızca nesne yönelimli dillerde, statik bağ her dilde ortaya çıkar
 - [ ] Dinamik bağ programı yavaşlatır, statik bağın çalışma anı maliyeti sıfırdır
-> Açıklama: Statik bağ kodun kendisinde durur; bozulunca derleme veya test kırmızı yanar — ucuz hata. Dinamik bağ kodda görünmez, canlıda günler sonra tuhaf bir davranış olarak patlar — pahalı hata. Kural: dinamik bağı statik bağa çevir, yani gizli sözleşmeyi imzaya taşı. Ajanlar da yalnızca görünür bağları okuyabilir.
+> Açıklama: Statik bağ kodun kendisinde durur; bozulunca derleme veya test kırmızı yanar. Bu ucuz bir hatadır. Dinamik bağ kodda görünmez, canlı ortamda günler sonra tuhaf bir davranış olarak ortaya çıkar. Bu pahalı bir hatadır. Kural: dinamik bağı statik bağa çevir, yani gizli sözleşmeyi metot imzasına taşı. Ajanlar da yalnızca görünür bağları okuyabilir.

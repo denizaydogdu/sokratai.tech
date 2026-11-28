@@ -1,6 +1,6 @@
 ---
 baslik: "MCP: Uygulamanı Bir AI Ajanına Araç Olarak Aç"
-yazar: "AI Öğretmen — Hafta 9 (hexagonal/adapter) laboratuvarı"
+yazar: "AI Öğretmen · Hafta 9 (hexagonal/adapter) laboratuvarı"
 tarih: "2026-07-16"
 dil: "Türkçe kavram özeti (diyagramlı)"
 etiketler: 9
@@ -14,22 +14,22 @@ Bir de para tarafı var: doğru kurarsan yapay zekânın faturası sana değil, 
 
 ## Neden bu özet
 Hafta 9'da hexagonal mimariyi öğrendin: çekirdek mantık ortada durur, dış dünyaya **adapter'larla**
-bağlanır — REST bir adapter, veritabanı bir adapter. Bu kaynak, 2026'nın fiili standardı olan
+bağlanır (REST bir adapter, veritabanı da bir adapter). Bu kaynak, 2026'nın fiili standardı olan
 **MCP'yi** (Model Context Protocol) tam da bir **adapter** olarak tanıtır: uygulamanın çekirdeğini
-değiştirmeden, ona AI ajanlarının bağlanacağı yeni bir kapı açarsın. Üstelik bu kapı, kendi
-uygulaman (AI Öğretmen) üzerinden anlatılır — yani yine "öğrettiğinin canlı örneği". Ve bir bonus:
-doğru kurulursa, başkaları uygulamanı kullanır ama **senin AI faturanı ödemez.**
+değiştirmeden, ona AI ajanlarının bağlanacağı yeni bir kapı açarsın. Üstelik bu kapı kendi
+uygulaman (AI Öğretmen) üzerinden anlatılır; yani uygulama, öğrettiği konunun yine canlı örneği olur.
+Bir de bonusu var: doğru kurulursa başkaları uygulamanı kullanır ama **AI faturası sana çıkmaz.**
 
 ## Türkçe çalışma metni
 
-### 1. MCP nedir — evrensel bir priz
-**MCP** (Model Context Protocol — "model bağlam protokolü"), Anthropic'in Kasım 2024'te açık
+### 1. MCP nedir: evrensel bir priz
+**MCP** (Model Context Protocol, yani "model bağlam protokolü"), Anthropic'in Kasım 2024'te açık
 standart olarak yayımladığı ve 2026'da yaygınlaşan bir **protokoldür** (iki programın birbirini
 anlaması için üzerinde anlaştığı ortak konuşma kuralı). Tek cümlede: **bir AI ajanının (Claude
 Desktop, Claude Code, Cursor gibi) dış araçlara ve verilere bağlanması için evrensel bir priz.**
 
 En iyi benzetme **USB'dir.** USB'den önce her cihazın kendi kablosu vardı; USB gelince tek bir
-standart port oldu — fare de, klavye de, disk de aynı prize takılıyor. MCP de AI dünyasında bunu
+standart port oldu: fare de, klavye de, disk de aynı prize takılıyor. MCP de AI dünyasında bunu
 yapar: bir yeteneği **bir kez** MCP olarak yazarsan, **herhangi bir AI ajanı** onu kullanabilir
 (bkz. **Diyagram 1**). Her ajan için ayrı entegrasyon yazmazsın.
 
@@ -41,29 +41,29 @@ konuşur: **M+N** tane iş. 3 ajan + 4 uygulamada fark 12'ye karşı 7'dir; 10 a
 
 Üç rolü baştan ayır, çünkü adları sonra sık geçecek:
 
-- **Sunucu (server):** yeteneği dışarı açan taraf — bu metinde **senin uygulaman.**
+- **Sunucu (server):** yeteneği dışarı açan taraf; bu metinde **senin uygulaman.**
 - **İstemci (client):** sunucuya bağlanan taraf; ajan uygulamasının içinde yaşar ve her sunucu
   için bir tane bulunur.
 - **Barındırıcı (host):** istemcileri içinde çalıştıran ajan uygulamasının kendisi (Claude Desktop,
-  Claude Code). Dil modelini çağıran ve kararı veren odur — **sunucu değil.** Bu ayrım §3'teki
+  Claude Code). Dil modelini çağıran ve kararı veren odur, **sunucu değil.** Bu ayrım §3'teki
   "token kimde yanar" sorusunun tüm cevabıdır.
 
 Şu an senin AI Öğretmen uygulaman AI'yı **çağırıyor** (OpenRouter'a prompt gönderiyor); ok tek
-yönlü: `uygulama → AI`. MCP'nin açtığı şey **ters yön**: bir AI ajanı, senin uygulamandaki bir
-yeteneği **araç olarak** kullanabilir — örneğin "öğrenci hangi haftada?" diye sorar ya da "hafta 3
+yönlü: `uygulama → AI`. MCP bunun **ters yönünü** açar: bir AI ajanı, senin uygulamandaki bir
+yeteneği **araç olarak** kullanabilir. Örneğin "öğrenci hangi haftada?" diye sorar ya da "hafta 3
 içeriğini getir" der.
 
-### 2. Üç yapı taşı — Tools, Resources, Prompts
+### 2. Üç yapı taşı: Tools, Resources, Prompts
 MCP'nin sunduğu üç şey var (bkz. **Diyagram 2**):
 
 - **Araçlar (Tools):** Ajanın **çağırabileceği eylem/veri metotları.** Senin uygulamanda:
   "ilerlememi kaydet", "hafta detayını getir", "atölye kategorilerini listele". Bir araç, senin bir
   servis metodunun (ör. `MufredatService.haftaDetay`) dışarıya açılmış halidir.
 - **Kaynaklar (Resources):** Ajanın **okuyabileceği içerik.** Senin uygulamanda: haftalık ders
-  metni, atölye alıştırmaları, çalışma kaynakları. Bir **URI** (bir şeyin benzersiz adresi — web
-  adresi gibi) ile adreslenir: `content://hafta/3`.
+  metni, atölye alıştırmaları, çalışma kaynakları. Bir **URI** (web adresi gibi, bir şeyin benzersiz
+  adresi) ile adreslenir: `content://hafta/3`.
 - **Prompt'lar (Prompts):** Ajana **verilen hazır talimat şablonları.** Senin uygulamanda:
-  "öğretmen kimliği + Sokratik yöntem", değerlendirme rubriği. İşte can alıcı nokta bir sonraki
+  "öğretmen kimliği + Sokratik yöntem", değerlendirme rubriği. Can alıcı nokta bir sonraki
   bölümde: bu prompt'u **ajan alır ve muhakemeyi kendisi yapar.**
 
 > **Kim seçer? Yapı taşını buna göre seç.** Üçü arasındaki asıl fark *ne* sundukları değil,
@@ -84,14 +84,14 @@ MCP'nin sunduğu üç şey var (bkz. **Diyagram 2**):
 > seçeceği oturum kipleridir; `content://hafta/{no}` kaynakları uygulamanın iliştireceği metinlerdir;
 > `hafta_detay` aracı ise modelin kendi başına çağırdığı okumadır (ADR-0007).
 
-### 3. Kritik olay — token kimin? (ve MCP neden bir adapter)
+### 3. Kritik nokta: token kimin? (ve MCP neden bir adapter)
 Programın ana derdi hep şuydu: uygulaman AI'yı çağırıyor, yani **her kullanıcı senin OpenRouter
 token'ını yakıyor.** Çok kullanıcı = fatura patlar. MCP bunu tersine çevirir (bkz. **Diyagram 3**):
 
 - **Klasik model:** Kullanıcı → **senin uygulaman → LLM (OpenRouter)**. Muhakemeyi sunucun yapar,
   **token sende yanar.**
 - **MCP modeli:** Kullanıcının **kendi Claude'u** senin MCP sunucuna bağlanır. Sunucun yalnızca
-  **araç + içerik + prompt** sunar — **LLM çağırmaz.** Öğretmenlik muhakemesini **kullanıcının
+  **araç + içerik + prompt** sunar, **LLM çağırmaz.** Öğretmenlik muhakemesini **kullanıcının
   Claude'u, kullanıcının token'ıyla** yapar. **Token kullanıcıda yanar, sende değil.**
 
 Yani sunucun bir "öğretmen" değil, bir **öğretmen donanımı** olur: müfredatı, öğrencinin durumunu ve
@@ -104,38 +104,39 @@ Hafta 9'da teorisini gördüğün port-adapter, burada gerçek bir MCP adapter'�
 
 > **Sampling notu (Ekim 2026):** MCP'de bir de **Sampling** özelliği vardı: sunucu, *barındırıcının*
 > modelini kullanarak LLM çağrısı yaptırabiliyordu. 2026-07-28 revizyonu Sampling'i (Roots ve
-> Logging ile birlikte) **kullanım dışı** (deprecated) ilan etti. Kullanım dışı bırakılma penceresi
-> boyunca çalışmaya devam eder, ama yeni uygulamalara eklenmemesi istenir. Önerilen geçiş yolu
+> Logging ile birlikte) **kullanım dışı** (deprecated) ilan etti. Tamamen kaldırılana kadarki geçiş
+> süresinde çalışmaya devam eder, ama yeni uygulamalara eklenmemesi istenir. Önerilen geçiş yolu
 > "LLM sağlayıcısının API'sini doğrudan çağır"dır; bu, yukarıdaki **klasik model**dir ve token yine
 > sende yanar. Bizim token modelimizi bu değişiklik **etkilemez**, çünkü sunucumuz hiçbir LLM
 > çağrısı yapmaz; ne doğrudan ne Sampling üzerinden. Muhakeme baştan beri istemcidedir.
 
-### 4. En güzel yanı — kural mimariyle mühürlenir
+### 4. En güzel yanı: kural mimariyle mühürlenir
 "MCP LLM çağırmasın ki token kullanıcıda kalsın" bir **niyet** değil, **derleme-zamanı garantisi**
 olabilir. Bu uygulamanın **ArchUnit** (Java projelerinde mimari kuralları normal bir test gibi
 yazıp doğrulatan kütüphane) kuralı (`MimariTestleri` → `claude_yalniz_ai_paketinden`), Spring
 AI / Claude sınıflarına yalnız `ai/` paketinin bağlanmasına izin verir. Yeni `mcp/` paketi Spring
-AI'yı **import etmediği sürece** LLM çağıramaz — ve eğer yanlışlıkla çağırırsan **build kırmızı
-olur.** Yani Hafta 4'te öğrendiğin "guardrail" (belgeleme değil, zorlama), token modelini de mühürler:
+AI'yı **import etmediği sürece** LLM çağıramaz. Yanlışlıkla çağırmaya kalkarsan **build (derleme)
+kırmızı olur.** Yani Hafta 4'te öğrendiğin "guardrail" (koruma kuralı; belgeleme değil, zorlama),
+token modelini de mühürler:
 maliyet güvencesi bir yorum satırı değil, geçen ya da kalan bir testtir.
 
-### 5. Yerelden uzağa — iki taşıma (transport)
-**Taşıma (transport)**, protokolün mesajlarını fiziksel olarak hangi kanaldan geçirdiğidir —
+### 5. Yerelden uzağa: iki taşıma (transport)
+**Taşıma (transport)**, protokolün mesajlarının fiziksel olarak hangi kanaldan geçtiğidir. Yani
 protokolün *ne söylediği* değil, *nasıl iletildiği*. MCP bugün iki taşıma tanımlar:
 
-- **stdio (yerel, tek kişi):** "Standart girdi/çıktı" — iki programın birbirine boru gibi
-  bağlanması. Uygulamanı kendi makinende çalıştırırsın; Claude Desktop onu bir alt-süreç olarak
+- **stdio (yerel, tek kişi):** "Standart girdi/çıktı" demektir: iki program birbirine boru gibi
+  bağlanır. Uygulamanı kendi makinende çalıştırırsın; Claude Desktop onu bir alt-süreç olarak
   başlatır ve mesajlar bu boru üzerinden akar. Ağ yok, kimlik doğrulama yok. Öğrenmek ve kendi
   kullanımın için ideal.
 - **Streamable HTTP (uzak, çok kişi):** Sunucun herkese açık bir adreste HTTP ile yayınlanır;
-  birçok kişi kendi Claude'uyla bağlanır. Kimlik doğrulama (**OAuth** — kullanıcının parolasını
+  birçok kişi kendi Claude'uyla bağlanır. Kimlik doğrulama (**OAuth**: kullanıcının parolasını
   vermeden uygulamalara sınırlı izin verdiği yetkilendirme standardı) ve HTTPS gerekir.
-  "Başkalarına açmak" senaryosu budur — ama gerçek kullanıcı verisi işleyeceğin için burada
-  KVKK/gizlilik (bkz. `ai-yonetisim-uyum` kaynağı) mimari bir karar haline gelir.
+  "Başkalarına açmak" senaryosu budur. Ama gerçek kullanıcı verisi işleyeceğin için burada
+  KVKK/gizlilik (bkz. `ai-yonetisim-uyum` kaynağı) mimari bir karar hâline gelir.
 
 > **Tarih notu (güncellendi: Ekim 2026, eskiyebilir):** Uzak bağlantı için ilk sürümlerde ayrı bir
 > "HTTP+SSE" taşıması vardı; 2025'teki revizyonda yerini **Streamable HTTP**'ye bıraktı. Eski bir
-> eğitimde "SSE endpoint'i aç" diyorsa, o metin bu değişiklikten önceye aittir.
+> eğitim metni "SSE endpoint'i aç" diyorsa, o metin bu değişiklikten önceye aittir.
 > Sonra daha büyük bir değişiklik geldi. Resmî belirtimin sürüm sayfasına göre **güncel (current)
 > sürüm 2026-07-28'dir** (taslak değil; https://modelcontextprotocol.io/specification/versioning).
 > Değişiklik günlüğüne göre (https://modelcontextprotocol.io/specification/2026-07-28/changelog)
@@ -144,8 +145,9 @@ protokolün *ne söylediği* değil, *nasıl iletildiği*. MCP bugün iki taşı
 >   istek kendi protokol sürümünü ve istemci yeteneklerini `_meta` alanında taşır.
 > - Sunucular **`server/discover`** RPC'sini uygulamak zorundadır (desteklenen sürümler, yetenekler,
 >   kimlik). İstemcinin bunu çağırması isteğe bağlıdır.
-> - Streamable HTTP'de SSE akışını sürdürme (`Last-Event-ID`) kaldırıldı: kopan akış uçuştaki
->   isteği kaybettirir ve istemci onu yeni bir istek olarak gönderir. Eski GET uç noktası yerine
+> - Streamable HTTP'de kopan SSE akışını kaldığı yerden sürdürme (`Last-Event-ID`) kaldırıldı:
+>   akış koparsa yanıtı henüz gelmemiş istek kaybolur ve istemci onu yeni bir istek olarak gönderir.
+>   Eski GET uç noktası yerine
 >   tek bir uzun ömürlü POST yanıtı (`subscriptions/listen`) geldi.
 > - Görevler (Tasks) çekirdekten çıkıp resmî bir uzantıya taşındı. **Roots, Sampling ve Logging
 >   kullanım dışı** (deprecated) ilan edildi (bkz. §3 notu). Eski HTTP+SSE taşıması da resmen
@@ -153,29 +155,30 @@ protokolün *ne söylediği* değil, *nasıl iletildiği*. MCP bugün iki taşı
 >
 > Mimari ders şu: **durumsuz protokol ≠ durumsuz uygulama.** Sepet, taslak ya da uzun süren bir iş
 > hâlâ durum ister. Belirtimin önerisi, bu durumu bağlantıya değil, sunucunun ürettiği **açık bir
-> tutamaca** (handle) bağlamak ve tutamacı sıradan bir araç argümanı olarak taşımaktır. Ayrıntı, dört
-> durum ömrü ve "yapışkan oturum neden çözüm değil" sorusu için
+> tutamaca** (handle: durumu gösteren kimlik değeri) bağlamak ve tutamacı sıradan bir araç argümanı
+> olarak taşımaktır. Ayrıntı, dört durum ömrü ve "yapışkan oturum (sticky session) neden çözüm değil"
+> sorusu için
 > [araç çağrısı güvenilirliği](arac-cagrisi-guvenilirligi.md) §5. Bu deponun sunucusu (MCP Java SDK
 > 0.18.3, ADR-0007) el sıkışmalı **eski nesilden** bir sürüm konuşur: ADR'deki doğrulama
 > `initialize` + `tools/list` ile yapıldı. SDK'nın `ProtocolVersions` sınıfı yalnız 2024-11-05,
 > 2025-03-26, 2025-06-18 ve 2025-11-25 sürümlerini tanır; yani bu depo henüz 2025-11-25'te ve
-> durumsuz 2026-07-28'i konuşmaz. Geçiş = SDK yükseltmesi + oturum varsayımlarının gözden
-> geçirilmesi. Yeni belirtim el sıkışmalı sürümlerle birlikte çalışma
-> için bir geriye dönük uyumluluk bölümü tanımlar. Taşıma ve oturum katmanı değişse de §1-§4'te
+> durumsuz 2026-07-28'i konuşmaz. Geçiş için SDK'yı yükseltmek ve oturumla ilgili varsayımları
+> gözden geçirmek gerekir. Yeni belirtim, el sıkışmalı sürümlerle birlikte çalışabilmek
+> için bir geriye dönük uyumluluk bölümü içerir. Taşıma ve oturum katmanı değişse de §1-§4'te
 > anlattığımız hiçbir şey değişmez, çünkü **protokol taşımadan bağımsızdır**; iyi bir katman
 > ayrımının anlamı budur.
 
-### 5.1 Uzak sunucuda yetkilendirme — üç kural
+### 5.1 Uzak sunucuda yetkilendirme: üç kural
 Streamable HTTP'ye geçince sunucun bir **OAuth 2.1 kaynak sunucusu** (resource server) olur: token'ı
-kendisi basmaz, harici bir yetkilendirme sunucusunun (Auth0 gibi) bastığı token'ı **doğrular.**
+kendisi üretmez, harici bir yetkilendirme sunucusunun (Auth0 gibi) ürettiği token'ı **doğrular.**
 (stdio'da bu bölüm geçerli değildir: belirtime göre stdio uygulamaları OAuth akışını izlememeli,
 kimlik bilgisini ortamdan almalıdır.) Üç kural ezber değerindedir:
 
-1. **Kitle bağlama (audience binding, RFC 8707).** Sunucu yalnız **kendisi için** basılmış token'ı
+1. **Kitle bağlama (audience binding, RFC 8707).** Sunucu yalnız **kendisi için** üretilmiş token'ı
    kabul eder. İstemci token isterken `resource` parametresiyle sunucunun kanonik adresini (ör.
    `https://sunucu.ornek/mcp`) bildirmek zorundadır; sunucu da token'daki `aud` değerinin bu adres
-   olduğunu kontrol etmek zorundadır. Bu yapılmazsa, başka bir hizmet için alınmış bir token seninkini
-   de açar.
+   olduğunu kontrol etmek zorundadır. Bu yapılmazsa, başka bir hizmet için alınmış bir token senin
+   sunucunu da açar.
 2. **Token aktarımı (token passthrough) YOK.** Belirtimin cümlesi açıktır: MCP sunucuları kendi
    kaynakları için geçerli olmayan token'ları **kabul etmemeli ve başka yere taşımamalıdır.**
    Sunucun bir alt API'yi (GitHub, takvim) çağıracaksa, istemcinin sana verdiği token'ı ona
@@ -197,12 +200,12 @@ mührü). Kural 3 ise **eksikti**: kodda kapsam kontrolü yok, geçerli bir toke
 açıyordu (yazan iki araç `gorev_isaretle` ve `statik_quiz_kaydet` dahil). Asgari kapsam ilkesine göre
 sonraki adım okuma/yazma kapsam ayrımı olurdu. Bir not daha: 2026-07-28 revizyonu Dinamik İstemci
 Kaydını (DCR) **İstemci Kimliği Üst Veri Belgeleri** (CIMD) lehine kullanım dışı bıraktı. ADR-0007'de
-CIMD'yi Auth0 reddettiği için kapatıp DCR'ye düşmüştük. Bugün yeniden kursaydık, CIMD'yi destekleyen
+Auth0 CIMD'yi reddettiği için onu kapatıp DCR'ye geçmiştik. Bugün yeniden kursaydık, CIMD'yi destekleyen
 bir yetkilendirme sunucusu seçmek bir kriter olurdu.
 
-### 6. MCP tek katman değil — A2A onun **üstünde** durur
-Piyasada "MCP mi A2A mı?" diye bir tartışma göreceksin. **Yanlış soru** — ikisi rakip değil, farklı
-sınırların protokolü. Linux Foundation'ın kendi tanımıyla: *A2A, ajanların **kurumlar arası** nasıl
+### 6. MCP tek katman değil: A2A onun **üstünde** durur
+Piyasada "MCP mi A2A mı?" diye bir tartışma göreceksin. **Bu yanlış bir soru**: ikisi rakip değil,
+farklı sınırların protokolü. Linux Foundation'ın kendi tanımıyla: *A2A, ajanların **kurumlar arası** nasıl
 konuşup koordine olduğunu; MCP, ajanların **iç araçlara ve veri kaynaklarına** nasıl bağlandığını
 tanımlar.* İkisi de artık aynı çatı altında (MCP, Aralık 2025'te Agentic AI Foundation'a bağışlandı).
 
@@ -210,15 +213,15 @@ Bunu Hafta 9'un diliyle oku: **ikisi de adapter, ama farklı port'ların adapter
 (ajan → senin araçların), A2A yatay (ajan ↔ başka kurumun ajanı). Yani bu kaynakta öğrendiğin
 MCP adapter işi **A2A ile geçersizleşmez**; A2A gerekirse onun üstüne biner.
 
-> **Durum notu (Temmuz 2026 — eskiyebilir):** A2A ölü değil: ilk kararlı sürüm **v1.0** (Nisan 2026),
-> Java SDK GA (Haziran 2026), bir yılda 50'den 150'yi aşkın kuruluş desteği. **Ama abartma:**
-> "150+ kuruluş destekliyor" ≠ "150+ üretimde çalışıyor" — üretim kullanımının çoğu hâlâ **PoC**
-> (proof of concept — "olabilirliğini göstermek için yapılan deneme sürümü"; gerçek kullanıcıya
-> açılmış bir sistem değil) ve
-> kamuya açık retansiyon verisi yok. Bu yüzden bu program A2A'ya ayrı bir hafta ayırmıyor:
+> **Durum notu (Temmuz 2026, eskiyebilir):** A2A ölü değil: ilk kararlı sürüm **v1.0** (Nisan 2026),
+> Java SDK genel kullanımda (GA, Haziran 2026), destekleyen kuruluş sayısı bir yılda 50'den 150'nin
+> üstüne çıktı. **Ama abartma:** "150+ kuruluş destekliyor" ≠ "150+ kuruluşta üretimde çalışıyor".
+> Kullanımın çoğu hâlâ **PoC** (proof of concept: "olabilirliğini göstermek için yapılan deneme
+> sürümü"; gerçek kullanıcıya açılmış bir sistem değil) ve
+> kamuya açık retansiyon (kullanmayı sürdürme oranı) verisi yok. Bu yüzden bu program A2A'ya ayrı bir hafta ayırmıyor:
 > **bilmen gereken bir sınır, bugün kurman gereken bir sistem değil.**
 
-### 7. Priz takıldıktan sonra — araç arayüzü ve hata sözleşmesi
+### 7. Priz takıldıktan sonra: araç arayüzü ve hata sözleşmesi
 Sunucuyu açmak işin yarısı; ajan araçlarını **adından, açıklamasından ve parametre şemasından**
 seçer. Yani araç tasarımı = **prompt tasarımı + API tasarımı**. İyi bir arayüz, doğru eylemi kolay,
 yanlış eylemi zor ya da imkânsız kılar. İyi bir araç açıklaması altı şeyi söyler: ne yapar · ne
@@ -227,49 +230,52 @@ zaman kullanılır · **ne zaman kullanılMAZ** · girdi biçimi · çıktının
 İki tasarım deseni ezber değerinde:
 - **Enum kullan** (kapalı kümelerde): **enum**, "izin verilen değerlerin önceden sayıldığı liste"
   demektir (ör. durum = `bekliyor | onaylandı | iptal`). Modele serbest metin yazdırma; geçerli
-  değerleri şemada tek tek sırala — yazamadığı şeyi uyduramaz.
-- **Bul-sonra-eylem (lookup-then-act):** kullanıcı varlığa bulanık adla değinirken önce `ara(sorgu)`
-  kimlik döndürür, sonra eylem **yalnızca kesin kimlikle** çalışır. Aday birden çoksa modele
-  tahmin ettirme — ayırt edici alanlarla kullanıcıya seçtir. (Genel bir kabuk komutu yerine adanmış
-  araç açmanın nedeni de bu: `eposta_gonder` aracı onaya bağlanabilir, `bash -c "curl ..."` bağlanamaz.)
+  değerleri şemada tek tek sırala; böylece model listede olmayan bir değer uyduramaz.
+- **Bul-sonra-eylem (lookup-then-act):** kullanıcı bir kayıttan belirsiz bir adla söz ettiğinde önce
+  `ara(sorgu)` kimliği döndürür, eylem ise **yalnızca kesin kimlikle** çalışır. Aday birden çoksa
+  modele tahmin ettirme; ayırt edici alanları göstererek kullanıcıya seçtir. (Genel bir kabuk komutu
+  yerine işe özel araç açmanın nedeni de bu: `eposta_gonder` aracı onaya bağlanabilir, `bash -c "curl ..."` bağlanamaz.)
 
-**Hata sözleşmesi:** genel bir "hata oluştu", modeli tahmine zorlar — yeniden mi denesin, sorsun mu,
-dursun mu? Üretim aracı hatayı SINIFLANDIRIR:
+**Hata sözleşmesi:** genel bir "hata oluştu" mesajı modeli tahmine zorlar: yeniden mi denesin, sorsun
+mu, dursun mu? Üretimdeki bir araç hatayı SINIFLANDIRIR:
 
 | Kategori | Örnek | Doğru davranış |
 |---|---|---|
-| Geçici altyapı | zaman aşımı, 503 | güvenliyse **aracın içinde** yeniden dene — model ilk başarısız denemeyi görmemeli |
-| Kalıcı doğrulama | bozuk tarih, geçersiz enum | yapılandırılmış detay dön — model düzeltsin ya da sorsun |
+| Geçici altyapı | zaman aşımı, 503 | güvenliyse **aracın içinde** yeniden dene; model ilk başarısız denemeyi görmemeli |
+| Kalıcı doğrulama | bozuk tarih, geçersiz enum | yapılandırılmış ayrıntı dön; model düzeltsin ya da sorsun |
 | İş kuralı | uygun değil, mükerrer | yeniden-denenemez + kullanıcıya açıklama |
 | Yetki | erişim yok | yeniden-denenemez + yükseltme yolu |
 | **Belirsiz yazma durumu** | ödeme/bildirim gönderildikten sonra zaman aşımı | **belirsizliği raporla, otomatik yeniden deneme YASAK** (yan etki olmuş olabilir) |
 
-MCP'de uygulama-düzeyi hata normal araç sonucu içinde `isError: true` ile döner (protokol hatası
-değil) — kategori + `retryable` + sonraki adımlar alanlarıyla. Bu, `llm-uygulama-guvenligi`'ndeki
-"LLM-dostu hata" fikrinin araç-sözleşmesi hâli.
+MCP'de uygulama düzeyindeki hata, protokol hatası olarak değil, normal araç sonucunun içinde
+`isError: true` ile döner; yanında kategori, `retryable` ve sonraki adımlar alanları bulunur. Bu,
+`llm-uygulama-guvenligi`'ndeki "LLM-dostu hata" fikrinin araç sözleşmesine uygulanmış hâli.
 
-**Bu projeye uygula (lab + doğrulanmış cevap):** 8 aracımızı bu gözle denetledik — sonuç olumlu:
+**Bu projeye uygula (lab + doğrulanmış cevap):** 8 aracımızı bu gözle denetledik ve sonuç olumlu:
 `OgretmenMcpAraclari.arac()` sarmalayıcısı `BulunamadiException`/`IllegalArgumentException`'ı yakalayıp
-**`isError: true`** ile zarif sonuç dönüyor ("Kaynak bulunamadı: X"); çıplak istisna istemciye sızmıyor.
+**`isError: true`** ile düzgün bir sonuç dönüyor ("Kaynak bulunamadı: X"); ham istisna (exception)
+istemciye sızmıyor.
 Yani sözleşmenin çekirdeği (uygulama hatası ≠ protokol hatası) yerinde. İyileştirme payı da dürüstçe
 kayıtlı (borç listesi): düz metin mesaj, kategorili yapıya (`error_category` + `retryable` + kurtarma
-yolu — "geçerli slug'lar `kaynaklar` aracında") yükseltilebilir. `gorev_isaretle` için düşün:
-2026-10-26'ya kadar araç bir toggle'dı; yarı-yolda zaman aşımına uğrarsa istemcinin körlemesine
-tekrar denemesi işareti GERİ alıyordu — "belirsiz yazma durumu" dersinin bizdeki somut yüzü.
-ADR-0016 bunu "çevir" yerine "ayarla"ya çevirdi (opsiyonel `hedef_durum`, varsayılan `true`); artık
+yolu, ör. "geçerli slug'lar `kaynaklar` aracında") yükseltilebilir. `gorev_isaretle` için düşün:
+2026-10-26'ya kadar araç bir toggle'dı (her çağrıda durumu tersine çeviriyordu). Çağrı yarı yolda
+zaman aşımına uğrarsa istemcinin körlemesine tekrar denemesi işareti GERİ alıyordu. Bu, "belirsiz
+yazma durumu" dersinin bizdeki somut örneğiydi. ADR-0016 aracı "tersine çevir" davranışından "ayarla"
+davranışına geçirdi (opsiyonel `hedef_durum`, varsayılan `true`); artık
 tekrar denemek sonucu değiştirmez. Eski kodun tam davranışı (sıralı ve eşzamanlı tekrar, kayıp
 güncelleme), düzeltme ve düzeltme sırasında çıkan istisna sarma bulgusu için bkz.
 [araç çağrısı güvenilirliği](arac-cagrisi-guvenilirligi.md) §8.
 
-### 7.1 Araç arayüzünü zaman içinde korumak — üç kural daha
+### 7.1 Araç arayüzünü zaman içinde korumak: üç kural daha
 Araç tasarımı bir kez yapılıp bitmez; araç yayımlandıktan sonra **bir sözleşmedir.** Üç kural:
 
 - **`action` argümanı 3'ten fazla değer alıyorsa aracı böl.** `notlar(action: "listele" | "ara" |
-  "olustur" | "sil", ...)` gibi tek bir "İsviçre çakısı" araç DRY (tekrarsız) görünür, ama modeli
-  doğru eylemi bir dizeden, doğru seçenekleri de tipsiz bir sözlükten seçmeye zorlar. Model aracı
+  "olustur" | "sil", ...)` gibi her işi yapan tek bir "İsviçre çakısı" araç DRY (tekrarsız) görünür,
+  ama modeli doğru eylemi bir metin (string) değerinden, doğru seçenekleri de tipi belirsiz bir
+  sözlükten (dictionary) seçmeye zorlar. Model aracı
   **adından** seçer; dört ayrı ad (`not_listele`, `not_ara`, `not_olustur`, `not_sil`) dört ayrı
   açıklama, dört ayrı şema ve dört ayrı onay kapısı demektir. Silme aracını onaya bağlamak, ancak
-  silme ayrı bir araçsa mümkündür. Büyük kayıt defterlerinde ortak önek (`not_*`) ve kimlik
+  silme ayrı bir araçsa mümkündür. Araç sayısı çok olan sistemlerde ortak önek (`not_*`) ve kimlik
   alanlarına `pattern` (ör. `^not-[0-9]{8}$`, uydurma kimliği şemada yakalar) eklenir. Bizim sekiz
   aracımızın hiçbirinde `action` argümanı yok; her araç tek bir iş yapıyor.
 - **Yeniden adlandırma yerine sürümle.** Yayımlanmış bir aracın adını değiştirmek ya da argüman
@@ -277,8 +283,8 @@ Araç tasarımı bir kez yapılıp bitmez; araç yayımlandıktan sonra **bir s�
   testler sessizce bozulur. Doğru yol yeni bir ad eklemek (`gorev_durum_ayarla` ya da `..._v2`),
   eskisini bir sürüm boyunca "kullanım dışı" diye işaretlemek ve sonra kaldırmaktır. **Anlamı**
   değiştirmek de adı değiştirmek kadar kırıcıdır: `gorev_isaretle`'yi aynı adla "toggle"dan
-  "ayarla"ya çevirmek, onu eski anlamıyla çağıran istemciyi bozar. (Bu depoda tam olarak bu yapıldı —
-  aşağıdaki kutu kararı dürüstçe tartışıyor.)
+  "ayarla"ya çevirmek, onu eski anlamıyla çağıran istemciyi bozar. (Bu depoda tam olarak bu yapıldı;
+  aşağıdaki kutu bu kararı dürüstçe tartışıyor.)
 - **Annotation'lar ipucudur, zorlama değil.** MCP araç tanımına `readOnlyHint`, `destructiveHint`,
   `idempotentHint`, `openWorldHint` gibi ipuçları eklenebilir. Barındırıcı bunları onay penceresi ve
   sunum için kullanır. Ama resmî belirtim (2026-07-28, Tools) istemcinin bunları **güvenilir bir
@@ -288,17 +294,17 @@ Araç tasarımı bir kez yapılıp bitmez; araç yayımlandıktan sonra **bir s�
   [araç çağrısı güvenilirliği](arac-cagrisi-guvenilirligi.md) §3). Bizim araçlarımız bugün hiç
   annotation taşımıyor (`Tool.builder()` yalnız ad, açıklama ve şema alıyor).
 
-> **Gerçek vaka — kuralı bilerek esnettik (ADR-0016, 2026-10-26).** `gorev_isaretle` toggle'dan
+> **Gerçek vaka: kuralı bilerek esnettik (ADR-0016, 2026-10-26).** `gorev_isaretle` toggle'dan
 > "ayarla"ya çevrildi ve **adı korundu**; yeni bir `gorev_durum_ayarla` eklenmedi. Yani yukarıdaki
 > ikinci kuralın tam karşısındaki şey yapıldı: aynı ad, yeni anlam. Bunu yapmak neden savunulabilir
-> oldu? (1) MCP sunucuları 2026-10-21'de kapandı; tek istemci yereldeki stdio bağlantısı — eski anlamı
-> ezberlemiş uzak bir istemci yok. (2) Yeni `hedef_durum` parametresi **opsiyonel**; eski üç argümanla
+> oldu? (1) MCP sunucuları 2026-10-21'de kapandı; tek istemci yereldeki stdio bağlantısı, yani eski
+> anlamı ezberlemiş uzak bir istemci yok. (2) Yeni `hedef_durum` parametresi **opsiyonel**; eski üç argümanla
 > gelen çağrı hâlâ geçerli. (3) Varsayılan `true`, yani "işaretle" adının sözlük anlamıyla uyumlu:
 > eski çağrıların neredeyse tamamı zaten "tamamlandı yap" niyetiyle yapılıyordu; değişen tek davranış,
 > tamamlanmış görevi aynı çağrıyla **geri açmanın** artık mümkün olmaması (bunun için açıkça
 > `hedef_durum: false` gerekir). Ama dürüst olalım: bu, kuralın **istisnası**dır, yeni kuralı değil.
 > Uzakta çalışan, birden çok istemcili bir sunucuda doğru yol yeni araç adı (ya da sürüm) eklemek,
-> eskisini bir sürüm boyunca "kullanım dışı" diye işaretlemek ve sonra kaldırmak olurdu — çünkü
+> eskisini bir sürüm boyunca "kullanım dışı" diye işaretlemek ve sonra kaldırmak olurdu, çünkü
 > hangi istemcinin toggle davranışına (ör. "aynı çağrıyla geri al") dayandığını bilemezsin. Web
 > tarafında aynı kararın tersi verildi: `POST /api/gorev/toggle` sessizce yeniden anlamlandırılmadı,
 > **kaldırılıp** yerine yeni ad (`POST /api/gorev/durum`, `tamamlandi` zorunlu) geldi.
@@ -306,26 +312,26 @@ Araç tasarımı bir kez yapılıp bitmez; araç yayımlandıktan sonra **bir s�
 > *Şerh:* Bu kuralların kaynağı olan ders (AIEFS 13-05), açıklama ve ad iyileştirmesinin seçim
 > doğruluğunu "10–20 puan" (Composio), "%62'den %89'a" (Databricks) artırdığını ve tek parça
 > araçların "%15–30 daha kötü seçildiğini" söyler. Bunlar satıcıların kendi iç benchmark'larıdır,
-> bağımsız doğrulanmamıştır ve kendi araç setine taşınmaz. Kuralların kendisi sağlam mühendislik
+> bağımsız olarak doğrulanmamıştır ve senin araç setine aynen uygulanamaz. Kuralların kendisi sağlam mühendislik
 > gerekçesine dayanır (ad = seçim yüzeyi, ayrı araç = ayrı kapı); rakamlar dayanmaz. Kendi
 > değerlendirme setinle ölç (bkz. `ai-verimlilik-olcumu`).
 
-> Bu bölümün çerçevesi, Claude Certified Architect – Foundations sınavının topluluk rehberinden
-> (Daron Yöndem) süzülmüştür — sınav, araç arayüzünü ve hata sözleşmesini **mimari beceri** olarak
+> Bu bölümün çerçevesi, Claude Certified Architect (Foundations) sınavının topluluk rehberinden
+> (Daron Yöndem) süzülmüştür. Sınav, araç arayüzünü ve hata sözleşmesini **mimari beceri** olarak
 > ölçüyor; bkz. Başlangıç Kılavuzu'ndaki dış hedef notu.
 
 > **Özet:** MCP, uygulamanın yeteneklerini AI ajanlarına açan bir **adapter**'dır. Doğru kurulursa
-> (sunucu LLM çağırmaz) muhakeme ve maliyet bağlanan kullanıcıda kalır. Bu, hem Hafta 9'un
-> (hexagonal) hem Hafta 4'ün (guardrail) canlı bir sentezidir.
+> (sunucu LLM çağırmaz) muhakeme ve maliyet bağlanan kullanıcıda kalır. Bu konu, Hafta 9'u
+> (hexagonal) ve Hafta 4'ü (guardrail) canlı bir örnekte birleştirir.
 
-## Diyagram 1 — MCP: bir kez yaz, her ajan bağlansın (evrensel priz)
+## Diyagram 1: MCP ile bir kez yaz, her ajan bağlansın (evrensel priz)
 
 ```svg
 <svg viewBox="0 0 640 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="MCP evrensel priz: farklı AI ajanları (Claude Desktop, Claude Code, Cursor) tek bir MCP protokolü üzerinden senin uygulamanın araçlarına bağlanır">
   <defs>
     <marker id="mcp1-ok" markerWidth="10" markerHeight="10" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#186399"/></marker>
   </defs>
-  <text x="320" y="26" text-anchor="middle" font-size="15" font-weight="700" fill="#1C3247" font-family="system-ui">MCP: bir kez yaz — herhangi bir AI ajanı bağlansın</text>
+  <text x="320" y="26" text-anchor="middle" font-size="15" font-weight="700" fill="#1C3247" font-family="system-ui">MCP: bir kez yaz, herhangi bir AI ajanı bağlansın</text>
   <text x="320" y="45" text-anchor="middle" font-size="11" fill="#5D7789" font-family="system-ui">USB gibi: tek standart priz, farklı cihazlar aynı porta takılır.</text>
 
   <rect x="24" y="78" width="150" height="40" rx="9" fill="#EEF0FF" stroke="#4F46E5" stroke-width="1.4"/>
@@ -349,14 +355,14 @@ Araç tasarımı bir kez yapılıp bitmez; araç yayımlandıktan sonra **bir s�
   <line x1="174" y1="198" x2="264" y2="156" stroke="#186399" stroke-width="1.6" marker-end="url(#mcp1-ok)"/>
   <line x1="374" y1="148" x2="464" y2="148" stroke="#186399" stroke-width="1.8" marker-end="url(#mcp1-ok)"/>
 
-  <text x="320" y="270" text-anchor="middle" font-size="10.5" fill="#1C3247" font-family="system-ui">Her ajan için ayrı entegrasyon yok — hepsi aynı MCP prizinden bağlanır.</text>
+  <text x="320" y="270" text-anchor="middle" font-size="10.5" fill="#1C3247" font-family="system-ui">Her ajan için ayrı entegrasyon yok; hepsi aynı MCP prizinden bağlanır.</text>
 </svg>
 ```
 
-## Diyagram 2 — Üç yapı taşı: Tools, Resources, Prompts
+## Diyagram 2: Üç yapı taşı (Tools, Resources, Prompts)
 
 ```svg
-<svg viewBox="0 0 640 288" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="MCP üç primitifi: araçlar (eylem/veri), kaynaklar (içerik), prompt'lar (talimat şablonu) — her biri AI Öğretmen örneğiyle">
+<svg viewBox="0 0 640 288" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="MCP üç primitifi: araçlar (eylem/veri), kaynaklar (içerik), prompt'lar (talimat şablonu); her biri AI Öğretmen örneğiyle">
   <text x="320" y="26" text-anchor="middle" font-size="15" font-weight="700" fill="#1C3247" font-family="system-ui">MCP'nin üç yapı taşı</text>
   <text x="320" y="45" text-anchor="middle" font-size="11" fill="#5D7789" font-family="system-ui">Ajana ne sunarsın: eylem, içerik, talimat.</text>
 
@@ -392,7 +398,7 @@ Araç tasarımı bir kez yapılıp bitmez; araç yayımlandıktan sonra **bir s�
 </svg>
 ```
 
-## Diyagram 3 — Token kimde? Klasik vs MCP (ve adapter)
+## Diyagram 3: Token kimde? Klasik vs MCP (ve adapter)
 
 ```svg
 <svg viewBox="0 0 640 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Klasik modelde sunucu LLM çağırır token sende yanar; MCP modelinde kullanıcının Claude'u muhakemeyi yapar token kullanıcıda yanar; MCP bir adapter'dır">
@@ -403,7 +409,7 @@ Araç tasarımı bir kez yapılıp bitmez; araç yayımlandıktan sonra **bir s�
   <text x="320" y="24" text-anchor="middle" font-size="15" font-weight="700" fill="#1C3247" font-family="system-ui">Token kimde yanar? Klasik vs MCP</text>
 
   <rect x="24" y="44" width="592" height="118" rx="11" fill="#FBEAE7" stroke="#BE4433" stroke-width="1.3"/>
-  <text x="44" y="66" text-anchor="start" font-size="11.5" font-weight="700" fill="#BE4433" font-family="system-ui">KLASİK — muhakeme sunucuda, TOKEN SENDE</text>
+  <text x="44" y="66" text-anchor="start" font-size="11.5" font-weight="700" fill="#BE4433" font-family="system-ui">KLASİK: muhakeme sunucuda, TOKEN SENDE</text>
   <rect x="48" y="80" width="120" height="52" rx="8" fill="#FFFFFF" stroke="#5D7789" stroke-width="1.2"/>
   <text x="108" y="110" text-anchor="middle" font-size="10.5" fill="#1C3247" font-family="system-ui">kullanıcı</text>
   <rect x="260" y="80" width="130" height="52" rx="8" fill="#FFFFFF" stroke="#186399" stroke-width="1.3"/>
@@ -416,13 +422,13 @@ Araç tasarımı bir kez yapılıp bitmez; araç yayımlandıktan sonra **bir s�
   <line x1="390" y1="106" x2="480" y2="106" stroke="#BE4433" stroke-width="1.8" marker-end="url(#mcp3-a)"/>
 
   <rect x="24" y="176" width="592" height="118" rx="11" fill="#E9F4EE" stroke="#25804C" stroke-width="1.3"/>
-  <text x="44" y="198" text-anchor="start" font-size="11.5" font-weight="700" fill="#25804C" font-family="system-ui">MCP — muhakeme istemcide, TOKEN KULLANICIDA</text>
+  <text x="44" y="198" text-anchor="start" font-size="11.5" font-weight="700" fill="#25804C" font-family="system-ui">MCP: muhakeme istemcide, TOKEN KULLANICIDA</text>
   <rect x="48" y="212" width="150" height="52" rx="8" fill="#EEF0FF" stroke="#4F46E5" stroke-width="1.3"/>
   <text x="123" y="235" text-anchor="middle" font-size="10.5" font-weight="700" fill="#4F46E5" font-family="system-ui">kullanıcının Claude'u</text>
   <text x="123" y="252" text-anchor="middle" font-size="9" fill="#25804C" font-family="system-ui">💳 fatura KULLANICIDA</text>
   <rect x="290" y="212" width="150" height="52" rx="8" fill="#FFFFFF" stroke="#186399" stroke-width="1.3"/>
   <text x="365" y="232" text-anchor="middle" font-size="10.5" font-weight="700" fill="#186399" font-family="system-ui">MCP sunucun</text>
-  <text x="365" y="249" text-anchor="middle" font-size="9" fill="#5D7789" font-family="system-ui">LLM çağırmaz — araç/içerik/prompt</text>
+  <text x="365" y="249" text-anchor="middle" font-size="9" fill="#5D7789" font-family="system-ui">LLM çağırmaz: araç/içerik/prompt</text>
   <line x1="198" y1="238" x2="288" y2="238" stroke="#25804C" stroke-width="1.8" marker-end="url(#mcp3-b)"/>
   <line x1="288" y1="228" x2="200" y2="228" stroke="#25804C" stroke-width="1.4" marker-end="url(#mcp3-b)"/>
   <text x="470" y="234" text-anchor="start" font-size="10" fill="#1C3247" font-family="system-ui">Sunucu araç+talimat verir;</text>
@@ -434,30 +440,31 @@ Araç tasarımı bir kez yapılıp bitmez; araç yayımlandıktan sonra **bir s�
 ```
 
 ## Öz-sınav (kendini test et)
-1. MCP'yi "evrensel priz (USB)" benzetmesiyle anlat. "Bir kez yaz, her ajan bağlansın" ne demek —
+1. MCP'yi "evrensel priz (USB)" benzetmesiyle anlat. "Bir kez yaz, her ajan bağlansın" ne demek?
    MCP olmadan aynı yeteneği üç farklı ajana açmak için ne yapman gerekirdi? **M×N → M+N** ifadesini
-   5 ajan ve 6 uygulama için sayı vererek doldur.
+   5 ajan ve 6 uygulama için sayılarla hesapla.
 2. Barındırıcı (host), istemci (client) ve sunucu (server) rollerini kendi cümlenle ayır. Bu üçünden
-   **hangisi dil modelini çağırır** — ve bu cevap §3'teki "token kimde yanar" sorusuyla nasıl aynı
-   cevaptır?
+   **hangisi dil modelini çağırır**? Bu cevap neden §3'teki "token kimde yanar" sorusunun da
+   cevabıdır?
 3. MCP'nin üç yapı taşını (tool/resource/prompt) kendi uygulamandan birer örnekle eşle. "Prompt"
-   yapı taşı neden diğer ikisinden farklı — muhakemeyi kim yapar?
-4. Klasik modelde bir öğrenci senin uygulamanı kullanınca token kimde yanar? MCP modelinde kim?
-   Bu farkın çok-kullanıcı senaryosundaki sonucu ne?
+   yapı taşı neden diğer ikisinden farklı? Muhakemeyi kim yapar?
+4. Klasik modelde bir öğrenci senin uygulamanı kullanınca token kimde yanar? MCP modelinde kimde?
+   Çok kullanıcılı bir senaryoda bu farkın sonucu ne olur?
 5. "MCP LLM çağırmamalı" kuralı neden sadece bir yorum satırı değil de bir **derleme-zamanı
-   garantisi** olabiliyor? Hangi ArchUnit kuralı bunu sağlıyor, ve yanlışlıkla ihlal edersen ne olur?
+   garantisi** olabiliyor? Hangi ArchUnit kuralı bunu sağlıyor ve kuralı yanlışlıkla ihlal edersen
+   ne olur?
 6. MCP neden bir "adapter" (Hafta 9 hexagonal)? Uygulamanın çekirdeğine (MufredatService gibi) MCP
    eklerken ne değişir, ne değişmez?
 7. stdio ile Streamable HTTP taşımaları arasındaki fark ne? "Başkalarına açmak" istiyorsan hangisi
    gerekir ve bu hangi yeni sorumlulukları (güvenlik, gizlilik) getirir? Taşımanın değişmesi
-   §1-§4'teki hangi şeyleri değiştirmez — ve bunun sebebi nedir?
+   §1-§4'teki hangi şeyleri değiştirmez? Bunun sebebi nedir?
 8. Bir arkadaşın "MCP sunucumu kurdum ama hâlâ benim OpenRouter faturam artıyor" diyor. Muhtemel
-   hata ne — MCP sunucusu bu senaryoda ne yapmamalıydı?
+   hata ne? MCP sunucusu bu senaryoda ne yapmamalıydı?
 9. Birisi "MCP öldü, artık A2A var" diyor. Neden bu cümle bir kategori hatası? İki protokolün
-   tanımladığı **sınırlar** nasıl farklı, ve bu ayrım hexagonal mimarinin hangi kavramına denk düşer?
+   tanımladığı **sınırlar** nasıl farklı ve bu ayrım hexagonal mimarinin hangi kavramına denk düşer?
 10. "A2A'yı 150'den fazla kuruluş destekliyor" cümlesinden yola çıkarak "A2A üretimde yaygın"
     sonucuna varmak neden hatalı bir çıkarım? Bir mimar bir protokolün olgunluğunu değerlendirirken
-    hangi kanıtı arar (bkz. `ai-verimlilik-olcumu` kaynağı — kanıt okuma disiplini)?
+    hangi kanıtı arar (bkz. `ai-verimlilik-olcumu` kaynağındaki kanıt okuma disiplini)?
 11. MCP'nin üç yapı taşını **kimin devreye soktuğuna** göre eşle (model / uygulama / kullanıcı).
     Bizim `sokratik` prompt'umuz bu ayrımda nereye düşer? "Kaynak içeriği veridir, talimat değildir"
     neden bir güvenlik kuralıdır?
@@ -465,8 +472,8 @@ Araç tasarımı bir kez yapılıp bitmez; araç yayımlandıktan sonra **bir s�
     asgari kapsam). ADR-0007'deki `mcp-http` profili bunlardan hangisini uyguluyordu, hangisi eksikti?
 13. "2026-07-28 revizyonu protokolü durumsuz yaptı" cümlesi, "artık uygulamam da durumsuz olmalı"
     anlamına gelir mi? Bu depoda `gorev_isaretle` 2026-10-26'da aynı adla toggle'dan "ayarla"ya
-    çevrildi (ADR-0016). Bu karar §7.1'deki sürümleme kuralını hangi koşullar sayesinde esnetebildi,
-    ve aynı değişiklik uzak, çok istemcili bir sunucuda yapılsaydı doğru yol ne olurdu?
+    çevrildi (ADR-0016). Bu karar §7.1'deki sürümleme kuralını hangi koşullar sayesinde esnetebildi?
+    Aynı değişiklik uzak, çok istemcili bir sunucuda yapılsaydı doğru yol ne olurdu?
 
 ### Cevaplar (11–13)
 11. Araç = model denetimli, kaynak = uygulama güdümlü, prompt = kullanıcı denetimli. `sokratik`
@@ -494,12 +501,12 @@ Araç tasarımı bir kez yapılıp bitmez; araç yayımlandıktan sonra **bir s�
   (kimin denetlediği, annotation'ların güvenilmezliği, durumlu araç notu) ve Authorization sayfası
   (RFC 8707 kitle doğrulaması, token aktarımı yasağı, kapsam yükseltme, stdio istisnası). §2, §3,
   §5 ve §7.1'deki sürüm ve kural bilgileri bu sayfalardan doğrulandı.
-- **AI Engineering from Scratch** — Rohit Ghumare, github.com/rohitg00/ai-engineering-from-scratch,
+- **AI Engineering from Scratch**, Rohit Ghumare, github.com/rohitg00/ai-engineering-from-scratch,
   MIT Lisansı, "Copyright (c) 2026 Rohit Ghumare". Büyütmede yararlanılan dersler: Faz 11 · 14 Model
   Context Protocol; Faz 13 · 05 Tool Schema Design, 06 MCP Fundamentals, 07 Building an MCP Server,
   09 MCP Transports, 10 MCP Resources and Prompts, 11 MCP Sampling, 16 MCP Security: OAuth 2.1.
   Uyarlama notu: çeviri değil sentezdir. Ders kodu kopyalanmadı. Derslerdeki satıcı benchmark
   rakamları §7.1'de *Şerh* olarak işaretlendi. Derslerin MCP sürüm iddiaları üçüncü taraf
   kaynaklara değil, yukarıdaki resmî belirtime göre yazıldı.
-- §7'nin çerçevesi: Claude Certified Architect – Foundations topluluk rehberi (Daron Yöndem), §7'deki
+- §7'nin çerçevesi: Claude Certified Architect (Foundations) topluluk rehberi (Daron Yöndem); §7'deki
   nota bakınız.

@@ -7,12 +7,12 @@ baslik: "AI Engineering ≠ ML Engineering"
 ## Ders
 
 ### Bugün ne öğreneceksin?
-Bugüne kadar mimari konuştuk; bu hafta **yapay zekâ mühendisliği** başlıyor. Günün sonunda üç şeyi kendi cümlelerinle anlatabileceksin: "dil modeli" dediğimiz şey aslında ne yapıyor, AI mühendisliği klasik makine öğrenmesinden neden farklı, ve hazır bir modeli kendi işine uydurmanın üç yolu hangi **ayrı** problemi çözüyor.
+Bugüne kadar mimari konuştuk; bu hafta **yapay zekâ mühendisliği** başlıyor. Günün sonunda üç şeyi kendi cümlelerinle anlatabileceksin: "dil modeli" dediğimiz şey aslında ne yapıyor, AI mühendisliği klasik makine öğrenmesinden neden farklı ve hazır bir modeli kendi işine uydurmanın üç yolundan her biri hangi **ayrı** problemi çözüyor.
 
 ### Temel kavramlar
-- **Dil modeli (LLM — Large Language Model, "büyük dil modeli"):** İnternet ölçeğinde metinle beslenmiş, tek bir şey yapan bir program: *"bu metinden sonra en olası devam nedir?"* Cevabı kelime kelime tahmin ederek üretir. Düşünmez, aramaz, hatırlamaz — **tahmin eder**. Bu cümleyi aklında tut; haftanın yarısı bundan çıkıyor.
+- **Dil modeli (LLM, Large Language Model: "büyük dil modeli"):** İnternet ölçeğinde metinle beslenmiş, tek bir şey yapan bir program: *"bu metinden sonra en olası devam nedir?"* Cevabı kelime kelime tahmin ederek üretir. Düşünmez, aramaz, hatırlamaz; yalnızca **tahmin eder**. Bu cümleyi aklında tut, çünkü haftanın yarısı bu fikre dayanıyor.
 - **Token:** Modelin gördüğü en küçük metin parçası; kabaca bir kelime ya da kelimenin bir parçası. Model harf değil token sayar ve ücretlendirme token başınadır.
-- **Prompt (yönerge):** Modele verdiğin metin talimat. Modelin gördüğü tek gerçeklik budur; prompt'ta olmayan hiçbir şeyi bilmez.
+- **Prompt (yönerge):** Modele verdiğin yazılı talimat. Modelin gördüğü tek gerçeklik budur; prompt'ta olmayan hiçbir şeyi bilmez.
 - **Temel model (foundation model):** Başkasının milyonlarca dolar harcayarak eğittiği, genel amaçlı dev model. Sen onu eğitmezsin, **kiralarsın**.
 - **Adaptasyon:** Hazır modeli kendi işine uydurma. Üç yolu var: prompt, RAG, fine-tune.
 
@@ -30,20 +30,20 @@ Klasik makine öğrenmesi: veri topla → model eğit → yayına al. AI mühend
 |---|---|---|---|
 | **Neyi çözer** | Talimat belirsiz | Model **bilmiyor** | Biliyor ama istediğin gibi davranmıyor |
 | **Model değişir mi** | Hayır | Hayır | **Evet** (ağırlıklar) |
-| **Bilgi güncellenince** | — | Belgeyi değiştir, bitti | Yeniden eğit |
+| **Bilgi güncellenince** | - | Belgeyi değiştir, bitti | Yeniden eğit |
 | **Maliyet / süre** | Dakikalar, bedava | Saatler–günler, orta | Günler, pahalı; eğitim verisi şart |
 | **Deneme sırası** | **Her zaman önce** | Prompt yetmezse | En son çare |
 
 ### Somut örnek
-Şu an kullandığın bu proje tam olarak böyle çalışıyor. Kendi modelimizi eğitmedik; OpenRouter üzerinden hazır bir temel modeli çağırıyoruz. AI Öğretmen'in kişiliği ve kuralları `prompts/sistem-kimlik.st` dosyasında **düz metin** olarak duruyor — yani davranışı fine-tune ile değil, **prompt ile** kuruldu. Haftanın içeriğini bilmesi ise `content/` altındaki metinlerin çağrı anında prompt'a eklenmesiyle olur: bu da RAG'ın en yalın hâlidir.
+Şu an kullandığın bu proje tam olarak böyle çalışıyor. Kendi modelimizi eğitmedik; OpenRouter üzerinden hazır bir temel modeli çağırıyoruz. AI Öğretmen'in kişiliği ve kuralları `prompts/sistem-kimlik.st` dosyasında **düz metin** olarak duruyor. Yani davranışı fine-tune ile değil, **prompt ile** kuruldu. Haftanın içeriğini bilmesi ise `content/` altındaki metinlerin çağrı anında prompt'a eklenmesiyle olur: bu da RAG'ın en yalın hâlidir.
 
 ### Sık yapılan hata
-En sık refleks: *"şirket belgelerimizle modeli eğitelim."* Neredeyse her zaman yanlıştır. Belge yarın değişirse fine-tune'u baştan yaparsın; RAG'de dosyayı değiştirir, geçersin. Üstelik RAG **kaynak gösterebilir** ("bu cevap şu belgenin 3. sayfasından"), fine-tune gösteremez. İkinci hata bunun tersi: prompt'la beş dakikada çözülecek bir biçim sorununu fine-tune'a taşımak — en pahalı aracı en ucuz problem için seçmek.
+En sık refleks: *"şirket belgelerimizle modeli eğitelim."* Neredeyse her zaman yanlıştır. Belge yarın değişirse fine-tune'u baştan yaparsın; RAG'de dosyayı değiştirir, geçersin. Üstelik RAG **kaynak gösterebilir** ("bu cevap şu belgenin 3. sayfasından"), fine-tune gösteremez. İkinci hata bunun tersi: prompt'la beş dakikada çözülecek bir biçim sorununu fine-tune'a taşımak, yani en pahalı aracı en ucuz problem için seçmek.
 
 ### Görevlere geçmeden önce
 Tek soruyu ezberle: **"Modelin eksiği bilgi mi, davranış mı, yoksa sadece kötü talimat mı?"** Kötü talimat → prompt. Eksik bilgi → RAG. Yanlış davranış (ve prompt çare olmadı) → fine-tune. Görevde senaryolarını bu üç kutuya yerleştirirken her biri için bu soruyu yüksek sesle cevapla; kutulardan hangisine düştüğünü gerekçesiyle yaz.
 
-**Derinleşmek istersen:** "Bu haftanın kaynakları" kutusundaki **Ajan Mimarisi Desenleri** metninin §1 "İş akışı mı ajan mı — grafı kim sahipleniyor?" bölümü, bugünkü "hazır modeli al → adapte et" fikrinin bir adım sonrasını anlatır: prompt, RAG ve araçlarla güçlendirilmiş model çağrılarını (augmented LLM) önceden yazılmış senin kodun mu sıralıyor (iş akışı / workflow), yoksa model çalışma anında kendisi mi seçiyor (ajan / agent)? Bugünkü "önce prompt, en son fine-tune" sırası gibi metnin kuralı da en basitle başlamaktır: çoğu iş için sabit bir iş akışı yeter. Şimdilik zorunlu değil; ajanlara geldiğinde geri dönebilirsin.
+**Derinleşmek istersen:** "Bu haftanın kaynakları" kutusundaki **Ajan Mimarisi Desenleri** metninin §1 "İş akışı mı ajan mı: grafı kim sahipleniyor?" bölümü, bugünkü "hazır modeli al → adapte et" fikrinin bir adım sonrasını anlatır: prompt, RAG ve araçlarla güçlendirilmiş model çağrılarını (augmented LLM) önceden yazılmış senin kodun mu sıralıyor (iş akışı / workflow), yoksa model çalışma anında kendisi mi seçiyor (ajan / agent)? Metnin kuralı da bugünkü "önce prompt, en son fine-tune" sırasına benzer: en basitiyle başla, çünkü çoğu iş için sabit bir iş akışı yeter. Şimdilik zorunlu değil; ajanlara geldiğinde geri dönebilirsin.
 
 ## Görevler
 - [ ] Türkçe çalışma metnini oku ('Bu haftanın kaynakları' kutusundan; kaynak: kitap Böl. 1)

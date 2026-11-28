@@ -1,6 +1,6 @@
 ---
 baslik: "Temeller Tazeleme: Secure Coding 101"
-yazar: "Faz 0 — Mühendislik Temelleri"
+yazar: "Faz 0: Mühendislik Temelleri"
 tarih: "2026-07-10"
 dil: "Türkçe kavram özeti (diyagramlı)"
 etiketler: 4
@@ -8,7 +8,7 @@ etiketler: 4
 
 ### Bu metin ne anlatıyor?
 Bu metin, yazdığın programın kötü niyetli birinin eline geçtiğinde ne olacağını düşünerek
-kod yazmayı anlatıyor. Ana fikir tek cümlede: **dışarıdan gelen hiçbir veriye güvenme, ve
+kod yazmayı anlatıyor. Ana fikir tek cümlede: **dışarıdan gelen hiçbir veriye güvenme ve
 bir şey ters gittiğinde saldırgana bilgi verme.** Sırasıyla şunları göreceksin: gelen veriyi
 denetleme, güvendiğin bölgeyle güvenmediğin bölgenin sınırı, en yaygın saldırı olan enjeksiyon
 ve ona karşı parametreli sorgu, hataları güvenli yönetme, güvenli varsayılanlar, parolaların
@@ -22,7 +22,7 @@ temel refleksleri tazeler: girdiyi doğrula, güven sınırını bil, veriyi kom
 sızdırmadan yönet, varsayılanları güvenli kur, sırları doğru sakla.
 
 ## Girdi doğrulama (input validation)
-Dışarıdan gelen her veri — form alanı, URL parametresi, dosya adı, API gövdesi — aksi
+Dışarıdan gelen her veri (form alanı, URL parametresi, dosya adı, API gövdesi) aksi
 kanıtlanana kadar **kötü niyetli** sayılır. Doğrulamanın altın kuralı: **izin-listesi
 (allowlist) her zaman kara-listeden (denylist/blacklist) iyidir.**
 
@@ -38,12 +38,12 @@ kanıtlanana kadar **kötü niyetli** sayılır. Doğrulamanın altın kuralı: 
 (yorum, mesaj, ürün açıklaması) kullanıcı zaten her karakteri yazabilmelidir; orada dar bir
 izin-listesi kurulamaz. Bu alanlarda güvenlik girdiyi kısıtlayarak değil, veriyi
 **kullanıldığı yere göre doğru biçimde kaçırarak** (escaping / output encoding) ve komuttan
-ayırarak sağlanır — bir sonraki bölümün konusu. Ayrıca doğrulama tek başına yeterli bir
+ayırarak sağlanır. Bu, Enjeksiyon bölümünün konusu. Ayrıca doğrulama tek başına yeterli bir
 savunma değildir; katmanlardan yalnızca biridir.
 
 ## Güven sınırı (trust boundary)
 **Güven sınırı**, güvenmediğin bir bölge ile güvendiğin çekirdeğin arasındaki çizgidir.
-İstemci (client), ağ (network), üçüncü taraf servisler — hepsi sınırın **dışındadır** ve
+İstemci (client), ağ (network), üçüncü taraf servisler: hepsi sınırın **dışındadır** ve
 oradan gelen hiçbir şeye güvenilmez. Doğrulama, tam da bu sınırın üstünde yapılır: veri
 çekirdeğe girmeden önce temizlenir.
 
@@ -125,7 +125,7 @@ içinde birleştirilir** (string birleştirme). O anda veritabanı, hangi kısm�
 veri olduğunu ayırt edemez:
 
 ```java
-// YANLIŞ — veri ile komut aynı metinde birleşiyor
+// YANLIŞ: veri ile komut aynı metinde birleşiyor
 String sql = "SELECT * FROM kullanici WHERE ad = '" + ad + "'";
 ```
 
@@ -133,7 +133,7 @@ Kullanıcı `ad` alanına `' OR '1'='1` yazarsa sorgunun anlamı değişir ve ko
 doğru olur. Çözüm veriyi kısıtlamak değil, **veriyi komuttan ayrı bir kanaldan göndermektir**:
 
 ```java
-// DOĞRU — parametreli sorgu (hazırlanmış ifade / prepared statement)
+// DOĞRU: parametreli sorgu (hazırlanmış ifade / prepared statement)
 PreparedStatement ps = baglanti.prepareStatement(
         "SELECT * FROM kullanici WHERE ad = ?");
 ps.setString(1, ad);          // veri hiçbir zaman kod olarak yorumlanmaz
@@ -143,7 +143,7 @@ Burada sorgunun iskeleti veritabanına önce ve ayrı gönderilir; `?` yerine ko
 sorgunun yapısını değiştiremez, yalnızca bir değer olarak kalır.
 
 **Şerh:** Parametreli sorgu, SQL enjeksiyonunu "tamamen ortadan kaldıran sihirli düğme"
-değildir — yalnızca **değer konulabilen yerleri** korur. Tablo adı, sütun adı ya da
+değildir; yalnızca **değer konulabilen yerleri** korur. Tablo adı, sütun adı ya da
 `ORDER BY` yönü gibi sorgunun yapısına ait parçalar parametre olamaz; oraya kullanıcı girdisi
 gidecekse tek güvenli yol sabit bir **izin-listesinden** seçim yapmaktır. Aynı şekilde bir ORM
 (nesne-ilişki eşleyici) kullanmak da otomatik koruma anlamına gelmez: içinde elle metin
@@ -151,17 +151,17 @@ birleştirdiğin her yer yine açıktır.
 
 Aynı "veri ile kod karışmasın" fikri çıktı tarafında da geçerlidir: kullanıcı verisini bir
 HTML sayfasına basarken HTML'e uygun biçimde kaçırmazsan (escaping), veri tarayıcıda betik
-olarak çalışır — buna **XSS (cross-site scripting)** denir.
+olarak çalışır. Buna **XSS (cross-site scripting)** denir.
 
 ## Hata yönetimi (exception handling): sırrı sızdırma
 Program beklenmedik bir durumla karşılaşınca çalışmayı kesip bir hata nesnesi fırlatır; buna
 **istisna (exception)** denir. Böyle bir hata oluştuğunda kullanıcıya **ne kadar az iç bilgi
-verirsen o kadar güvenlisin.** Ham **yığın izi** (stack trace — hatanın hangi metotlardan
+verirsen o kadar güvenlisin.** Ham **yığın izi** (stack trace: hatanın hangi metotlardan
 geçerek oluştuğunu gösteren döküm), veritabanı hata mesajı, dosya yolu, sürüm bilgisi veya
 bağlantı dizesi (connection string) kullanıcıya sızarsa saldırgana harita çizmiş olursun.
 
 - **Kullanıcıya:** genel, nötr bir mesaj ("Bir hata oluştu, lütfen tekrar deneyin").
-- **İç loga:** tam ayrıntı — yığın izi (stack trace), hata kodu, bağlam — ama yalnızca
+- **İç loga:** tam ayrıntı (yığın izi, hata kodu, bağlam), ama yalnızca
   sunucuda. Loga da sır yazılmaz: parola, token, kart numarası log dosyasında görünmemeli.
 
 **Şerh:** "Az bilgi = çok güvenlik" bir denge sorusudur, sınırsız bir kural değil. Kullanıcının
@@ -201,20 +201,20 @@ mesaj gösterip ayrıntıyı içeride loglayan) yaklaşımı karşılaştırır.
 
 ## Güvenli varsayılanlar (secure defaults) ve en az yetki
 - **Güvenli varsayılanlar (secure defaults):** sistemin "kutudan çıktığı" hâli en
-  güvenli hâli olmalı. Bir özellik yanlışlıkla açık kalırsa değil, yanlışlıkla kapalı
-  kalırsa güvende olursun. Erişim varsayılan olarak **kapalı**, açmak bilinçli bir karar
+  güvenli hâli olmalı. Ayarı unutulan bir özellik açık değil kapalı kalmalı; böylece
+  hata yapsan bile güvende olursun. Erişim varsayılan olarak **kapalı**, açmak bilinçli bir karar
   olsun.
-- **En az yetki (least privilege):** her bileşen — kullanıcı, servis, süreç, veritabanı
-  hesabı — işini yapmaya yeten **en dar** yetkiye sahip olmalı. Bir bileşen ele
+- **En az yetki (least privilege):** her bileşen (kullanıcı, servis, süreç, veritabanı
+  hesabı) işini yapmaya yeten **en dar** yetkiye sahip olmalı. Bir bileşen ele
   geçirilirse hasar, o dar yetkiyle sınırlı kalır. Uygulama veritabanına `admin` ile
   değil, yalnızca ihtiyaç duyduğu tablolara erişebilen bir hesapla bağlanmalı.
 - **Koda sır gömme (hardcoded secrets):** API anahtarı, parola, token asla kaynak koda
-  veya git'e yazılmaz. Sırlar ortam değişkeni (environment variable), gizli yönetimi
+  veya git'e yazılmaz. Sırlar ortam değişkeni (environment variable), sır yönetim aracı
   (secrets manager) veya güvenli yapılandırmadan gelir. Git geçmişine giren bir sır,
   silinse bile geçmişte kalır ve rotasyon gerektirir.
 
 ## Parola saklama: yavaş hash, tuz (salt)
-Parolalar veritabanında **asla düz metin** (plaintext) tutulmaz. Geri çevrilebilir bir
+Parolalar veritabanında **asla düz metin** (plaintext) tutulmaz. Geri çözülebilir bir
 şifrelemeyle de tutulmaz: anahtarı ele geçiren herkes tüm parolaları okur. Doğru yöntem
 **özetleme (hashing)**: girdiden tek yönlü, sabit uzunlukta bir çıktı üreten işlem. Tek yönlü
 demek, çıktıdan girdiye dönmenin pratikte mümkün olmaması demektir. Kullanıcı giriş yaparken
@@ -222,7 +222,7 @@ girilen parolanın özeti yeniden hesaplanır ve kayıtlı özetle karşılaşt�
 
 Ama her hash parola için uygun değildir:
 
-- **Hızlı hash (MD5, SHA-1, SHA-256):** Dosya bütünlüğü doğrulamak için tasarlanmıştır ve
+- **Hızlı hash (MD5, SHA-1, SHA-256):** Dosya bütünlüğünü doğrulamak için tasarlanmıştır ve
   bilerek çok hızlıdır. Tam da bu yüzden parola için **yanlıştır**: bir saldırgan sızdırdığı
   özet listesine karşı sıradan bir donanımla saniyede milyarlarca deneme yapabilir.
 - **Yavaş hash (bcrypt, scrypt, Argon2, PBKDF2):** Parola için tasarlanmıştır; hesaplanması
@@ -235,7 +235,7 @@ Ama her hash parola için uygun değildir:
 işe yarar: (1) aynı parolayı kullanan iki kişinin özeti farklı çıkar, yani sızıntıda "bunlar
 aynı parolayı kullanıyor" bilgisi verilmez; (2) saldırganın önceden hesaplayıp hazır tuttuğu
 tablolar (rainbow table) işe yaramaz olur, her parolayı ayrı ayrı denemek zorunda kalır.
-bcrypt ve Argon2 tuzu kendileri üretip çıktının içinde saklar — elle uğraşmana gerek yoktur.
+bcrypt ve Argon2 tuzu kendileri üretip çıktının içinde saklar; elle uğraşmana gerek yoktur.
 İsteğe bağlı olarak tüm parolalara ortak, veritabanı dışında tutulan gizli bir ek değer daha
 kullanılabilir: **biber (pepper)**.
 

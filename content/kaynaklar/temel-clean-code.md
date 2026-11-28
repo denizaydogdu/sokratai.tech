@@ -1,6 +1,6 @@
 ---
 baslik: "Temeller Tazeleme: Clean Code Disiplini"
-yazar: "Faz 0 — Mühendislik Temelleri"
+yazar: "Faz 0: Mühendislik Temelleri"
 tarih: "2026-07-10"
 dil: "Türkçe kavram özeti (diyagramlı)"
 etiketler: 4,5
@@ -27,8 +27,8 @@ Amaç ezber değil; bir değişiklik geldiğinde kodun sana direnmemesi.
 Temiz kod tek bir şeyle ölçülmez; üç direğin dengesidir. **Sadelik (simplicity)**:
 gereğinden fazla parça yok, her satırın bir sebebi var. **Doğruluk (correctness)**:
 kod gerçekten istenen işi yapar, kenar durumları (edge cases) dahil. **Tamlık
-(completeness)**: iş yarım kalmaz — hata yolları (error paths), sınır değerler ve
-"olmayan veri" durumu da düşünülmüştür. Üçü aynı anda gözetilir; birini feda etmek
+(completeness)**: iş yarım kalmaz. Hata yolları (error paths), sınır değerler ve
+verinin hiç gelmediği durum da düşünülmüştür. Üçü aynı anda gözetilir; birini feda etmek
 ötekini de zayıflatır. Aşağıdaki diyagram üç direği yan yana koyar.
 
 ```svg
@@ -56,14 +56,14 @@ kod gerçekten istenen işi yapar, kenar durumları (edge cases) dahil. **Tamlı
 
 ### 2. Fonksiyonlar: küçük ve tek iş
 Fonksiyon (function), bir işi yapan ve adı olan kod parçasıdır; başka yerlerden adıyla
-çağrılır. İyi bir fonksiyon **tek bir şey yapar ve onu iyi yapar** (tek sorumluluk —
-single responsibility).
-Küçük olması tesadüf değil, tek işli olmasının sonucudur. Uzun, çok-işli bir
-fonksiyon; okumayı zorlaştırır, test etmeyi güçleştirir ve bir yeri değiştirince
+çağrılır. İyi bir fonksiyon **tek bir şey yapar ve onu iyi yapar**. Buna tek sorumluluk
+(single responsibility) denir.
+Küçük olması tesadüf değil, tek işli olmasının sonucudur. Uzun ve çok işli bir
+fonksiyon okumayı zorlaştırır, test etmeyi güçleştirir; bir yerini değiştirince
 alakasız bir yeri bozar. Çözüm: her mantıksal adımı kendi adıyla anılan küçük bir
-fonksiyona ayır. Böylece isim, ne yaptığını anlatır; gövde nasıl yaptığını.
+fonksiyona ayır. Böylece fonksiyonun adı ne yaptığını, gövdesi de nasıl yaptığını anlatır.
 Aşağıda aynı iş "önce" (tek dev fonksiyon) ve "sonra" (üç küçük fonksiyon) olarak
-görülüyor — boy farkı görsel olarak da anlamlı.
+görülüyor. Çizimdeki boy farkı da bilinçli.
 
 ```svg
 <svg viewBox="0 0 640 288" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Fonksiyon önce ve sonra: solda uzun çok-işli tek fonksiyon, sağda küçük tek-işli üç fonksiyon">
@@ -112,12 +112,13 @@ gerisini de öğrenmiş olur. İsim iyi olduğunda çoğu yorum gereksizleşir.
 ### 4. Yorum yerine anlaşılır kod
 Yorum (comment), kodun içine yazılan ve programın çalışmasına karışmayan açıklama
 satırıdır. Yorum bir borçtur: kod değişir, yorum güncellenmezse **yalan söylemeye** başlar.
-İlk tercih kodun kendini anlatmasıdır — açık isimler, küçük fonksiyonlar,
+İlk tercih kodun kendini anlatmasıdır: açık isimler, küçük fonksiyonlar,
 sihirli sayılar yerine adlandırılmış sabitler. **Sihirli sayı (magic number)**, kodun
 ortasında açıklamasız duran çıplak bir değerdir (`if (gun > 30)`); onu
 `const int AZAMI_KIRA_GUNU = 30;` gibi adı olan bir sabite çevirirsen sayı kendini
 anlatır. Yorumu, kodun söyleyemediği şey için
-sakla: **neden** böyle yapıldığı (bir iş kuralı, bir dış kısıt, bir bilinçli takas).
+sakla: **neden** böyle yapıldığı. Bu bir iş kuralı, bir dış kısıt ya da bilinçli bir ödünleşim
+(trade-off) olabilir.
 "Ne yaptığını" anlatan yorum, genellikle kötü isimlendirmenin üstünü örten bir
 yamadır. Aşağıdaki karşılaştırma bunu gösteriyor: solda kötü isim + açıklayıcı
 yorum, sağda niyeti kendi söyleyen kod.
@@ -148,17 +149,17 @@ yorum, sağda niyeti kendi söyleyen kod.
 ```
 
 **Şerh:** "Yorum kötüdür, iyi kod yorum gerektirmez" mutlak bir kural değildir; abartıldığında
-zarar verir. Bir düzenli ifadenin (regex) neden o biçimde yazıldığı, bir dış sistemin tuhaf
-davranışına karşı konmuş geçici çözüm, yasal/iş kaynaklı bir sınır ya da bir kütüphanenin
-dışarıya açık işlevlerinin belgesi — bunlar kodun kendi başına söyleyemeyeceği şeylerdir ve
-yorumla yazılır. Kural şudur: **"ne yapıyor" yorumunu isimle çöz, "neden böyle" yorumunu yaz.**
+zarar verir. Bazı şeyleri kod kendi başına söyleyemez; bunlar yorumla yazılır: bir düzenli
+ifadenin (regex) neden o biçimde yazıldığı, bir dış sistemin tuhaf davranışına karşı konmuş
+geçici çözüm, yasal ya da iş kaynaklı bir sınır, bir kütüphanenin dışarıya açık işlevlerinin
+belgesi. Kural şudur: **"ne yapıyor" yorumunu isimle çöz, "neden böyle" yorumunu yaz.**
 
 ### 5. Yeniden düzenleme (refactoring) nedir?
 **Refactoring**, kodun **dışarıdan görünen davranışını değiştirmeden** iç yapısını
 iyileştirmektir: uzun fonksiyonu bölmek, kötü bir ismi düzeltmek, tekrar eden bloğu tek yere
-almak. Tanımın kritik yarısı "davranış değişmez" kısmıdır — davranışı da değiştiriyorsan o
-artık refactoring değil, yeni özellik ya da hata düzeltmesidir; ikisini aynı anda yapmak
-hatanın kaynağını bulmayı zorlaştırır.
+almak. Tanımın kritik kısmı "davranış değişmez" şartıdır. Davranışı da değiştiriyorsan
+yaptığın iş artık refactoring değil, yeni özellik ya da hata düzeltmesidir. İkisini aynı anda
+yapmak hatanın kaynağını bulmayı zorlaştırır.
 
 Refactoring'in ön koşulu testtir: davranışın aynı kaldığını sana ancak testler söyler. Bu
 yüzden temiz kod ile test disiplini birbirine bağlıdır (bkz. Developer Testing metni). Pratik

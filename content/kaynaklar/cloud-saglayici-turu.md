@@ -1,13 +1,13 @@
 ---
 baslik: "Cloud Sağlayıcı Turu: AWS, GCP, Azure"
-yazar: "Serpiştirme — Veri/dağıtım yanı"
+yazar: "AI Öğretmen ek okuma metni: veri ve dağıtım konusu"
 tarih: "2026-07-10"
 dil: "Türkçe kavram özeti (diyagramlı)"
 etiketler: 11
 ---
 
 ### Bu metin ne anlatıyor?
-Eskiden bir program yayına almak için kendi bilgisayarını alıp bir odaya koyman gerekirdi.
+Eskiden bir programı yayına almak için kendi bilgisayarını satın alıp bir odaya koyman gerekirdi.
 Bugün bu makineleri kiralıyorsun: buna **bulut** (cloud) deniyor. Bu metin, bulutu satan üç
 büyük şirketin (AWS, Google Cloud, Microsoft Azure) aynı işe nasıl farklı adlar verdiğini ve
 altta yatan ortak fikirleri anlatıyor. Amaç ürün adı ezberlemek değil; "bana aslında hangi
@@ -16,7 +16,7 @@ yetenek lazım?" diye düşünebilmek ve satıcının reklamıyla gerçeği ayı
 ### Bu metinde geçen temel terimler
 - **Bulut sağlayıcı** (cloud provider): Sunucu, depolama ve ağ kapasitesini kiralayan şirket.
 - **Sanal makine** (virtual machine, VM): Fiziksel bir bilgisayarın içinde çalışan, sana
-  kendi bilgisayarınmış gibi görünen yazılım makine.
+  kendi bilgisayarınmış gibi görünen, yazılımla kurulmuş makine.
 - **Yönetilen hizmet** (managed service): Kurulumunu, yedeğini, güncellemesini sağlayıcının
   üstlendiği hazır hizmet (ör. yönetilen bir veritabanı).
 - **Bölge ve erişilebilirlik alanı** (region / availability zone): Sağlayıcının makinelerinin
@@ -33,19 +33,19 @@ yetenek lazım?" diye düşünebilmek ve satıcının reklamıyla gerçeği ayı
 sağlayıcıdan bağımsız düşünür: "nesne depolama (object storage) lazım" der, "S3 lazım"
 demez. Ama bu bağımsızlığı koruyabilmek için üç büyük sağlayıcının aynı kavramı hangi
 isimle sattığını **eşleyebilmek** gerekir. Bu özet o eşlemeyi ve altındaki ortak
-kavramları kısaca verir — ezber için değil, "hepsi aynı fikrin farklı etiketi" sezgisini
-kurmak için.
+kavramları kısaca verir. Amaç ezber değil, "hepsi aynı fikrin farklı etiketi" sezgisini
+kurmak.
 
 ## Katmanlar: IaaS → PaaS → SaaS ve serverless
 Bulut hizmetleri, senin ne kadarını yönettiğine göre üç ana soyutlama katmanına ayrılır:
 
-- **IaaS** (Altyapı hizmet olarak / Infrastructure as a Service): Sana çıplak sanal makine
+- **IaaS** (Hizmet olarak altyapı / Infrastructure as a Service): Sana çıplak sanal makine
   verilir; işletim sistemini, çalışma ortamını, ölçeklemeyi sen kurarsın. En çok kontrol,
   en çok sorumluluk.
-- **PaaS** (Platform hizmet olarak / Platform as a Service): Sana hazır bir çalışma
+- **PaaS** (Hizmet olarak platform / Platform as a Service): Sana hazır bir çalışma
   platformu verilir; sadece kodunu bırakırsın, altyapıyla uğraşmazsın.
-- **SaaS** (Yazılım hizmet olarak / Software as a Service): Hazır uygulamayı kullanırsın
-  (ör. e-posta servisi); ne altyapı ne kod — sadece veri ve ayar senin.
+- **SaaS** (Hizmet olarak yazılım / Software as a Service): Hazır uygulamayı kullanırsın
+  (ör. e-posta servisi); altyapı da kod da sağlayıcının, yalnız veri ve ayar senin.
 - **Serverless** (Sunucusuz): Aslında sunucu vardır ama sen görmezsin; kodun yalnızca
   bir olay (event) geldiğinde çalışır, çalıştığı milisaniye kadar ödersin. Ölçekleme
   sağlayıcının işidir. PaaS'ın uç bir biçimi gibi düşünülebilir.
@@ -54,22 +54,22 @@ Bulut hizmetleri, senin ne kadarını yönettiğine göre üç ana soyutlama kat
 Sağlayıcı ne olursa olsun, ürün kataloğu birkaç çekirdek aile etrafında döner:
 
 - **Hesaplama** (Compute): kodun çalıştığı sanal makineler / işlemci gücü.
-- **Nesne depolama** (Object storage): dosya/blob saklama — resim, yedek, log; klasör
+- **Nesne depolama** (Object storage): dosya/blob saklama (resim, yedek, log); klasör
   değil "kova" (bucket) mantığı.
 - **Veritabanı** (Database): yönetilen (managed) ilişkisel ya da NoSQL veri depoları.
 - **Serverless işlev** (Serverless function): olayla tetiklenen küçük kod parçaları.
-- **Ağ** (Networking): sanal özel ağ (VPC — Virtual Private Cloud, sana ayrılmış izole ağ
-  bölmesi), yük dengeleyici (load balancer — gelen isteği birden çok sunucuya dağıtan
-  bileşen), DNS (alan adını IP adresine çeviren defter), CDN (İçerik Dağıtım Ağı — statik
-  dosyaları kullanıcıya coğrafi olarak yakın sunuculardan veren katman) — parçaları
-  birbirine bağlayan ve dış dünyaya açan katman.
-- **Kimlik ve erişim yönetimi** (IAM — Identity and Access Management): kimin neye
+- **Ağ** (Networking): parçaları birbirine bağlayan ve dış dünyaya açan katman. Sanal özel
+  ağ (VPC, Virtual Private Cloud: sana ayrılmış izole ağ bölmesi), yük dengeleyici (load
+  balancer: gelen isteği birden çok sunucuya dağıtan bileşen), DNS (alan adını IP adresine
+  çeviren defter) ve CDN (İçerik Dağıtım Ağı: statik dosyaları kullanıcıya coğrafi olarak
+  yakın sunuculardan veren katman) bu aileye girer.
+- **Kimlik ve erişim yönetimi** (IAM, Identity and Access Management): kimin neye
   erişebileceğini tanımlayan kural katmanı. Bulutta güvenlik hatalarının çoğu burada,
   fazla geniş verilmiş yetkilerde doğar.
 
 ## Üç sağlayıcı eşlemesi
 Aynı çekirdek aileler, üç sağlayıcıda farklı ürün adlarıyla satılır. Aşağıdaki tablo
-en sık karşılaşacağın dört aileyi yan yana koyar — bir sütunu bilmek, çoğu zaman
+en sık karşılaşacağın dört aileyi yan yana koyar. Bir sütunu bilmek çoğu zaman
 diğerlerini tahmin etmeye yeter.
 
 ```svg
@@ -129,7 +129,7 @@ aynı değildir. "Karşılığı var" demek "taşımak bedava" demek değildir.
 
 ## Sorumluluk merdiveni: IaaS → PaaS → SaaS
 Katman yükseldikçe (IaaS'tan SaaS'a) **senin yönettiğin azalır, sağlayıcının yönettiği
-artar**. Aşağıdaki iki renkli barlar bu takası gösterir: mavi = senin sorumluluğun,
+artar**. Aşağıdaki iki renkli çubuklar bu dengeyi gösterir: mavi = senin sorumluluğun,
 yeşil = sağlayıcının sorumluluğu.
 
 ```svg
@@ -169,23 +169,23 @@ herkese açık bırakırsan bu senin hatan, sağlayıcının değil.
   <text x="340" y="24" text-anchor="middle" font-size="15" font-weight="700" fill="#1C3247" font-family="system-ui">Paylaşılan Sorumluluk Modeli</text>
   <text x="340" y="43" text-anchor="middle" font-size="12" fill="#5D7789" font-family="system-ui">Çizginin üstü sen · altı sağlayıcı</text>
   <rect x="90" y="58" width="500" height="60" rx="10" fill="#EEF0FF" stroke="#4F46E5" stroke-width="1.5"/>
-  <text x="340" y="82" text-anchor="middle" font-size="13" font-weight="700" fill="#4F46E5" font-family="system-ui">SEN — bulutTAKİ güvenlik</text>
+  <text x="340" y="82" text-anchor="middle" font-size="13" font-weight="700" fill="#4F46E5" font-family="system-ui">SEN: bulutTAKİ güvenlik</text>
   <text x="340" y="103" text-anchor="middle" font-size="11" fill="#1C3247" font-family="system-ui">veri · erişim yönetimi (IAM) · uygulama · yapılandırma</text>
   <line x1="90" y1="133" x2="590" y2="133" stroke="#C77A17" stroke-width="2" stroke-dasharray="6 4"/>
   <text x="340" y="130" text-anchor="middle" font-size="10" font-weight="600" fill="#C77A17" font-family="system-ui">sorumluluk hattı</text>
   <rect x="90" y="138" width="500" height="66" rx="10" fill="#EAF1F7" stroke="#186399" stroke-width="1.5"/>
-  <text x="340" y="164" text-anchor="middle" font-size="13" font-weight="700" fill="#186399" font-family="system-ui">SAĞLAYICI — bulutUN güvenliği</text>
+  <text x="340" y="164" text-anchor="middle" font-size="13" font-weight="700" fill="#186399" font-family="system-ui">SAĞLAYICI: bulutUN güvenliği</text>
   <text x="340" y="186" text-anchor="middle" font-size="11" fill="#1C3247" font-family="system-ui">donanım · ağ altyapısı · sanallaştırma · fiziksel tesis</text>
 </svg>
 ```
 
-## Bölge ve erişilebilirlik alanı — "bulut hiç çökmez" efsanesi
+## Bölge ve erişilebilirlik alanı: "bulut hiç çökmez" efsanesi
 Bulut, tek bir dev makine değildir. Sağlayıcı makinelerini **bölgelere** (region) ayırır;
 her bölgenin içinde birbirinden bağımsız elektrik ve ağ beslemesi olan **erişilebilirlik
 alanları** (availability zone) bulunur.
 
 Bunun mimari sonucu şudur: dayanıklılık otomatik gelmez, **sen tasarlarsan** gelir.
-Uygulamanı tek bir alanda çalıştırırsan, o alan çökünce sen de çökersin — sağlayıcı yine de
+Uygulamanı tek bir alanda çalıştırırsan, o alan çökünce sen de çökersin. Sağlayıcı yine de
 SLA'sını tutmuş sayılır, çünkü bölgenin geri kalanı ayaktaydı. İki alana yayılmak (multi-AZ)
 bir yapılandırma tercihi ve ek maliyettir.
 
@@ -193,7 +193,7 @@ Aynı şey bölge düzeyinde de geçerlidir: büyük sağlayıcıların **bölge
 gerçekten yaşanmıştır**. "Buluta taşıdım, artık kesinti derdim yok" cümlesi teknik olarak
 yanlıştır; doğrusu "kesinti olasılığını para ve karmaşıklık karşılığında düşürebilirim"dir.
 
-## Satıcı iddialarına şerh — reklamı mimariden ayır
+## Satıcı iddialarına şerh: reklamı mimariden ayır
 Bulut belgelerinin çoğunu satan taraf yazar. Aşağıdakiler sık duyacağın mutlak iddialar ve
 her birinin gerçek karşılığıdır:
 
@@ -202,8 +202,8 @@ her birinin gerçek karşılığıdır:
   hizmetlerinin saniyedeki istek tavanı vardır. Doğru okuma: "senin ölçeğinde muhtemelen
   sınıra çarpmazsın", "sınır yok" değil.
 - **"%99,99 kullanılabilirlik."** Bu bir **taahhüt değil, geri ödeme koşuludur**. Tutulmazsa
-  aldığın şey genelde faturandan bir kredidir — kaybettiğin iş değil. Ayrıca oran hizmet
-  hizmet, bölge bölge ve yapılandırmaya göre değişir; tek alanda çalışan kurulumun SLA'sı
+  aldığın şey genelde faturandan düşülen bir kredidir, kaybettiğin işin karşılığı değil. Ayrıca
+  bu oran hizmete, bölgeye ve yapılandırmaya göre değişir; tek alanda çalışan kurulumun SLA'sı
   çok alanlıdan düşüktür.
 - **"Sunucusuz = sunucu yok."** Sunucu var, sen görmüyorsun. Bunun bedeli: soğuk başlangıç
   (cold start) gecikmesi, çalışma süresi tavanı, sınırlı yerel disk ve hata ayıklamanın
@@ -214,33 +214,33 @@ her birinin gerçek karşılığıdır:
 - **"Bulut daha güvenli."** Paylaşılan sorumluluk gereği sağlayıcının tarafı güvenli
   olabilir; **senin tarafın** varsayılan olarak güvenli değildir. Sektörün en bilinen veri
   sızıntılarının bir kısmı, yanlış yapılandırılmış açık depolama kovalarından doğdu.
-- **"Çoklu bulut (multi-cloud) seni kilitlenmeden kurtarır."** Çoğu zaman iki sağlayıcının
-  da en zayıf ortak paydasını kullanmak ve iki ekip bilgisi taşımak demektir — kilitlenmeyi
-  azaltırken karmaşıklığı ve maliyeti artırır. Bilinçli bir takas olabilir; otomatik bir
-  kazanç değildir.
+- **"Çoklu bulut (multi-cloud) seni kilitlenmeden kurtarır."** Çoğu zaman yalnız iki
+  sağlayıcıda da ortak olan en temel özellikleri kullanmak ve iki ayrı ekip bilgisi taşımak
+  demektir. Kilitlenmeyi azaltırken karmaşıklığı ve maliyeti artırır. Bilinçli bir ödünleşim
+  (trade-off) olabilir; otomatik bir kazanç değildir.
 
-**Genel kural:** bir bulut iddiasını okurken sor — *bunu kim söylüyor, hangi ölçümle
+**Genel kural:** bir bulut iddiasını okurken şunu sor: *bunu kim söylüyor, hangi ölçümle
 söylüyor, hangi koşulda geçerli?* Sağlayıcının kendi karşılaştırma sayfası bir kanıt değil,
 bir pazarlama argümanıdır; bağımsız ölçüm veya kendi yükünle yaptığın deneme kanıttır.
 
 ## Vendor lock-in uyarısı
 Bir sağlayıcının **kendine özgü** (proprietary) yönetilen hizmetlerine ne kadar
-derinden bağlanırsan, başka sağlayıcıya taşınman o kadar zorlaşır — buna **satıcıya
+derinden bağlanırsan, başka sağlayıcıya taşınman o kadar zorlaşır. Buna **satıcıya
 kilitlenme** (vendor lock-in) denir. Örneğin uygulamanı doğrudan AWS Lambda + DynamoDB +
-SQS üçlüsüne örersen, GCP'ye geçiş neredeyse yeniden yazma demektir.
+SQS üçlüsüne sıkıca bağlarsan, GCP'ye geçiş neredeyse yeniden yazmak demektir.
 
 Denge şudur: kilitlenmeyi tümden reddetmek (her şeyi elle, taşınabilir kurmak) çoğu
 zaman fazla maliyetlidir; ama kritik parçaları **standart arayüzlerin arkasına**
 (ör. nesne depolamayı soyut bir arayüzle sarmak, PostgreSQL gibi taşınabilir bir
-veritabanı seçmek) koyarak çıkış maliyetini bilinçli yönetebilirsin. Mimar kararı
-sağlayıcı özelliğinin verdiği hız ile ileride ödenecek taşınma bedeli arasında tartılır.
+veritabanı seçmek) koyarak çıkış maliyetini bilinçli yönetebilirsin. Mimar kararını,
+sağlayıcıya özgü özelliğin kazandırdığı hız ile ileride ödenecek taşınma bedelini tartarak verir.
 
 ## Öz-sınav (kendini test et)
 1. IaaS, PaaS ve SaaS arasında "senin yönettiğin" ile "sağlayıcının yönettiği" nasıl
    değişir? Serverless bu merdivenin neresine düşer?
 2. Nesne depolama (object storage) için AWS, GCP ve Azure'un ürün adları nedir?
 3. Paylaşılan sorumluluk modelinde herkese açık bırakılmış bir veri kovasının güvenlik
-   açığı kimin sorumluluğundadır — sen mi, sağlayıcı mı? Neden?
+   açığı kimin sorumluluğundadır: senin mi, sağlayıcının mı? Neden?
 4. Vendor lock-in nedir ve bir mimar çıkış maliyetini azaltmak için hangi tasarım
    hamlelerini yapabilir?
 5. "Sağlayıcıdan bağımsız düşün ama eşlemeyi bil" cümlesi pratikte ne demek? Bir örnekle

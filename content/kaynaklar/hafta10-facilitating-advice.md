@@ -1,6 +1,6 @@
 ---
 baslik: "Hafta 10 Görsel Özet: Advice Process ve Merkeziyetsiz Mimari Karar"
-yazar: "Facilitating Software Architecture (Harmel-Law, O'Reilly 2024) — kavram özeti"
+yazar: "Facilitating Software Architecture (Harmel-Law, O'Reilly 2024): kavram özeti"
 tarih: "2026-07-11"
 dil: "Türkçe kavram özeti (diyagramlı)"
 etiketler: 10
@@ -19,44 +19,44 @@ teknoloji seçiminin ortak bir dille nasıl hizalandığını (radar) gösteriyo
   sistemin genelini etkileyen teknik karar (ör. "veritabanını hangi teknolojiyle kuralım").
 - **Advice process (danışma süreci):** Bu metnin ana konusu. Kararı tek bir kişi verir; ama
   karardan etkilenenlere ve konuyu bilenlere danışmadan veremez.
-- **Konsensüs (consensus):** Herkesin uzlaşması. Advice process bu **değildir** — karışmasın.
+- **Konsensüs (consensus):** Herkesin uzlaşması. Advice process bu **değildir**; ikisini karıştırma.
 - **ADR (Architecture Decision Record / Mimari Karar Kaydı):** Bir kararı, bağlamını, alınan
   tavsiyeleri ve sonuçlarını yazan kısa belge.
 
 ## Neden bu özet
-Mimari kararı tek bir mimara ya da bir onay komitesine sıkıştırmak, sistem büyüdükçe
-darboğaza (bottleneck) döner: kararı verecek kişi işi en iyi bilenden uzaktır ve herkes
-onay için bekler. Harmel-Law'ın önerdiği yol tam tersidir — *advice process* (danışma
-süreci) kararı verme yetkisini yayar ama danışmayı zorunlu kılar. Bu üç görsel, kitabın
-merkeziyetsiz (decentralized) karar modelini bir çırpıda bakılacak referans niyetinedir.
+Mimari kararları tek bir mimara ya da bir onay komitesine bağlamak, sistem büyüdükçe bir
+darboğaz (bottleneck) yaratır: kararı verecek kişi işi en iyi bilenden uzaktır ve herkes
+onay için bekler. Harmel-Law tam tersini önerir: *advice process* (danışma süreci) karar
+verme yetkisini dağıtır ama danışmayı zorunlu kılar. Aşağıdaki üç görsel, kitabın
+merkeziyetsiz (decentralized) karar modeline tek bakışta göz atabileceğin bir başvuru kaynağıdır.
 
 ## 1. Advice Process (Danışma süreci)
-Temel kural: **herkes** her mimari kararı verebilir — ama kararı vermeden önce **iki gruba
+Temel kural: **herkes** her mimari kararı verebilir, ama kararı vermeden önce **iki gruba
 danışmak zorundadır**: (1) karardan etkilenenler, (2) o konunun uzmanları. Alınan tavsiyeyi
 uygulamak zorunlu değildir; ama samimiyetle danışmak zorunludur.
 
-Bu ayrımı kaçırmamak için üç şeyi yan yana koy:
+Bu ayrımı kaçırmamak için üç karar yöntemini yan yana koy:
 
 | | Kim karar verir? | Danışma | Tıkanma riski |
 |---|---|---|---|
-| **Oylama** | Çoğunluk | — | Azınlığın haklı olduğu durumu ezer |
+| **Oylama** | Çoğunluk | yok | Azınlığın haklı olduğu durumu ezer |
 | **Konsensüs** | Herkes birlikte | Sonsuz | Bir kişi itiraz ederse iş durur |
-| **Advice process** | **Tek kişi** (işi yapan) | **Zorunlu** | Yok — karar hiçbir yerde beklemez |
+| **Advice process** | **Tek kişi** (işi yapan) | **Zorunlu** | Yok: karar hiçbir yerde beklemez |
 
 Advice process bir konsensüs ya da komite oylaması **değildir**: karar tek bir kişinindir,
-danışma ise pazarlıksızdır. Kimsenin veto hakkı yoktur — ama kimse danışmayı da atlayamaz.
+danışma ise pazarlık konusu değildir. Kimsenin veto hakkı yoktur, ama kimse danışmayı da atlayamaz.
 Verilen tavsiyeye uymuyorsan, **neden uymadığını kayda geçmen** beklenir; tavsiye ile ona
 verilen cevap birlikte kararın gerekçesinin parçası olur.
 
-Sonuç; hız, sahiplik (ownership — kararın arkasında duran belli bir kişi olması) ve hizalanmanın
-(alignment — ekiplerin birbiriyle uyumlu yönde ilerlemesi) aynı anda korunmasıdır.
+Böylece üç şey aynı anda korunur: hız, sahiplik (ownership: kararın arkasında duran belli bir
+kişinin olması) ve hizalanma (alignment: ekiplerin birbiriyle uyumlu yönde ilerlemesi).
 
 ```svg
 <svg viewBox="0 0 660 250" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Advice process akışı: karar veren önce etkilenenlere ve uzmanlara danışır, sonra kararı kendi verir ve ADR'ye kaydeder; konsensüs ya da komite değildir">
   <defs>
     <marker id="h10ok1" markerWidth="10" markerHeight="10" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#186399"/></marker>
   </defs>
-  <text x="330" y="26" text-anchor="middle" font-size="15" font-weight="700" fill="#1C3247" font-family="system-ui">Advice Process — tek karar verici, zorunlu danışma</text>
+  <text x="330" y="26" text-anchor="middle" font-size="15" font-weight="700" fill="#1C3247" font-family="system-ui">Advice Process: tek karar verici, zorunlu danışma</text>
   <rect x="18" y="46" width="140" height="52" rx="10" fill="#EAF1F7" stroke="#186399" stroke-width="1.5"/>
   <text x="88" y="70" text-anchor="middle" font-size="12.5" font-weight="700" fill="#186399" font-family="system-ui">Karar veren</text>
   <text x="88" y="87" text-anchor="middle" font-size="10" fill="#5D7789" font-family="system-ui">(herkes olabilir)</text>
@@ -75,12 +75,12 @@ Sonuç; hız, sahiplik (ownership — kararın arkasında duran belli bir kişi 
   <line x1="250" y1="98" x2="250" y2="122" stroke="#186399" stroke-width="1.8" marker-end="url(#h10ok1)"/>
   <rect x="138" y="124" width="106" height="46" rx="9" fill="#EEF0FF" stroke="#4F46E5" stroke-width="1.5"/>
   <text x="191" y="146" text-anchor="middle" font-size="11.5" font-weight="700" fill="#4F46E5" font-family="system-ui">1 · Etkilenenler</text>
-  <text x="191" y="161" text-anchor="middle" font-size="9.5" fill="#5D7789" font-family="system-ui">bundan etkilenen</text>
+  <text x="191" y="161" text-anchor="middle" font-size="9.5" fill="#5D7789" font-family="system-ui">karardan etkilenen</text>
   <rect x="256" y="124" width="106" height="46" rx="9" fill="#E9F4EE" stroke="#25804C" stroke-width="1.5"/>
   <text x="309" y="146" text-anchor="middle" font-size="11.5" font-weight="700" fill="#25804C" font-family="system-ui">2 · Uzmanlar</text>
   <text x="309" y="161" text-anchor="middle" font-size="9.5" fill="#5D7789" font-family="system-ui">konuyu bilen</text>
   <rect x="18" y="188" width="624" height="54" rx="10" fill="#FBF0DE" stroke="#C77A17" stroke-width="1.5"/>
-  <text x="330" y="210" text-anchor="middle" font-size="11.5" font-weight="700" fill="#1C3247" font-family="system-ui">Konsensüs / komite DEĞİL — kararı tek kişi verir, ama danışma zorunludur.</text>
+  <text x="330" y="210" text-anchor="middle" font-size="11.5" font-weight="700" fill="#1C3247" font-family="system-ui">Konsensüs / komite DEĞİL: kararı tek kişi verir, ama danışma zorunludur.</text>
   <text x="330" y="230" text-anchor="middle" font-size="10.5" fill="#5D7789" font-family="system-ui">Tavsiyeyi uygulamak zorunlu değil; samimiyetle danışmak zorunlu.</text>
 </svg>
 ```
@@ -135,31 +135,32 @@ Peki alınan kararlar ortada nasıl görünür kalır? İki mekanizmayla: kararl
 konuşulduğu **Architecture Advice Forum (AAF)** ve her kararın yazıya döküldüğü **ADR**.
 
 **Architecture Advice Forum (AAF):** düzenli aralıkla toplanan, şeffaf bir forumdur.
-Kararlar ve alınan danışmalar burada herkese açık paylaşılır. Amacı **onay vermek değildir** —
-görünürlük (visibility) ve ortak öğrenmedir; kimse kararı forumdan geçirmek zorunda değildir,
+Kararlar ve alınan danışmalar burada herkese açık paylaşılır. Amacı **onay vermek değildir**;
+amacı görünürlük (visibility) ve ortak öğrenmedir. Kimse kararı forumdan geçirmek zorunda değildir,
 ama forum sayesinde herkes neyin neden kararlaştırıldığını görür. Kararlar ADR'ye kaydedilir.
 
 **ADR = omurga:** Her mimari karar bir *Architecture Decision Record* ile yazıya geçer:
-kararın kendisi, **bağlamı (context)**, **alınan danışma**, ve **sonucu/etkileri**. ADR bir
-dayatma aracı değil, bir kolaylaştırma (facilitation) aracıdır — kararın gerekçesini ve
-danışıldığı kişileri kalıcı hale getirir, böylece gelecekteki ekipler "neden böyle?" sorusunun
+kararın kendisi, **bağlamı (context)**, **alınan danışma** ve **sonucu/etkileri**. ADR bir
+dayatma aracı değil, bir kolaylaştırma (facilitation) aracıdır: kararın gerekçesini ve
+danışılan kişileri kalıcı hâle getirir. Böylece gelecekteki ekipler "neden böyle?" sorusunun
 cevabını bulabilir.
 
 > **Şerh (abartıya karşı):** Advice process bedava ya da her ortamda uygulanabilir bir tarif
 > değildir. Çalışması için birkaç önkoşulu vardır: kararı verecek kişilerin o konuda yeterli
 > deneyimi olmalı (yeni başlayanlardan kurulu bir ekipte "herkes karar verebilir" kaosa döner);
 > danışılan kişinin "bu fikir kötü" diyebileceği bir güven ortamı bulunmalı; ve danışma ile
-> kararın kaydı gerçekten tutulmalı — tutulmazsa süreç birkaç ay içinde "kimseye sormadan
-> yapma"ya çürür. Ayrıca bazı kararlar (yasal zorunluluk, güvenlik politikası, düzenlemeye
-> tabi alanlar) tanım gereği merkezîdir ve bu sürecin dışındadır. Kitap bunu bir kültür
-> değişimi olarak sunar; bir araç kurup bir toplantı koyarak kurulmuş sayılmaz.
+> kararın kaydı gerçekten tutulmalı. Kayıt tutulmazsa süreç birkaç ay içinde bozulur ve
+> "kimseye sormadan yapmak"a dönüşür. Ayrıca bazı kararlar (yasal zorunluluk, güvenlik politikası,
+> düzenlemeye tabi alanlar) tanım gereği merkezîdir ve bu sürecin dışındadır. Kitap advice
+> process'i bir kültür değişimi olarak sunar: bir araç kurup takvime bir toplantı koymakla süreç
+> kurulmuş sayılmaz.
 
 ## 3. Technology Radar (Teknoloji radarı)
-Teknoloji seçimini de merkeziyetsiz ama hizalı tutmanın yolu radardır (aslen Thoughtworks'ün
-altı ayda bir yayımladığı Technology Radar'dan gelen, ekiplerin kendi iç radarını kurması için
-uyarlanan bir düzen): her aday teknoloji dört halkadan birine yerleştirilir. Merkeze yakın olan
+Teknoloji seçimini de merkeziyetsiz ama hizalı tutmanın yolu radardır. Fikir, Thoughtworks'ün
+altı ayda bir yayımladığı Technology Radar'dan gelir; ekipler bu düzeni kendi iç radarlarını
+kurmak için uyarlar. Her aday teknoloji dört halkadan birine yerleştirilir. Merkeze yakın olan
 daha olgun ve güvenlidir; dışa doğru gittikçe temkin artar. Böylece ekipler kendi seçimlerini
-yapar ama ortak bir dil paylaşır — "bu kütüphane bizde Assess'te" cümlesi, uzun bir tartışmayı
+yapar ama ortak bir dil paylaşır. "Bu kütüphane bizde Assess'te" cümlesi uzun bir tartışmayı
 tek kelimeye indirir.
 
 Radar bir yasak listesi değildir: **Hold**, "kullanmak yasak" demek değil, "yeni işlerde bunu
@@ -169,11 +170,11 @@ kısa sürede gerçeği yansıtmayan bir duvar süsüne döner.
 
 ```svg
 <svg viewBox="0 0 660 258" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Technology Radar dört halkası: Adopt benimse, Trial denemeye değer, Assess araştır, Hold kullanmayı ertele">
-  <text x="330" y="24" text-anchor="middle" font-size="15" font-weight="700" fill="#1C3247" font-family="system-ui">Technology Radar — dört halka</text>
+  <text x="330" y="24" text-anchor="middle" font-size="15" font-weight="700" fill="#1C3247" font-family="system-ui">Technology Radar: dört halka</text>
   <text x="330" y="44" text-anchor="middle" font-size="10.5" fill="#5D7789" font-family="system-ui">teknoloji seçimini merkeziyetsiz ama hizalı yapar; merkeze yakın = daha olgun</text>
   <rect x="30" y="58" width="290" height="78" rx="11" fill="#E9F4EE" stroke="#25804C" stroke-width="1.5"/>
   <text x="46" y="86" font-size="12.5" font-weight="700" fill="#25804C" font-family="system-ui">Adopt · Benimse</text>
-  <text x="46" y="106" font-size="10.5" fill="#1C3247" font-family="system-ui">kanıtlanmış; güvenle kullan —</text>
+  <text x="46" y="106" font-size="10.5" fill="#1C3247" font-family="system-ui">kanıtlanmış; güvenle kullan.</text>
   <text x="46" y="123" font-size="10.5" fill="#1C3247" font-family="system-ui">varsayılan (default) seçenek.</text>
   <rect x="340" y="58" width="290" height="78" rx="11" fill="#EAF1F7" stroke="#186399" stroke-width="1.5"/>
   <text x="356" y="86" font-size="12.5" font-weight="700" fill="#186399" font-family="system-ui">Trial · Denemeye değer</text>
@@ -199,7 +200,7 @@ kısa sürede gerçeği yansıtmayan bir duvar süsüne döner.
 5. Technology Radar'ın dört halkasını olgunluk sırasına diz ve "Assess" ile "Hold" arasındaki farkı bir cümleyle açıkla.
 6. Oylama, konsensüs ve advice process'i "kararı kim verir" ve "iş nerede tıkanır" sorularıyla
    karşılaştır. Advice process neden bu üçü içinde tıkanmayanıdır?
-7. Aldığın tavsiyeye uymamaya karar verdin. Süreç senden ne yapmanı bekler — ve bu neden
-   sadece bir kayıt işi değil, sürecin çalışmasının şartıdır?
+7. Aldığın tavsiyeye uymamaya karar verdin. Süreç senden ne yapmanı bekler? Bu neden
+   sadece bir kayıt işi değil de sürecin çalışmasının şartıdır?
 8. Advice process'in çalışması için hangi önkoşullar gerekir? Bu koşullar yoksa süreç ne hâle
    gelir?

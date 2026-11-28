@@ -17,17 +17,17 @@ Bugün tek bir soruyu cevaplayacaksın: bir programın parçaları hangi sırayl
 - **Hexagonal (altıgen) mimari:** domain'i merkeze koyan, veritabanını/HTTP'yi/e-postayı merkeze *takılan parçalar* olarak gören yaklaşım. Asıl adı "ports & adapters"tır; altıgen çizimi rastlantısaldır, kenar sayısının bir anlamı yoktur.
 
 ### Somut örnek (bu proje)
-Bu projenin katman kuralı şudur: `types → config → repo → service → ai → web`. Ok soldan sağa **tek yönlüdür**: `web`, `service`'i çağırabilir; `service`, `web`'i asla çağıramaz. Bu kural bir belge değil, çalışan bir testtir (`MimariTestleri`) — ihlal edilirse build kırmızı yanar.
+Bu projenin katman kuralı şudur: `types → config → repo → service → ai → web`. Ok soldan sağa **tek yönlüdür**: `web`, `service`'i çağırabilir; `service`, `web`'i asla çağıramaz. Bu kural bir belge değil, çalışan bir testtir (`MimariTestleri`): ihlal edilirse build kırmızı yanar.
 
-Şimdi tehlikeyi gör. Katmanlı bir projede işe genelde tablodan başlanır: önce `quiz_sonuc` tablosu, sonra ona birebir benzeyen bir entity, sonra o entity'yi taşıyan bir service, en sonda onu JSON'a çeviren bir controller. Bir süre sonra iş kuralı ("hafta tamamlandı mı?") artık bir `SELECT` sorgusunun `WHERE` cümlesinde yaşar. Kuralı okumak için SQL okuman, test etmek için veritabanı ayağa kaldırman gerekir. İş mantığı **altyapıya sızmıştır** (Hafta 5'in diliyle: yüksek coupling).
+Şimdi tehlikeyi gör. Katmanlı bir projede işe genelde tablodan başlanır: önce `quiz_sonuc` tablosu, sonra ona birebir benzeyen bir entity, sonra o entity'yi taşıyan bir service, en sonda onu JSON'a çeviren bir controller. Bir süre sonra iş kuralı ("hafta tamamlandı mı?") artık bir `SELECT` sorgusunun `WHERE` cümlesinde yaşar. Kuralı okumak için SQL okuman, test etmek için veritabanı ayağa kaldırman gerekir. İş mantığı **altyapıya sızmıştır** (Hafta 5'in diliyle: yüksek bağlaşım, coupling).
 
 Katmanlı mimari bunu yasaklamaz; hatta kolaylaştırır, çünkü yığının en altı veritabanıdır ve her şey ona yaslanır. Hexagonal'ın yaptığı şey yığını devirip merkeze domain'i koymaktır.
 
 ### Sık yapılan hata
-En yaygın yanılgı: "Ben zaten katman kullanıyorum, demek ki mimarim temiz." Temiz (clean) mimari **katman sayısıyla** ya da klasörleri düzgün adlandırmakla ilgili değildir; **okların yönüyle** ilgilidir. `service` paketinde JPA entity'si dolaşıyorsa klasör adı ne olursa olsun domain kirlenmiştir. İkinci yaygın hata: "Hexagonal, altı katman demek." Hayır — altıgen yalnızca bir çizim.
+En yaygın yanılgı: "Ben zaten katman kullanıyorum, demek ki mimarim temiz." Temiz (clean) mimari **katman sayısıyla** ya da klasörleri düzgün adlandırmakla ilgili değildir; **okların yönüyle** ilgilidir. `service` paketinde JPA entity'si dolaşıyorsa klasör adı ne olursa olsun domain kirlenmiştir. İkinci yaygın hata: "Hexagonal, altı katman demek." Hayır, altıgen yalnızca bir çizim.
 
 ### Görevlere geçmeden önce
-Elinde iki soru olsun: (1) bu kod parçası veritabanı olmadan çalıştırılıp test edilebilir mi? (2) iş kuralını okumak için bir çerçevenin (framework) belgelerine bakmam gerekiyor mu? Birine bile "hayır" diyemiyorsan orada sızıntı vardır. İkinci görevdeki iki örneği ararken bu iki soruyu kullan, bulduklarını birer cümleyle not et — yarın port/adapter ile onları nasıl temizleyeceğini göreceksin.
+Elinde iki soru olsun: (1) bu kod parçası veritabanı olmadan çalıştırılıp test edilebilir mi? (2) iş kuralını okumak için bir çerçevenin (framework) belgelerine bakmam gerekiyor mu? Birinci soruya "hayır" ya da ikinci soruya "evet" diyorsan orada sızıntı vardır. İkinci görevdeki iki örneği ararken bu iki soruyu kullan, bulduklarını birer cümleyle not et. Yarın port/adapter ile onları nasıl temizleyeceğini göreceksin.
 
 ## Görevler
 - [ ] İlk bölümleri oku

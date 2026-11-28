@@ -1,6 +1,6 @@
 ---
-baslik: "Başlangıç Kılavuzu — 12 Haftada AI Çağı Yazılım Mimarı (önce bunu oku)"
-yazar: "AI Öğretmen — program giriş belgesi"
+baslik: "Başlangıç Kılavuzu: 12 Haftada AI Çağı Yazılım Mimarı (önce bunu oku)"
+yazar: "AI Öğretmen · program giriş belgesi"
 tarih: "2026-07-15"
 dil: "Türkçe program haritası (diyagramlı)"
 etiketler: 1,2,3,4,5,6,7,8,9,10,11,12
@@ -11,21 +11,21 @@ etiketler: 1,2,3,4,5,6,7,8,9,10,11,12
 nasıl geçeceğini ve program bittiğinde neleri yapabiliyor olacağını anlatır. Ders değil, derse
 başlamadan önce okunacak giriş belgesidir.
 
-## Bu belge nedir — ve neden ilk bunu okumalısın
+## Bu belge nedir ve neden önce bunu okumalısın
 Elindeki program **12 hafta** sürüyor; her hafta **5 gün ders + görev + quiz** içeriyor. Ama daha ilk
 güne başlamadan bir soruya cevap vermen gerekiyor: **neden buradasın ve bu 12 haftanın sonunda kim
 olacaksın?** Bir yolculuğa haritayı görmeden çıkarsan, üçüncü haftada "ben aslında ne öğreniyorum?"
 diye sorarsın. Bu belge o haritadır: **nereye gittiğini, neden tam bu sırayla gittiğini ve her gün
 nasıl çalışacağını** baştan gösterir. On beş dakikanı ayır; sonra Hafta 1'e çok daha net başlarsın.
 
-## Neden bu eğitim — çünkü senin işin değişti
+## Neden bu eğitim: çünkü senin işin değişti
 Yıllarca "iyi yazılımcı" demek "iyi kod yazan" demekti. Artık **kodun büyük kısmını yapay zekâ
-(AI) yazabiliyor.** Bu, işinin bittiği anlamına gelmiyor — **işinin yer değiştirdiği** anlamına
-geliyor. AI bir satırı senden hızlı yazar; ama şunları yazamaz:
+(AI) yazabiliyor.** Bu, işinin bittiği anlamına gelmiyor; **işinin yer değiştirdiği**, yani ağırlığın
+başka işlere kaydığı anlamına geliyor. AI bir satırı senden hızlı yazar, ama şunları senin yerine yapamaz:
 
 - **NE inşa edileceğine** karar vermeyi (hangi problem, hangi kapsam),
-- **NEDEN böyle** olduğunu (hangi ödünleşmeyi (trade-off) neden seçtin),
-- **HANGİ BEDELLE** olduğunu (bu tasarım hız mı, güvenlik mi, maliyet mi feda ediyor),
+- **NEDEN böyle** olduğunu açıklamayı: hangi ödünleşimi (trade-off) neden seçtin,
+- **HANGİ BEDELLE** olduğunu söylemeyi (bu tasarım neyi feda ediyor: hızı mı, güvenliği mi, maliyeti mi),
 - ve bütün bunları **bir ekibe ve bir makineye anlatmayı.**
 
 Bu program sana **AI'nin yapamadığı işi** öğretir: makineyi yöneten, mimari kararı gerekçelendiren,
@@ -35,34 +35,34 @@ niyeti hem insana hem ajana net anlatan **mimar** olmayı. Bir cümlede özeti �
 > cevapları vermeyi öğretir.**
 
 ## Bu eğitimin sonunda ne yapabiliyor olacaksın
-12 hafta bittiğinde — bunlar hedef değil, **çıktı**:
+12 hafta bittiğinde şunları yapabileceksin. Bunlar bir hedef listesi değil, programın **çıktısı**:
 
 1. Bir AI ajanına iş yaptırırken **kod diktiren değil, onun çalışacağı ORTAMI tasarlayan** kişi
    olacaksın: ajana hangi bilgiyi (bağlam), hangi araçları ve nasıl bir geri beslemeyi vereceğini
-   sen kurarsın. Şöyle düşün: AI, işe yeni başlamış **çok yetenekli ama şirketi hiç bilmeyen bir
-   çalışan** gibidir — elleri hızlıdır ama kuralları, işi, sınırları bilmez. Sen onun yerine kod
+   sen belirlersin. Şöyle düşün: AI, işe yeni başlamış **çok yetenekli ama şirketi hiç bilmeyen bir
+   çalışan** gibidir: elleri hızlıdır ama kuralları, işi, sınırları bilmez. Sen onun yerine kod
    yazmazsın; ona **doğru ortamı, net görevi ve sonucu denetleyen bir kontrolü** verirsin. (Bu işin
    İngilizce adı **harness engineering**. "Harness" = koşum takımı, yani bir atı arabaya bağlayıp
    yönlendiren kayışlar; nasıl koşum atın gücünü arabacının istediği yöne çeviriyorsa, senin
-   kurduğun ortam da AI'nin gücünü senin niyetine çevirir.)
-2. Bir repoyu, hem insanın hem ajanın güvenebileceği bir **"kayıt sistemine"** çevireceksin
-   (AGENTS.md, karar kayıtları (ADR), belge bahçesi).
+   kurduğun ortam da AI'nin gücünü senin niyetin doğrultusunda yönlendirir.)
+2. Bir repoyu, hem insanın hem ajanın güvenebileceği bir **"kayıt sistemine"** (bilginin doğru ve
+   güncel hâlinin tutulduğu tek yer) çevireceksin: AGENTS.md, karar kayıtları (ADR) ve düzenli bakımı yapılan belgelerle.
 3. Belirsiz bir isteği **net bir spec'e (şartnameye)** dökecek ve mimari kuralı **otomatik zorlayan**
-   testler (ArchUnit gibi) yazacaksın — kural belgede değil, **çalışan sınırda** duracak.
-4. Bir mimari kararı, moda ya da alışkanlıkla değil, **karakteristikler ve ödünleşmelerle**
+   testler (ArchUnit gibi) yazacaksın. Kural yalnız belgede kalmayacak; test onu her seferinde denetleyecek (**çalışan sınır**).
+4. Bir mimari kararı, moda ya da alışkanlıkla değil, **mimari nitelikler ve ödünleşimlerle**
    gerekçelendirebileceksin; kararı bir **C4 diyagramıyla** anlatabileceksin.
 5. AI'yi bir oyuncak değil, bir **sistem parçası** olarak inşa edeceksin: model seçimi, **RAG**
-   (modelin bilmediği bilgiyi soru anında ona okutma yöntemi — retrieval-augmented generation),
+   (retrieval-augmented generation: modelin bilmediği bilgiyi soru anında ona okutma yöntemi),
    değerlendirme (evaluation), gecikme (latency) ve **maliyet**.
 6. Temiz mimariyi (**hexagonal / port-adapter**) sadece anlatmayacak, **kendi elinle koda dökecek**
    ve ArchUnit'le mühürleyeceksin.
-7. Kararı tek kişinin sırtından alıp **ekibe ve sürece** taşıyacaksın (danışarak karar süreci —
-   Advice Process), bir junior'ı (yeni geliştirici)
+7. Kararı tek kişinin sırtından alıp **ekibe ve sürece** taşıyacaksın (danışarak karar verme süreci:
+   Advice Process) ve bir junior'ı (yeni başlayan geliştirici)
    yetiştirebileceksin.
-8. Ölçekli, **veri-yoğun** bir sistemin (replikasyon, bölümleme, tutarlılık) ödünleşmelerini
-   konuşabileceksin.
+8. Ölçekli, **veri-yoğun** bir sistemin (replikasyon, bölümleme, tutarlılık) ödünleşimlerini
+   tartışabileceksin.
 
-## Yol haritası — 12 hafta, 6 faz
+## Yol haritası: 12 hafta, 6 faz
 Program rastgele bir konu listesi değil; **bir tırmanıştır.** Altı fazın her biri iki hafta sürer ve
 seni bir öncekinden bir kat yukarı taşır (bkz. **Diyagram 1**).
 
@@ -91,17 +91,17 @@ seni bir öncekinden bir kat yukarı taşır (bkz. **Diyagram 1**).
   <rect x="72" y="190" width="544" height="52" rx="9" fill="#EEF0FF" stroke="#4F46E5" stroke-width="1.5"/>
   <rect x="72" y="190" width="8" height="52" fill="#4F46E5"/>
   <text x="92" y="212" text-anchor="start" font-size="11.5" font-weight="700" fill="#4F46E5" font-family="system-ui">FAZ 4 · AI'yi İNŞA ET</text>
-  <text x="92" y="230" text-anchor="start" font-size="10" fill="#1C3247" font-family="system-ui">H7–8: AI Engineering I–II — model, prompt, RAG, değerlendirme, maliyet</text>
+  <text x="92" y="230" text-anchor="start" font-size="10" fill="#1C3247" font-family="system-ui">H7–8: AI Engineering I–II (model, prompt, RAG, değerlendirme, maliyet)</text>
 
   <rect x="72" y="252" width="544" height="52" rx="9" fill="#E9F4EE" stroke="#25804C" stroke-width="1.5"/>
   <rect x="72" y="252" width="8" height="52" fill="#25804C"/>
   <text x="92" y="274" text-anchor="start" font-size="11.5" font-weight="700" fill="#25804C" font-family="system-ui">FAZ 3 · MİMARİ DÜŞÜNCE</text>
-  <text x="92" y="292" text-anchor="start" font-size="10" fill="#1C3247" font-family="system-ui">H5–6: Nitelikler ve ödünleşmeler + Mimari stiller ve C4 diyagramlama</text>
+  <text x="92" y="292" text-anchor="start" font-size="10" fill="#1C3247" font-family="system-ui">H5–6: Nitelikler ve ödünleşimler + Mimari stiller ve C4 diyagramlama</text>
 
   <rect x="72" y="314" width="544" height="52" rx="9" fill="#FBF0DE" stroke="#C77A17" stroke-width="1.5"/>
   <rect x="72" y="314" width="8" height="52" fill="#C77A17"/>
   <text x="92" y="336" text-anchor="start" font-size="11.5" font-weight="700" fill="#C77A17" font-family="system-ui">FAZ 2 · DİSİPLİN</text>
-  <text x="92" y="354" text-anchor="start" font-size="10" fill="#1C3247" font-family="system-ui">H3–4: Spec-driven akış + Guardrail'lar (kuralı otomatik zorla)</text>
+  <text x="92" y="354" text-anchor="start" font-size="10" fill="#1C3247" font-family="system-ui">H3–4: Spec odaklı akış + Guardrail'lar (kuralı otomatik zorla)</text>
 
   <rect x="72" y="376" width="544" height="52" rx="9" fill="#EAF1F7" stroke="#186399" stroke-width="1.5"/>
   <rect x="72" y="376" width="8" height="52" fill="#186399"/>
@@ -117,21 +117,22 @@ seni bir öncekinden bir kat yukarı taşır (bkz. **Diyagram 1**).
   sistemine** çevirirsin: `AGENTS.md`, `docs/`, ilk karar kayıtların (ADR).
 - **Faz 2 · Disiplin (Hafta 3–4).** Ortam kuruldu; şimdi **niyeti** net ifade etmeyi (task spec) ve
   makinenin kurala uymasını **garanti etmeyi** öğrenirsin. Kural artık bir belgede yatan iyi niyet
-  değil, **çalışan bir sınırdır**: ArchUnit gibi testler yanlış katman erişimini kırmızıya çevirir.
-- **Faz 3 · Mimari düşünce (Hafta 5–6).** Artık makineyi yönetiyorsun; ama **ne** inşa edeceğine sen
-  karar veriyorsun. Mimarinin özü **ödünleşmedir**: her "-lik" (güvenilirlik, ölçeklenebilirlik…)
-  bir başkasını zorlar. Kararı bir **C4 diyagramıyla** anlatmayı öğrenirsin.
+  değil, **çalışan bir sınırdır**: ArchUnit gibi testler yanlış katmana erişen kodu yakalar ve derlemeyi
+  kırmızıya çevirir (başarısız kılar).
+- **Faz 3 · Mimari düşünce (Hafta 5–6).** Artık makineyi yönetiyorsun; ama **ne** inşa edileceğine yine sen
+  karar vereceksin. Mimarinin özü **ödünleşimdir**: her nitelik (güvenilirlik, ölçeklenebilirlik…)
+  bir başkasından ödün vermeyi gerektirir. Kararı bir **C4 diyagramıyla** anlatmayı öğrenirsin.
 - **Faz 4 · AI'yi inşa et (Hafta 7–8).** AI'yi bir araç olarak kullandın; şimdi AI'yi bir **sistem
   parçası** olarak inşa edersin: doğru modeli seçmek, prompt disiplini, RAG, değerlendirme
   (evaluation) ve **maliyet/gecikme** hesabı.
 - **Faz 5 · Ustalaşma (Hafta 9–10).** Faz 3'ün teorisini **koda dökersin**: hexagonal/port-adapter
-  mimarisini kendi elinle Java'da uygular, ArchUnit'le mühürlersin. Ve kararı tek kişiden alıp
+  mimarisini kendi elinle Java'da uygular, ArchUnit'le mühürlersin. Ayrıca kararı tek kişiden alıp
   **ekibe** taşırsın (Advice Process, mimari karar forumu).
-- **Faz 6 · Zirve (Hafta 11–12).** En zorlu teknik alan — **veri-yoğun sistemler** (replikasyon,
-  bölümleme, tutarlılık) — artı **insan boyutu**: junior mentorluğu, ekip AI anlaşması ve her şeyi
+- **Faz 6 · Zirve (Hafta 11–12).** En zorlu teknik alan olan **veri-yoğun sistemler** (replikasyon,
+  bölümleme, tutarlılık) ve **insan boyutu**: junior mentorluğu, ekip AI anlaşması ve her şeyi
   birleştiren bir **capstone** (bitirme projesi).
 
-## Neden tam bu sıra — sırayı atlarsan üst kat çöker
+## Neden tam bu sıra: sırayı atlarsan üst kat çöker
 En çok merak edilen soru: "neden önce şu değil de bu?" Cevap basit: **her hafta bir öncekinin üstüne
 oturuyor.** Bu bir konu yığını değil, bir **taşıyıcı yapıdır** (bkz. **Diyagram 2**).
 
@@ -141,7 +142,7 @@ oturuyor.** Bu bir konu yığını değil, bir **taşıyıcı yapıdır** (bkz. 
     <marker id="bg2-up" markerWidth="10" markerHeight="10" refX="4" refY="8" orient="auto"><path d="M4,0 L8,8 L0,8 Z" fill="#25804C"/></marker>
   </defs>
   <text x="320" y="24" text-anchor="middle" font-size="15" font-weight="700" fill="#1C3247" font-family="system-ui">Her kat, altındakine dayanır</text>
-  <text x="320" y="43" text-anchor="middle" font-size="11" fill="#5D7789" font-family="system-ui">Alttaki sağlam olmadan üsttekini kuramazsın — sıra bilinçlidir.</text>
+  <text x="320" y="43" text-anchor="middle" font-size="11" fill="#5D7789" font-family="system-ui">Alttaki sağlam olmadan üsttekini kuramazsın; sıra bilinçlidir.</text>
 
   <rect x="130" y="60" width="380" height="46" rx="8" fill="#1C3247" stroke="#1C3247" stroke-width="1.4"/>
   <text x="320" y="79" text-anchor="middle" font-size="10.5" font-weight="700" fill="#FFFFFF" font-family="system-ui">H11–12 · Ölçek + Liderlik</text>
@@ -157,7 +158,7 @@ oturuyor.** Bu bir konu yığını değil, bir **taşıyıcı yapıdır** (bkz. 
 
   <rect x="130" y="216" width="380" height="46" rx="8" fill="#E9F4EE" stroke="#25804C" stroke-width="1.4"/>
   <text x="320" y="235" text-anchor="middle" font-size="10.5" font-weight="700" fill="#25804C" font-family="system-ui">H5–6 · Mimari düşünce</text>
-  <text x="320" y="252" text-anchor="middle" font-size="9" fill="#1C3247" font-family="system-ui">NE inşa edileceğine karar ver (ödünleşme)</text>
+  <text x="320" y="252" text-anchor="middle" font-size="9" fill="#1C3247" font-family="system-ui">NE inşa edileceğine karar ver (ödünleşim)</text>
 
   <rect x="130" y="268" width="380" height="46" rx="8" fill="#FBF0DE" stroke="#C77A17" stroke-width="1.4"/>
   <text x="320" y="287" text-anchor="middle" font-size="10.5" font-weight="700" fill="#C77A17" font-family="system-ui">H3–4 · Disiplin</text>
@@ -172,17 +173,17 @@ oturuyor.** Bu bir konu yığını değil, bir **taşıyıcı yapıdır** (bkz. 
 </svg>
 ```
 
-Somut örnekle: **Hafta 9'da** hexagonal mimariyi kendi elinle koda dökeceksin. Bunun için önceden
+Somut bir örnek: **Hafta 9'da** hexagonal mimariyi kendi elinle koda dökeceksin. Bunun için önceden
 görmüş olman gereken **iki** şey var: **Hafta 4'te** katman kuralını otomatik zorlamayı (guardrail'lar)
-ve **Hafta 5–6'da** o kuralın neden var olduğunu — hangi mimari ödünleşmeye hizmet ettiğini. İkisi de
+ve **Hafta 5–6'da** o kuralın neden var olduğunu, yani hangi mimari ödünleşime hizmet ettiğini. İkisi de
 Hafta 9'dan **önce** gelir; işte sıra bu yüzden böyle. Kuralı uygulamayı ve nedenini görmeden H9'da
-hexagonal yazsan, ezberlemiş olursun — anlamamış. Programın bütün mantığı budur: **önce AI'yi
+hexagonal yazarsan onu anlamış değil, ezberlemiş olursun. Programın bütün mantığı budur: **önce AI'yi
 yönetmeyi öğren, sonra niyeti disipline et, sonra ne inşa edeceğine karar vermeyi öğren, sonra AI'yi
 sistem yap, sonra ustalaş, sonunda ölçekle ve liderlik et.** Bir katı atlarsan üsttekini
-ezberlersin — anlamazsın.
+anlamazsın, yalnızca ezberlersin.
 
-## Nasıl çalışacaksın — günün ritmi
-Her hafta 5 gündür. Her gün aynı basit döngüyü izler; ve o döngünün kalbinde **AI Öğretmen** (bu
+## Nasıl çalışacaksın: günün ritmi
+Her hafta 5 gündür. Her gün aynı basit döngüyü izler. Bu döngünün merkezinde **AI Öğretmen** (bu
 uygulama) vardır: bir görevi bitirdiğini söylersin, sana sorular sorar, yanlış anladığın yeri
 yakalar (bkz. **Diyagram 3**).
 
@@ -192,7 +193,7 @@ yakalar (bkz. **Diyagram 3**).
     <marker id="bg3-a" markerWidth="10" markerHeight="10" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#186399"/></marker>
     <marker id="bg3-b" markerWidth="9" markerHeight="9" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#C77A17"/></marker>
   </defs>
-  <text x="320" y="24" text-anchor="middle" font-size="15" font-weight="700" fill="#1C3247" font-family="system-ui">Günlük ritim — ve neden bu uygulama dersin bir parçası</text>
+  <text x="320" y="24" text-anchor="middle" font-size="15" font-weight="700" fill="#1C3247" font-family="system-ui">Günlük ritim ve bu uygulamanın dersteki yeri</text>
 
   <rect x="24" y="50" width="128" height="58" rx="10" fill="#EAF1F7" stroke="#186399" stroke-width="1.5"/>
   <text x="88" y="74" text-anchor="middle" font-size="11.5" font-weight="700" fill="#186399" font-family="system-ui">1. OKU</text>
@@ -242,45 +243,45 @@ yakalar (bkz. **Diyagram 3**).
 </svg>
 ```
 
-Yani bu uygulama bir **ders kitabı değil, canlı bir organizmadır.** Hafta 2'de "AGENTS.md nedir"
-öğreneceksin — ve bu repoda gerçek bir AGENTS.md var. Hafta 4'te ArchUnit'le kuralı zorlamayı
-göreceksin — bu uygulamanın kendi katmanları ArchUnit'le korunuyor. **Öğrettiğimiz her pratiğin
-çalışan bir örneğinin üstünde duruyorsun.**
+Yani bu uygulama bir **ders kitabı değil, canlı bir organizmadır.** Hafta 2'de AGENTS.md'nin ne olduğunu
+öğreneceksin; bu repoda da gerçek bir AGENTS.md var. Hafta 4'te kuralı ArchUnit'le zorlamayı
+göreceksin; bu uygulamanın kendi katmanları da ArchUnit'le korunuyor. **Şu an kullandığın uygulama,
+öğrettiğimiz her pratiğin çalışan bir örneği.**
 
 Pratik notlar:
 - **Sıra önemli.** Bir hafta, bir önceki bitmeden tam açılmayabilir; bu bir aksaklık değil,
   yukarıdaki "her kat altındakine dayanır" ilkesinin uygulamadaki hâlidir.
 - **Görevler "okudum" demekle bitmez.** Asıl öğrenme, **yaptığın** ve AI Öğretmen'e
   **anlattığın** yerde olur. Bir kavramı kendi cümlelerinle anlatamıyorsan, henüz öğrenmemişsindir.
-- **Kaynaklar** (bu belge gibi diyagramlı özetler) her haftanın altında listelenir; bir kitabın
-  aylarını dakikalara indiren yol arkadaşlarıdır — ama dersin yerine geçmez, dersi **derinleştirir.**
+- **Kaynaklar** (bu belge gibi diyagramlı özetler) her haftanın altında listelenir. Bir kitabı aylarca
+  okumak yerine özünü dakikalar içinde veren yardımcı metinlerdir; dersin yerine geçmez, dersi **derinleştirir.**
 
-## Başlamadan önce — küçük bir anlaşma
+## Başlamadan önce: küçük bir anlaşma
 Bu program seni "AI kod yazıyor, ben ne yapacağım?" kaygısından çıkarıp, **"AI'nin yapamadığını ben
-yaparım"** güvenine taşımak için var. Ama tek şartı var: **acele etme, atlama.** Her hafta bir
+yaparım"** güvenine taşımak için var. Bunun tek bir şartı var: **acele etme, atlama.** Her hafta bir
 öncekinin üstüne oturuyor; hızlı geçmek, üst katı ezberlemek demektir.
 
 **Mezuniyet sonrası ölçülebilir bir dış hedef (isteğe bağlı):** Anthropic'in resmî
-**Claude Certified Architect – Foundations** sınavı, bu programın işlediği alanla (araç arayüzü,
-**MCP** — modelin dış araçlara ve verilere bağlanması için kullanılan açık protokol, Model
-Context Protocol; ajan desenleri, bağlam yönetimi, eval, maliyet) büyük ölçüde örtüşüyor. İyi bir
-hazırlık haritası: Daron Yöndem'in topluluk çalışma rehberi
-(github.com/daronyondem/claude-architect-exam-guide — İngilizce; sınavın kendisi de İngilizce,
+**Claude Certified Architect** sertifikasının **Foundations** (temel düzey) sınavı, bu programın işlediği
+alanlarla büyük ölçüde örtüşüyor: araç arayüzü, **MCP** (Model Context Protocol: modelin dış araçlara
+ve verilere bağlanması için kullanılan açık protokol), ajan desenleri, bağlam yönetimi, eval
+(değerlendirme testi) ve maliyet. İyi bir hazırlık haritası: Daron Yöndem'in topluluk çalışma rehberi
+(github.com/daronyondem/claude-architect-exam-guide; rehber İngilizce, sınavın kendisi de İngilizce,
 bunu hesaba kat).
 
 > **Şerh:** Sertifika, bir satıcının kendi ürün ekosistemi üzerinden verdiği bir belgedir;
 > mimarlık yetkinliğinin ölçüsü değildir ve kapsamı zamanla değişir. Burada hedef olarak değil,
-> **turnusol** olarak anılıyor — program sertifika için değil, rol değişimi için var. Sınav
+> **turnusol** (kendini sınamak için bir ölçüt) olarak anılıyor. Program sertifika için değil, rol değişimi için var. Sınav
 > içeriğini ve geçerliliğini kayıt olmadan önce kaynağından doğrula.
 
 > **Kodu makine yazacak. NE, NEDEN ve HANGİ BEDELLE sorularının cevabını veren mimar SEN olacaksın.**
-> Şimdi Hafta 1'e geç — ve rolünün nasıl değiştiğiyle başla.
+> Şimdi Hafta 1'e geç ve rolünün nasıl değiştiğini öğrenerek başla.
 
 ## Öz-sınav (kendini test et)
 1. Bu program, AI kod yazabildiği için işini kaybedeceğini değil, işinin **yer değiştirdiğini**
    söylüyor. Yeni işin hangi üç soruyla tanımlanıyor ve bunlar neden makineye devredilemiyor?
 2. "Harness" kelimesi neden koşum takımından ödünç alınmış? Bu benzetmeye göre senin AI ile
-   ilişkindeki rolün nedir — ve rolünü koda dokunarak mı, ortamı kurarak mı oynarsın?
+   ilişkindeki rolün nedir? Bu rolü koda dokunarak mı, ortamı kurarak mı oynarsın?
 3. Faz sırasının bilinçli olduğu söyleniyor. Hafta 9'daki hexagonal uygulamanın önüne konan iki
    önkoşulu ve her birinin neyi sağladığını yaz. Bu sıra bozulursa öğrenmede ne değişir?
 4. Günlük ritim dört adımdan oluşuyor. Görevi bitirip quiz'e geçmek, hangi adımı atlamak olur ve
@@ -291,20 +292,20 @@ bunu hesaba kat).
    yetkinlik kanıtı saymanın sakıncası nedir?
 
 ### Cevap anahtarı (önce kendin cevapla, sonra bak)
-1. **NE** inşa edileceği, **NEDEN** öyle olduğu (hangi ödünleşme seçildi) ve **HANGİ BEDELLE**
+1. **NE** inşa edileceği, **NEDEN** öyle olduğu (hangi ödünleşim seçildi) ve **HANGİ BEDELLE**
    olduğu. Devredilemez, çünkü üçü de bağlam, sorumluluk ve değer yargısı gerektirir; model
    bunları veriden türetemez, kendisine verilmesini bekler.
 2. Koşum takımı, atın gücünü arabacının istediği yöne çeviren kayışlardır. Sen atın yerine
    koşmazsın; **yönü, sınırı ve geri beslemeyi kurarsın**. Rolünü ortamı kurarak oynarsın: hangi
    bağlam, hangi araçlar, hangi denetim.
-3. Hafta 4 (kuralı otomatik zorlama — guardrail'lar) kuralın çalışan bir sınır hâline gelmesini
-   sağlar; Hafta 5–6 (nitelikler ve ödünleşmeler) o kuralın **neden** var olduğunu verir. Sıra
+3. Hafta 4 (kuralı otomatik zorlama, yani guardrail'lar) kuralın çalışan bir sınır hâline gelmesini
+   sağlar; Hafta 5–6 (nitelikler ve ödünleşimler) o kuralın **neden** var olduğunu öğretir. Sıra
    bozulursa hexagonal öğrenilmez, ezberlenir: yapı taklit edilir ama gerekçesi bilinmez.
-4. "Konuş" adımını atlamak olur. Bu adım, kavramı **kendi cümlelerinle** kurabiliyor musun onu
+4. "Konuş" adımını atlamak olur. Bu adım, kavramı **kendi cümlelerinle** anlatıp anlatamadığını
    ölçer; okumak tanımayı, anlatmak anlamayı gösterir.
 5. Çünkü uygulamanın kendisi öğretilen pratiklerle kurulmuştur. Örnekler: AGENTS.md/CLAUDE.md
    dosyası (repo bilgi sistemi), `docs/adr/` altındaki karar kayıtları, ArchUnit'le mühürlenen
    `types → config → repo → service → ai → web` katman yönü.
 6. Çünkü sertifikayı veren taraf aynı zamanda ürünü satan taraftır ve kapsamı zamanla değişir;
-   ölçtüğü şey bir ekosistem bilgisidir, mimari yargı değildir. Sakınca, belgeyi yetkinlik
-   sanıp asıl ölçütü — gerçek bir sistemde karar verip gerekçelendirebilmeyi — atlamaktır.
+   ölçtüğü şey bir ekosistem bilgisidir, mimari yargı değildir. Sakıncası, belgeyi yetkinlik
+   sanıp asıl ölçütü, yani gerçek bir sistemde karar verip bu kararı gerekçelendirebilmeyi atlamaktır.
