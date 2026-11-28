@@ -413,8 +413,10 @@ günlüğüne düşer. Bağlantıda (`[buraya tıkla](https://…?veri=…)`) ay
 >   metnine, görseli `[görsel: alt metin]` yazısına indirger; rapor HTML'inde `<a>`/`<img>` hiç
 >   oluşmaz. Kilit birim testi: `RaporServiceTest.raporHtmlindeBaglantiVeGorselYokMetinKalir`.
 >   Kural yalnız **güvenilmeyen (AI) metne** uygulanır; elle yazılmış müfredatın bağlantıları kalır.
-> - **İkinci katman (CSP):** `index.html`'deki CSP `img-src 'self' data:` der; dış alan adından resim
->   yüklenmez. (CSP yalnız `<meta>` ile verilir; `deploy/nginx-site.conf.ornek` ayrı bir CSP başlığı
+> - **İkinci katman (CSP):** `index.html`'deki CSP resmi yalnız kendi kökten, `data:` adreslerinden ve
+>   Google Analytics alanlarından yükler; başka dış alan adından resim yüklenmez. İzinli GA alanları da
+>   bir sızdırma kanalı olabilir (aşağıdaki EchoLeak dersi: izinli alan adı üzerinden çıkış), bu yüzden
+>   CSP burada tam bir duvar değildir. (CSP yalnız `<meta>` ile verilir; `deploy/nginx-site.conf.ornek` ayrı bir CSP başlığı
 >   eklemez.) Bağlantı tıklamasını CSP engellemez. Bu yüzden asıl kapı render katmanındadır, CSP
 >   ise ikinci duvardır: biri kaldırılsa diğeri kalır (§5, savunma derinliği).
 
@@ -577,7 +579,7 @@ Yukarıdakileri senin uygulamana uyarlayan, bugün uygulanabilir maddeler:
   durduramazsın.
 - **AI çıktısında dış resme izin verme.** Haftalık rapor gibi markdown render edilen her yerde dış
   `<img>` üretilmesin, dış bağlantı görünür alan adıyla ya da düz metin gösterilsin; CSP'deki
-  `img-src 'self' data:` korunur (§4d).
+  `img-src` listesi genişletilmez (bugün yalnız kendi kök, `data:` ve GA alanları; §4d).
 - **Hafızaya köken ve kapsam ekle.** `HafizaService` yazımlarına oturum/mesaj kökeni ve sürüm izi;
   her yeni hafıza türü için "kullanıcı mı, oturum mu, ajan mı?" kararı. Ortak yazılabilir bağlam
   açılmadan önce `KitapController` kararını hatırla: önce kapsam, sonra özellik (§3c).
@@ -635,7 +637,7 @@ Yukarıdakileri senin uygulamana uyarlayan, bugün uygulanabilir maddeler:
     (`@Profile("!site")`).
 14. `escapeHtml` markdown resmini kaçışlamaz, yani çıplak commonmark `<img>` üretirdi; bu depoda
     `BaglantiSokucu` görseli `[görsel: …]` metnine indirger, `<img>` hiç oluşmaz. İkinci duvar olarak
-    `index.html` CSP'si `img-src 'self' data:` dış resmi zaten yüklemezdi. Bağlantı gelseydi: CSP
+    `index.html` CSP'si GA alanları dışındaki dış resmi zaten yüklemezdi. Bağlantı gelseydi: CSP
     tıklamayı engellemez; tek tık kanalını kapatan yalnız render katmanıdır (bağlantı düz metne
     iner). EchoLeak'te veri izinli bir Microsoft alan adı üzerinden çıktı: izinli alan adında vekil
     varsa izin listesi kanalı kapatmaz.
