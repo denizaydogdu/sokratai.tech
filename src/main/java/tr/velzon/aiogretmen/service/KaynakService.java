@@ -107,7 +107,7 @@ public class KaynakService {
         List<String> parcalar = kaynakRepo.haftaninKaynaklari(hafta).stream()
                 .sorted(Comparator.comparing((Kaynak k) -> !k.slug().startsWith(haftaOneki)) // haftanın kendisi
                         .thenComparingInt(k -> k.etiketler().size()))                        // özel → genel
-                .map(k -> "### " + k.baslik() + " — " + k.yazar() + "\n" + semaSiz(k.govde()))
+                .map(k -> "### " + k.baslik() + " · " + k.yazar() + "\n" + semaSiz(k.govde()))
                 .toList();
         return BaglamKirpici.birlestir(parcalar, KAYNAK_BASI_SINIR, BAGLAM_KARAKTER_SINIRI,
                 "(Bu haftayla eşleşen kaynak metni yok.)");
@@ -115,6 +115,6 @@ public class KaynakService {
 
     /** ```svg diyagram bloklarını AI bağlamından çıkarır (yerine kısa etiket); okuma render'ı etkilenmez. */
     static String semaSiz(String md) {
-        return SVG_MD_FENCE.matcher(md).replaceAll("(diyagram — görsel özet)");
+        return SVG_MD_FENCE.matcher(md).replaceAll("(diyagram: görsel özet)");
     }
 }

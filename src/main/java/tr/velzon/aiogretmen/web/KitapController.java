@@ -58,7 +58,7 @@ public class KitapController {
             throw new IllegalArgumentException("not alanı zorunlu");
         }
         if (istek.not().length() > MAX_NOT) {
-            throw new IllegalArgumentException("not çok uzun — üst sınır " + MAX_NOT + " karakter; bölerek gönder");
+            throw new IllegalArgumentException("not çok uzun. Üst sınır: " + MAX_NOT + " karakter; bölerek gönder.");
         }
         return kitapService.notEkle(kitapAdiTemizle(istek.kitap()), istek.not());
     }

@@ -41,7 +41,7 @@ public class HataYonetimi {
 
     private static final Logger log = LoggerFactory.getLogger(HataYonetimi.class);
 
-    static final String BEKLENMEYEN_DETAY = "Beklenmeyen bir hata oluştu. Tekrar dene; sürerse site sorumlusuna bildir.";
+    static final String BEKLENMEYEN_DETAY = "Beklenmeyen bir hata oluştu. Tekrar dene; sorun sürerse site sorumlusuna bildir.";
     @ExceptionHandler(BulunamadiException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public Map<String, String> bulunamadi(BulunamadiException e) {
@@ -189,7 +189,7 @@ public class HataYonetimi {
             log.debug("İstemci hatası [{}] {} {}: {}", durum.value(), istek.getMethod(), istek.getRequestURI(),
                     e.toString());
             govde.put("hata", "Geçersiz istek");
-            govde.put("detay", "İstek işlenemedi (HTTP " + durum.value() + ") — sayfayı yenileyip tekrar dene.");
+            govde.put("detay", "İstek işlenemedi (HTTP " + durum.value() + "). Sayfayı yenileyip tekrar dene.");
         }
         if (sayfaIstegi(istek)) {
             yanit.sendError(durum.value()); // tarayıcı: Türkçe hata sayfası (static/error/*.html)

@@ -3,7 +3,7 @@
 > Pera (pera-soft) ile ilişik kalmadı (2026-11-27); repo denizaydogdu/sokratai.tech; deploy: Hostinger VPS üzerinde Dokploy.
 
 ## Komutlar
-- Derle+test: `./mvnw verify` (527 test, 5 atlanan PostgreSQL opt-in; 14 Playwright ön yüz testi dahil)
+- Derle+test: `./mvnw verify` (537 test, 5 atlanan PostgreSQL opt-in; 16 Playwright ön yüz testi dahil)
 - Çalıştır: `OPENROUTER_API_KEY=... ./mvnw spring-boot:run`  (http://127.0.0.1:8090; sağlayıcı: OpenRouter, ADR-0004)
   - Mülakat modülü varsayılan KAPALI; açmak için başına `APP_MULAKAT_ETKIN=true` ekle (ADR-0011)
   - Girişsiz çok ziyaretçili site (ADR-0017): `--spring.profiles.active=site` + `SPRING_DATASOURCE_URL`
@@ -27,7 +27,9 @@
 - Docker derlemesi Playwright indirmez: `-Donyuz.atla -Dmaven.test.skip=true` (Dockerfile'da hazır)
 - Sızıntı taraması (push öncesi kancada otomatik): `bash tools/sizinti-tara.sh [<commit>]`; yeni ikili dosya
   girdisi için `SIZINTI_IKILI_ONAY=<uç sha12> git push ...` (bkz. "Repo ve yayın")
-- Müfredat üret (HTML → content/): `node tools/html-to-content.mjs`
+- Müfredat dönüştürücü (HTML → content/, `node tools/html-to-content.mjs`) yalnız İLK üretim içindi: ÇALIŞTIRMA.
+  `content/` artık tek doğruluk kaynağı ve elle düzeltildi (Faz 14); dönüştürücü hafta dizinlerini silip yeniden yazar.
+- Yazım kuralı testi: `./mvnw -Dtest=IcerikYazimKurallariTest test` (içerik ve prompt'larda uzun çizgi yok)
 
 ## Sınırlar
 - ALWAYS: KULLANICI İNGİLİZCE BİLMİYOR — verdiği İngilizce kaynaklar Türkçe çalışma
@@ -43,6 +45,9 @@
   diyagram** (```svg çit; CSP-temiz — `<style>`/`class` YOK, yalnız presentation attribute;
   dosyaya özgü marker id öneki) + öz-sınav + satıcı iddiasına şerh. Render doğrula:
   `/api/kaynak/{slug}` → 3 svg. İstisna: rapor/soru bankası türü metinler diyagramsız kalabilir.
+- ALWAYS: Türkçe metin (ders, kaynak, atölye, arayüz, prompt) `docs/yazim-kilavuzu.md`'ye uyar: uzun çizgi
+  (—) YOK (işlevine göre iki nokta / yeni cümle / virgül / parantez), çeviri kokan cümle yok, terimler
+  kılavuzdaki sözlükle tutarlı. `IcerikYazimKurallariTest` içerik, prompt ve HTML sayfalarında uzun çizgiyi yakalar (app.js ve Java dizeleri incelemeyle); anlamı insan gözü/inceleme denetler.
 - ASK FIRST: yeni bağımlılık (önce docs/adr/'ye ADR).
 - NEVER: API anahtarını koda/git'e koymak; **Obsidian Vault'a şifre/token/secret yazmak**
   (vault kuralı); 127.0.0.1 dışına bind — uygulama daima 127.0.0.1'e bağlanır; **istisna: Docker
@@ -51,7 +56,7 @@
   yeniden üretmek.
 
 ## Nerede ne var
-- Mimari: ARCHITECTURE.md · Kararlar: docs/adr/ (0001–0021) · Planlar: docs/exec-plans/ (tamamlananlar: completed/, Faz 0–13)
+- Mimari: ARCHITECTURE.md · Kararlar: docs/adr/ (0001–0021) · Planlar: docs/exec-plans/ (tamamlananlar: completed/, Faz 0–14)
 - Müfredat: content/ (frontmatter'lı md) · Prompt şablonları: prompts/
 - Öğrenci hafızası (Faz 2, AI yazar): data/hafiza/ (git dışı)
 - Borç listesi: docs/tech-debt-tracker.md

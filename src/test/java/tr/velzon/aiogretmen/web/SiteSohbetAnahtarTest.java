@@ -267,7 +267,7 @@ class SiteSohbetAnahtarTest {
         durum = 429;
         r = sohbet("10.6.0.8", "DDDDDDDDDDDDDDDDDDDDDb", GECERSIZ);
         assertThat(r.getResponse().getStatus()).isEqualTo(429);
-        assertThat(r.getResponse().getContentAsString()).contains("biraz bekleyip");
+        assertThat(r.getResponse().getContentAsString()).contains("Biraz bekleyip");
     }
 
     @Test

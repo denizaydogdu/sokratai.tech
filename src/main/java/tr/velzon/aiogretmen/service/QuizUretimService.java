@@ -77,16 +77,20 @@ public class QuizUretimService {
             sonuc = parser.parse(duzeltme.metin(), UretilenQuiz.class);
         }
         UretilenQuiz quiz = sonuc
-                .orElseThrow(() -> new AiCiktisiBozukException("Quiz üretilemedi — lütfen tekrar deneyin."));
+                .orElseThrow(() -> new AiCiktisiBozukException("Quiz üretilemedi. Tekrar dene."));
 
         // asgari doğrulama: eksik alanlı/bozuk soruları at
+        // "sorular" alanı hiç yoksa ya da null ise NPE değil, aynı "bozuk çıktı" hatası
+        if (quiz.sorular() == null) {
+            throw new AiCiktisiBozukException("Quiz üretilemedi (soru listesi yok). Tekrar dene.");
+        }
         var gecerli = quiz.sorular().stream()
                 .filter(s -> s.soru() != null && !s.soru().isBlank())
                 .filter(s -> s.secenekler() != null && s.secenekler().size() == 4)
                 .filter(s -> s.dogruIndex() != null && s.dogruIndex() >= 0 && s.dogruIndex() < 4)
                 .toList();
         if (gecerli.isEmpty()) {
-            throw new AiCiktisiBozukException("Quiz üretilemedi (geçerli soru yok) — lütfen tekrar deneyin.");
+            throw new AiCiktisiBozukException("Quiz üretilemedi (geçerli soru yok). Tekrar dene.");
         }
         return new UretilenQuiz(gecerli);
     }

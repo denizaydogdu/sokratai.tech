@@ -36,7 +36,7 @@ public class BaslikAiAnahtarBaglami implements AiAnahtarBaglami {
         }
         String anahtar = ham.strip();
         if (!BICIM.matcher(anahtar).matches()) {
-            throw new AnahtarBicimiException("OpenRouter anahtarının biçimi geçersiz — 'sk-or-' ile başlamalı.");
+            throw new AnahtarBicimiException("OpenRouter anahtarının biçimi geçersiz: anahtar 'sk-or-' ile başlamalı.");
         }
         return Optional.of(anahtar);
     }

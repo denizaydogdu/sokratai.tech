@@ -86,6 +86,23 @@ class SpringAiOgretmenClientTest {
     }
 
     @Test
+    void bosCevaptaDaKullanimKaydiYazilirSonraHataFirlatilir() {
+        // content-filter/boş completion: ücret ödenmiştir, kullanım satırı düşmemeli (Codex bulgusu)
+        when(chatModel.call(any(Prompt.class))).thenReturn(new ChatResponse(
+                List.of(new Generation(new AssistantMessage(""))),
+                ChatResponseMetadata.builder().usage(new DefaultUsage(12, 0)).build()));
+        var client = new SpringAiOgretmenClient(chatModel, props, kullanimRepo, () -> "yerel");
+
+        assertThatThrownBy(() -> client.cagir(OgretmenAiClient.AiIstek.tekSeferlik(OgretmenAiClient.Islem.SOHBET,
+                OgretmenAiClient.ModelTuru.HIZLI, "sistem", "mesaj", 100)))
+                .isInstanceOf(tr.velzon.aiogretmen.types.AiCiktisiBozukException.class);
+
+        ArgumentCaptor<AiKullanim> kayit = ArgumentCaptor.forClass(AiKullanim.class);
+        verify(kullanimRepo).save(kayit.capture());
+        assertThat(kayit.getValue().inputTokens()).isEqualTo(12);
+    }
+
+    @Test
     void kimlikYoksaModeleHicGidilmez() {
         var client = new SpringAiOgretmenClient(chatModel, props, kullanimRepo, () -> {
             throw new IllegalStateException("oturum yok");

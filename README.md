@@ -63,7 +63,7 @@ Program 12 haftadan, her hafta 5 günden oluşur: **60 günlük ders**, **60 sta
 | 6 | Mimari Düşünme II: Stiller ve İletişim |
 | 7 | AI Engineering I: Stack, Modeller, Prompt |
 | 8 | AI Engineering II: RAG, Fine-tune Kararı, Evaluation |
-| 9 | Hexagonal / Clean Mimari (Elle Kirlen) |
+| 9 | Hexagonal / Clean Mimari (Ellerini Kirlet) |
 | 10 | Mimari Kararları Kolaylaştırmak (Advice Process) |
 | 11 | Veri-Yoğun Sistemler (DDIA) |
 | 12 | Liderlik, Mentorluk ve Capstone |
@@ -1110,8 +1110,8 @@ yetkilidir) — ADR-0017.
 ./mvnw -Dtest='DegerlendirmeServiceTest#*' test # bir sınıfın tüm metotları (desen örneği)
 ```
 
-- `./mvnw clean verify` şu an **527 test** çalıştırır (0 hata) ve yeşildir; bunların **5'i
-  atlanır** (aşağıdaki isteğe bağlı PostgreSQL testi). Ayrıca **14 Playwright gerçek tarayıcı testi** koşar
+- `./mvnw clean verify` şu an **537 test** çalıştırır (0 hata) ve yeşildir; bunların **5'i
+  atlanır** (aşağıdaki isteğe bağlı PostgreSQL testi). Ayrıca **16 Playwright gerçek tarayıcı testi** koşar
   (`OnYuzDavranisTest`, ADR-0021; Chromium kurulu olmalı — kurulu değilse CI'da hata verir).
 - Testler katman katman düzenlenmiştir: `ai/` (prompt doldurma, JSON ayrıştırma, anlam araması),
   `repo/` (içerik ve atölye ayrıştırıcıları, kullanım sorguları, şema taşınabilirliği), `service/`

@@ -88,7 +88,7 @@ final class AcikSayfa {
                 .append("</head>\n<body data-sayfa=\"acik\">\n")
                 .append("<header>\n  <div class=\"hwrap\">\n    <div class=\"brand\">\n")
                 .append("      <span class=\"eyebrow\">AI Öğretmen · 12 Haftalık Program</span>\n")
-                .append("      <a class=\"acik-marka\" href=\"/\">SokratAI — Mimar Defteri</a>\n")
+                .append("      <a class=\"acik-marka\" href=\"/\">SokratAI · Mimar Defteri</a>\n")
                 .append("    </div>\n    <a class=\"btn btn-ikincil acik-ust-bag\" href=\"/dersler\">Ders içeriği</a>\n")
                 .append("  </div>\n</header>\n<main class=\"acik-sayfa\">\n");
         yolHaritasi(h, b.yolHaritasi());

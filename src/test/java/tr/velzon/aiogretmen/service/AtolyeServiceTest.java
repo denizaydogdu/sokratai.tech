@@ -8,15 +8,19 @@ import tr.velzon.aiogretmen.ai.OgretmenAiClient.AiIstek;
 import tr.velzon.aiogretmen.ai.OgretmenAiClient.AiYanit;
 import tr.velzon.aiogretmen.ai.PromptFactory;
 import tr.velzon.aiogretmen.repo.AtolyeRepo;
+import tr.velzon.aiogretmen.types.AtolyeAlistirma;
 import tr.velzon.aiogretmen.types.AtolyeDegerlendirme;
+import tr.velzon.aiogretmen.types.AtolyeKategori;
 import tr.velzon.aiogretmen.types.BulunamadiException;
 
 import java.nio.file.Path;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -83,5 +87,44 @@ class AtolyeServiceTest {
                 .isInstanceOf(BulunamadiException.class)
                 .hasMessageContaining("yok-boyle-id");
         verify(aiClient, times(0)).cagir(any()); // alıştırma yoksa AI çağrısı da yapılmaz
+    }
+
+    @Test
+    void aiKapaliAlistirmaAiCagrisiYapmadanReddedilir() {
+        // net-gorev içerikte ai:false; bayrak gerçekten okunuyor mu önce repodan doğrula (içerik değişirse test anlamlı kalsın).
+        assertThat(alistirma("net-gorev").aiDegerlendir()).isFalse();
+
+        assertThatThrownBy(() -> servis.degerlendir("net-gorev", "prompt"))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage(AtolyeService.AI_KAPALI_MESAJ)
+                .hasMessageContaining("ideal çözümle karşılaştır");
+        verify(aiClient, never()).cagir(any()); // ücretli model çağrısı tetiklenmez
+    }
+
+    @Test
+    void aiAcikAlistirmaAiCagrisiYapar() {
+        assertThat(alistirma("birlestir").aiDegerlendir()).isTrue();
+        when(aiClient.cagir(any())).thenReturn(new AiYanit(GECERLI_JSON, 1, 1, "m"));
+
+        servis.degerlendir("birlestir", "prompt");
+
+        verify(aiClient, times(1)).cagir(any());
+    }
+
+    @Test
+    void herBolumdeYalnizSonAlistirmaAiIleDegerlendirilir() {
+        // Tasarım sözleşmesi: AI değerlendirmesi her bölümün son "birleştir" alıştırmasında (az token).
+        for (AtolyeKategori k : servis.kategoriler()) {
+            List<AtolyeAlistirma> l = k.alistirmalar();
+            assertThat(l).as(k.slug()).isNotEmpty();
+            assertThat(l.get(l.size() - 1).aiDegerlendir()).as(k.slug() + " son alıştırma").isTrue();
+            assertThat(l.subList(0, l.size() - 1)).as(k.slug() + " diğerleri")
+                    .noneMatch(AtolyeAlistirma::aiDegerlendir);
+        }
+    }
+
+    private AtolyeAlistirma alistirma(String id) {
+        return atolyeRepo.kategoriler().stream().flatMap(k -> k.alistirmalar().stream())
+                .filter(a -> a.id().equals(id)).findFirst().orElseThrow();
     }
 }

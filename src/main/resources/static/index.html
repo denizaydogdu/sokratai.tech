@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SokratAI — AI Öğretmen · 12 Haftalık Yapay Zekâ Mühendisliği Programı</title>
+<title>SokratAI · AI Öğretmen · 12 Haftalık Yapay Zekâ Mühendisliği Programı</title>
 <meta name="description" content="12 haftalık ücretsiz Türkçe yapay zekâ mühendisliği ve yazılım mimarlığı programı: günlük dersler, görevler, quizler ve Sokratik AI öğretmen.">
 <!-- CSP (ADR-0019): GA4 yalnız APP_SITE_GA_OLCUM_KIMLIGI ayarlıysa app.js'ten yüklenir; satır içi betik YOK.
      connect-src openrouter.ai: "OpenRouter ile bağlan" anahtar değişimi (PKCE, Faz 13; yalnız tarayıcıdan, sunucumuz görmez). -->
@@ -14,10 +14,10 @@
 <meta property="og:type" content="website">
 <meta property="og:locale" content="tr_TR">
 <meta property="og:site_name" content="SokratAI">
-<meta property="og:title" content="SokratAI — AI Öğretmen">
+<meta property="og:title" content="SokratAI · AI Öğretmen">
 <meta property="og:description" content="12 haftalık ücretsiz Türkçe yapay zekâ mühendisliği ve yazılım mimarlığı programı: günlük dersler, görevler, quizler ve Sokratik AI öğretmen.">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="SokratAI — AI Öğretmen">
+<meta name="twitter:title" content="SokratAI · AI Öğretmen">
 <meta name="twitter:description" content="12 haftalık ücretsiz Türkçe yapay zekâ mühendisliği ve yazılım mimarlığı programı: günlük dersler, görevler, quizler ve Sokratik AI öğretmen.">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="style.css">
@@ -26,7 +26,7 @@
 {
   "@context": "https://schema.org",
   "@type": "Course",
-  "name": "AI Öğretmen — 12 Haftalık Yapay Zekâ Mühendisliği Programı",
+  "name": "AI Öğretmen: 12 Haftalık Yapay Zekâ Mühendisliği Programı",
   "description": "12 haftalık ücretsiz Türkçe yapay zekâ mühendisliği ve yazılım mimarlığı programı: günlük dersler, görevler, quizler ve Sokratik AI öğretmen.",
   "inLanguage": "tr",
   "isAccessibleForFree": true,
@@ -48,7 +48,7 @@
     </div>
     <div class="stat">
       <span class="lab">Toplam İlerleme</span>
-      <span class="val" id="toplam-ilerleme">—</span>
+      <span class="val" id="toplam-ilerleme">-</span>
     </div>
     <button class="btn btn-ikincil" id="kilavuz-ac" title="Nasıl kullanılır?">❓ Nasıl kullanılır</button>
     <a class="btn btn-ikincil ders-icerik-bag" href="/dersler">📚 Ders içeriği</a>
@@ -58,9 +58,9 @@
 <!-- JS çalıştırmayan tarayıcılar ve botlar için (ADR-0020): içerik /dersler altında sunucuda çizilir. -->
 <noscript>
   <div class="panel noscript-not">
-    <p><strong>SokratAI</strong> — ücretsiz, Türkçe, 12 haftalık yapay zekâ mühendisliği ve yazılım mimarlığı
-      programı: günlük dersler, görevler, Türkçe kaynak metinleri ve Sokratik AI öğretmen. Etkileşimli uygulama
-      JavaScript ister; tüm ders ve kaynak metinlerini JavaScript olmadan okuyabilirsin:
+    <p><strong>SokratAI</strong> ücretsiz, Türkçe, 12 haftalık bir yapay zekâ mühendisliği ve yazılım mimarlığı
+      programıdır: günlük dersler, görevler, Türkçe kaynak metinleri ve Sokratik AI öğretmen. Etkileşimli uygulama
+      için JavaScript gerekir; tüm ders ve kaynak metinlerini JavaScript olmadan da okuyabilirsin:
       <a href="/dersler">Ders içeriği</a>.</p>
   </div>
 </noscript>
@@ -82,62 +82,62 @@
       dayandığını söyler.</p>
     <p><strong>📚 “Bu haftanın kaynakları” kutusu</strong> → o yazıların Türkçe çalışma
       metinleri. Bir görev “yazıyı oku” diyorsa ya da derse başlamadan okumak istersen,
-      buradan aç — yazı sayfada açılır (başka siteye gitmene gerek yok).</p>
+      buradan aç. Yazı aynı sayfada açılır, başka siteye gitmene gerek yok.</p>
     <p><strong>GÜN 1…5 kartları</strong> → haftanın günlük dersleri. Karta tıkla: ders metni
       ve görevler açılır. Başlıktaki <strong>“1/3” sayacı</strong> o günün görevlerinden kaçını
       bitirdiğini gösterir (1/3 = üç görevden biri tamam).</p>
     <p><strong>Görev satırları</strong> → sırayla yapılacak işler; biri bitmeden bir sonraki
       açılmaz. Her görevin türü bellidir: <em>📖 Oku</em>, <em>✍️ Yaz</em>, <em>💬 Tartış</em>.
-      Yanındaki butona basınca ne yapacağın açılır.</p>
+      Yanındaki butona bas; görevi yapacağın alan açılır.</p>
 
     <h3>1 · Haftayı seç, günün dersini oku</h3>
-    <p>Sol menüden haftayı seç (kilitli haftalar için önce öncekini bitirmen gerekir).
-      Gün kartına tıkla — ders metni açılır. Yazıların tamamı Türkçe.</p>
+    <p>Sol menüden haftayı seç (kilitli bir haftanın görevlerini yapmak için önce önceki haftayı bitirmelisin).
+      Gün kartına tıkla, ders metni açılır. Yazıların tamamı Türkçe.</p>
 
     <h3>2 · Görevleri sırayla yap</h3>
     <p data-yalniz-yerel><strong>📖 Oku görevi:</strong> “Oku” butonuna bas, yazı sayfada açılır. Okuyunca
-      <em>“✓ Okudum”</em>a bas — sonra AI öğretmen kısaca üstünden geçmen için bir soru sorar;
-      en kritik 1-2 noktayı kendi cümlelerinle yazınca öğretmen görevi geçirir.</p>
-    <p data-yalniz-yerel><strong>✍️ Yaz görevi:</strong> “Yaz” butonuna bas, ferah bir çalışma alanı açılır.
+      <em>“✓ Okudum”</em>a bas. Ardından AI öğretmen, yazıyı kısaca üstünden geçmen için bir soru sorar.
+      En önemli 1-2 noktayı kendi cümlelerinle yazınca öğretmen görevi tamamlanmış sayar.</p>
+    <p data-yalniz-yerel><strong>✍️ Yaz görevi:</strong> “Yaz” butonuna bas, geniş bir yazma alanı açılır.
       Cevabını yaz, <em>“Cevabımı AI öğretmene değerlendirt”</em>e bas. Öğretmen 100 üzerinden
-      puanlar; doğru noktalarını, eksiklerini ve sonraki adımını söyler — görev otomatik işaretlenir.
-      Takılırsan aynı ekranda <em>🔍 Soruyu aç</em> ve <em>💡 Örnek cevap göster</em> var.</p>
-    <p data-yalniz-yerel>Not: Kutucukları <strong>sen doldurmuyorsun</strong>. Görevleri AI öğretmenle üstünden
+      puanlar; doğru noktalarını, eksiklerini ve sonraki adımını söyler. Görev kendiliğinden işaretlenir.
+      Takılırsan aynı ekranda <em>🔍 Soruyu aç</em> ve <em>💡 Örnek cevap göster</em> düğmeleri var.</p>
+    <p data-yalniz-yerel>Not: Kutucukları <strong>sen işaretlemiyorsun</strong>. Görevleri AI öğretmenle üstünden
       geçerek tamamlarsın (Okudum → kısa cevap · yazıyı değerlendirt · tartış); öğretmen “geçtin”
       deyince sistem işaretler ve sıradaki görev açılır. İlerleme sol menüye ve üst bara yansır.</p>
     <p data-yalniz-site hidden><strong>📖 Oku görevi:</strong> “Oku” butonuna bas, yazı sayfada açılır. Okuyunca
-      <em>“Okudum ✓”</em>a bas — görev işaretlenir. (Sohbete anahtarını eklediysen öğretmen önce kısa bir soru
-      sorar; kendi cümlelerinle cevaplayınca görev geçer.)</p>
+      <em>“Okudum ✓”</em>a bas, görev işaretlenir. (Sohbete anahtarını eklediysen öğretmen önce kısa bir soru
+      sorar; kendi cümlelerinle cevaplayınca görev tamamlanır.)</p>
     <p data-yalniz-site hidden><strong>✍️ Yaz görevi:</strong> Görevi kendi defterinde ya da bir dosyada yap;
       bitirince <em>“Yaptım ✓”</em>a bas.</p>
     <p data-yalniz-site hidden><strong>💬 Tartış görevi:</strong> Konuyu düşün; anahtarın varsa AI öğretmenle
       sohbette tartış, yoksa <em>“Tartıştım ✓”</em> ile işaretle.</p>
-    <p data-yalniz-site hidden>Not: <strong>Kutucukları kendin de işaretleyebilirsin</strong> — bitirdiğin görevi
+    <p data-yalniz-site hidden>Not: <strong>Kutucukları kendin de işaretleyebilirsin</strong>: bitirdiğin görevi
       ✓ düğmesiyle işaretle, sıradaki görev açılır. İlerleme sol menüye ve üst bara yansır.</p>
 
     <h3>3 · Takıldığında sohbette sor</h3>
     <p data-yalniz-yerel>Sağdaki <strong>AI Öğretmen</strong> paneline yaz. Öğretmen hazır cevap vermez;
-      sorularla seni cevaba yürütür. “Ben şunu yaptım / şunu anlamadım” demek de serbest —
-      seni hatırlar, sonraki konuşmalarda buna göre davranır.</p>
+      sorularla seni cevaba götürür. “Ben şunu yaptım / şunu anlamadım” demek de serbest.
+      Öğretmen seni hatırlar ve sonraki konuşmalarda buna göre davranır.</p>
     <p data-yalniz-yerel><strong>“Gönder”in üstündeki görev barı</strong> → sohbette hep o an yapman gereken
       görevi ve <em>“→ göreve geç”</em> butonunu gösterir. Butona bas: oku için yazı açılır,
-      yaz için çalışma alanı, tartış için sohbet — görevi hep AI öğretmenle üstünden geçerek
+      yaz için çalışma alanı, tartış için sohbet. Görevi her zaman AI öğretmenle üstünden geçerek
       tamamlarsın.</p>
     <p data-yalniz-site hidden><strong>AI öğretmen isteğe bağlı, kendi anahtarınla:</strong> sağdaki panele kendi
       OpenRouter anahtarını eklersen öğretmenle sohbet edebilirsin. Öğretmen hazır cevap vermez; sorularla seni
-      cevaba yürütür. Ücret senin OpenRouter hesabına yazılır; anahtarın yalnız bu tarayıcıda durur, sunucumuz
+      cevaba götürür. Ücret senin OpenRouter hesabına yazılır; anahtarın yalnız bu tarayıcıda durur, sunucumuz
       kaydetmez. Anahtar eklemezsen de program eksiksiz çalışır.</p>
     <p data-yalniz-site hidden><strong>Görev barı</strong> → sağ panelde hep o an yapman gereken görevi gösterir;
       butonla göreve geçer ya da bitirdiğin görevi işaretlersin.</p>
 
     <h3 data-yalniz-yerel>4 · Haftayı kapat: quiz + rapor</h3>
     <h3 data-yalniz-site hidden>4 · Haftayı kapat: quiz</h3>
-    <p data-yalniz-yerel>Haftanın tüm günlerini bitirince haftalık quiz açılır — çöz (geçme eşiği %60).
+    <p data-yalniz-yerel>Haftanın tüm günlerini bitirince haftalık quiz açılır. Quiz'i çöz (geçme eşiği %60).
       İstersen <em>“AI'dan yeni sorular”</em> ile taze sorular al. Sonra <strong>Haftalık Rapor</strong>
       düğmesiyle öğretmenden hafta özetini iste: neredesin, neyi tekrar etmelisin.
-      Quiz'i %60+ geçince bir sonraki hafta açılır.</p>
-    <p data-yalniz-site hidden>Haftanın tüm günlerini bitirince haftalık quiz açılır — çöz (geçme eşiği %60).
-      Quiz'i %60+ geçince bir sonraki hafta açılır.</p>
+      Quiz'den %60 ya da üstü alınca bir sonraki hafta açılır.</p>
+    <p data-yalniz-site hidden>Haftanın tüm günlerini bitirince haftalık quiz açılır. Quiz'i çöz (geçme eşiği %60).
+      Quiz'den %60 ya da üstü alınca bir sonraki hafta açılır.</p>
 
     <h3 data-yalniz-site hidden>5 · İlerlemen bu tarayıcıda</h3>
     <p data-yalniz-site hidden>Giriş yok: ilerlemen bu tarayıcıda tutulur. Üstteki <strong>🔑 İlerleme kodum</strong>
@@ -145,7 +145,7 @@
       edersin. Kodu şifre gibi sakla.</p>
 
     <p class="kilavuz-ritim">💡 Önerilen ritim: her sabah e-postadan önce 20 dakika
-      (Richards &amp; Ford'un “20 dakika kuralı”) — bir günü bitirmek zorunda değilsin,
+      (Richards &amp; Ford'un “20 dakika kuralı”). Bir günün dersini tek oturuşta bitirmek zorunda değilsin,
       kaldığın yerden devam et.</p>
 
     <button class="btn" id="kilavuz-kapat">Anladım, başlayalım</button>
@@ -177,7 +177,7 @@
         <button class="btn" id="geri-yukle-btn" type="submit">Geri yükle</button>
       </form>
       <p class="kod-mesaj" id="geri-mesaj" role="alert" hidden></p>
-      <p class="kod-uyari">⚠️ Bu tarayıcıdaki ilerleme bu kodla değişecek — buradaki mevcut ilerleme birleştirilmez.</p>
+      <p class="kod-uyari">⚠️ Bu tarayıcıdaki ilerlemenin yerine bu kodun ilerlemesi gelir. Buradaki mevcut ilerleme onunla birleştirilmez.</p>
     </section>
     <button class="btn btn-ikincil kod-kapat" type="button" data-kod-kapat>Kapat</button>
   </div>
@@ -186,15 +186,15 @@
 <div class="layout">
 
   <aside>
-    <!-- Açık/kapalı: app.js menuKur — ≥ 900 px varsayılan açık, dar ekranda kapalı; kullanıcı seçimi hatırlanır. -->
+    <!-- Açık/kapalı: app.js menuKur: ≥ 900 px varsayılan açık, dar ekranda kapalı; kullanıcı seçimi hatırlanır. -->
     <details class="menu-bolum" id="egitim-menu">
-      <summary class="map-title">Eğitim — Program Haritası (Başlangıç + Hafta 1 → 12)</summary>
+      <summary class="map-title">Eğitim: Program Haritası (Başlangıç + Hafta 1 → 12)</summary>
       <div class="layer-stack" id="katman-haritasi"></div>
     </details>
     <!-- Mülakat bölümü varsayılan GİZLİ (ADR-0011): mulakat.js yalnız /api/ozellikler
          mulakat=true dönerse açar. -->
     <details class="menu-bolum" id="mulakat-bolumu" hidden>
-      <summary class="map-title">Mülakat Hazırlığı — 14 Kademe</summary>
+      <summary class="map-title">Mülakat Hazırlığı: 14 Kademe</summary>
       <div class="layer-stack" id="mulakat-haritasi"></div>
     </details>
   </aside>

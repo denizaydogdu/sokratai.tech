@@ -78,7 +78,7 @@ public class BaglamServisi {
                 "gun_icerik", gun == null ? "(belirli bir gün seçilmedi)" : contentRepo.hamGun(hafta, gun),
                 "ilerleme_ozeti", ilerlemeOzeti(hafta),
                 "hafiza", "",
-                "kitaplar", "(kitap bağlamı istemci tarafında — sunucu embedding çağırmaz)",
+                "kitaplar", "(kitap bağlamı istemci tarafında; sunucu embedding çağırmaz)",
                 "kaynaklar", kaynakService.baglamIcin(hafta)));
     }
 

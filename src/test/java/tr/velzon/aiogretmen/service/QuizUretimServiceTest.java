@@ -64,6 +64,13 @@ class QuizUretimServiceTest {
     }
 
     @Test
+    void soruListesiYoksaNpeDegilBozukCiktiHatasi() {
+        when(aiClient.cagir(any())).thenReturn(new AiYanit("{\"sorular\": null}", 1, 1, "m"));
+
+        assertThatThrownBy(() -> servis.uret(1, 5)).isInstanceOf(AiCiktisiBozukException.class);
+    }
+
+    @Test
     void kesilenJsondaDuzeltmeCagrisiYapar() {
         when(aiClient.cagir(any()))
                 .thenReturn(new AiYanit("{\"sorular\": [{\"soru\": \"yarıda kes", 1, 1, "m"))

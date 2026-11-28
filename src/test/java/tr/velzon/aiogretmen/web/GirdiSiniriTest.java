@@ -28,9 +28,9 @@ class GirdiSiniriTest {
         String uzun = "x".repeat(20_001);
         assertThatThrownBy(() -> GirdiSiniri.sinirla("ogrenciPrompt", uzun))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("ogrenciPrompt çok uzun (20001 karakter) — üst sınır 20000.");
+                .hasMessage("ogrenciPrompt çok uzun (20001 karakter). Üst sınır: 20000 karakter.");
         assertThatThrownBy(() -> GirdiSiniri.sinirla("mesaj", uzun, GirdiSiniri.BOLEREK_GONDER))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("mesaj çok uzun (20001 karakter) — üst sınır 20000. Metni bölerek gönder.");
+                .hasMessage("mesaj çok uzun (20001 karakter). Üst sınır: 20000 karakter. Metni bölerek gönder.");
     }
 }

@@ -35,7 +35,7 @@ public class OgretmenController {
      */
     static int haftaGerekli(Integer hafta) {
         if (hafta == null) {
-            throw new IllegalArgumentException("hafta alanı eksik — önce bir hafta seç.");
+            throw new IllegalArgumentException("hafta alanı eksik. Önce bir hafta seç.");
         }
         return hafta;
     }

@@ -51,7 +51,7 @@ class AiYenidenDenemeTest {
         assertThat(props.ai().denemeSayisi()).isEqualTo(3);
         verify(api, times(3)).chatCompletionEntity(any(), any());
         assertThat(e.neden()).isEqualTo(Neden.YANIT_YOK);
-        assertThat(e.getMessage()).isEqualTo("AI şu an yanıt vermiyor — biraz sonra tekrar dene.");
+        assertThat(e.getMessage()).isEqualTo("AI şu an yanıt vermiyor. Biraz sonra tekrar dene.");
     }
 
     @Test

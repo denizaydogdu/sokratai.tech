@@ -1,4 +1,5 @@
-# v1 (faz-3) — Kitap sayfası fotoğrafından metin çıkarma (guclu model, vision).
+# v2 (faz-14): uzun çizgiler yazım kılavuzuna göre kaldırıldı (docs/yazim-kilavuzu.md).
+# v1 (faz-3): Kitap sayfası fotoğrafından metin çıkarma (guclu model, vision).
 Bu görüntü bir kitap sayfasının fotoğrafı ("{kitap}" kitabından).
 
 Sayfadaki metni olduğu gibi, düzgün paragraflar halinde çıkar:
@@ -6,4 +7,4 @@ Sayfadaki metni olduğu gibi, düzgün paragraflar halinde çıkar:
 - Sayfa numarası, koşu başlığı (header/footer) gibi gürültüyü atla.
 - Şekil/tablo varsa [Şekil: tek cümle açıklama] biçiminde özetle.
 - Okunamayan yer varsa [okunamadı] yaz; UYDURMA.
-- Metin dışında hiçbir yorum ekleme — sadece sayfanın içeriği.
+- Metin dışında hiçbir yorum ekleme; yalnız sayfanın içeriğini yaz.

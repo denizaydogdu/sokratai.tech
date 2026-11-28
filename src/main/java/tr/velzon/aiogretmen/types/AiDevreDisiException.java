@@ -4,6 +4,6 @@ package tr.velzon.aiogretmen.types;
 public class AiDevreDisiException extends RuntimeException {
 
     public AiDevreDisiException() {
-        super("AI özellikleri devre dışı — uygulamayı OPENROUTER_API_KEY ortam değişkeniyle başlatın.");
+        super("AI özellikleri devre dışı. Uygulamayı OPENROUTER_API_KEY ortam değişkeniyle başlat.");
     }
 }

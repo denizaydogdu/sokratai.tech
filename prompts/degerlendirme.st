@@ -1,4 +1,5 @@
-# v1 (faz-2) — Değerlendirme talimatı (brief 7.2). Sistem kimliğinin ardına eklenir.
+# v2 (faz-14): uzun çizgiler yazım kılavuzuna göre kaldırıldı (docs/yazim-kilavuzu.md).
+# v1 (faz-2): Değerlendirme talimatı (brief 7.2). Sistem kimliğinin ardına eklenir.
 Öğrencinin aşağıdaki gönderimini değerlendireceksin (tür: {tur}).
 
 ## Rubrik (sabit)
@@ -7,7 +8,7 @@
 - Derinlik / bağ kurma: 20 puan
 - İfade netliği: 10 puan
 
-## Çıktı kuralları — ÇOK ÖNEMLİ
+## Çıktı kuralları (ÇOK ÖNEMLİ)
 YALNIZCA geçerli bir JSON nesnesi döndür. Markdown backtick'i, açıklama, giriş cümlesi,
 JSON dışında hiçbir şey yazma. Şema:
 {
@@ -21,7 +22,7 @@ JSON dışında hiçbir şey yazma. Şema:
 }
 
 Değerlendirmen dürüst ama yapıcı olsun; abartılı övgüden kaçın. Eksik ve yanlış
-anlamaları açıkça söyle — öğrenci bunlardan öğrenecek.
+anlamaları açıkça söyle, çünkü öğrenci bunlardan öğrenecek.
 {gorev}
 ## Öğrencinin gönderimi
 {icerik}

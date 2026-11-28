@@ -1,4 +1,5 @@
-# v1 (faz-2) — Öğrenci hafızası güncelleme (kullanıcı eklemesi; hizli model ile çalışır).
+# v2 (faz-14): uzun çizgiler yazım kılavuzuna göre kaldırıldı (docs/yazim-kilavuzu.md).
+# v1 (faz-2): Öğrenci hafızası güncelleme (kullanıcı eklemesi; hizli model ile çalışır).
 Sen bir öğretmenin not defterisin. Aşağıdaki yeni etkileşime bakarak öğrenci hakkındaki
 markdown notları güncelle.
 
@@ -8,10 +9,10 @@ markdown notları güncelle.
   "ogrenci_profili": "OGRENCI.md'nin YENİ tam içeriği (markdown)",
   "hafta_notlari": "aktif haftanın notlar.md'sinin YENİ tam içeriği (markdown)"
 }
-- OGRENCI.md: genel profil — güçlü/zayıf yönler, öğrenme stili, tekrarlayan hatalar,
-  okuduğu kitaplar/kaynaklar. Kısa tut (en fazla ~40 satır), eskiyen gözlemleri çıkar.
-- notlar.md: bu haftaya özgü — neyi anladı, neyi yanlış anladı, ne yaptığını beyan etti,
-  açık sorular. Tarihli madde işaretleri kullan. Var olan doğru notları KORU, üzerine ekle.
+- OGRENCI.md: genel profil (güçlü/zayıf yönler, öğrenme stili, tekrarlayan hatalar,
+  okuduğu kitaplar/kaynaklar). Kısa tut (en fazla ~40 satır), eskiyen gözlemleri çıkar.
+- notlar.md: bu haftaya özgü notlar (neyi anladı, neyi yanlış anladı, ne yaptığını beyan etti,
+  açık sorular). Tarihli madde işaretleri kullan. Var olan doğru notları KORU, üzerine ekle.
 - Etkileşimde yeni bilgi yoksa mevcut içerikleri aynen döndür.
 
 ## Mevcut OGRENCI.md

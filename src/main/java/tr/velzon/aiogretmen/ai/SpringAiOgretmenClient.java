@@ -111,20 +111,23 @@ public class SpringAiOgretmenClient implements OgretmenAiClient {
         String metin = yanit == null || yanit.getResult() == null
                 || yanit.getResult().getOutput() == null ? null
                 : yanit.getResult().getOutput().getText();
-        if (metin == null || metin.isBlank()) {
-            throw new tr.velzon.aiogretmen.types.AiCiktisiBozukException(
-                    "AI boş yanıt döndürdü — lütfen tekrar deneyin.");
-        }
-        var kullanim = yanit.getMetadata() == null ? null : yanit.getMetadata().getUsage();
+        var kullanim = yanit == null || yanit.getMetadata() == null ? null : yanit.getMetadata().getUsage();
         int input = kullanim == null || kullanim.getPromptTokens() == null ? 0 : kullanim.getPromptTokens();
         int output = kullanim == null || kullanim.getCompletionTokens() == null ? 0 : kullanim.getCompletionTokens();
 
         int sureMs = (int) Math.min(Integer.MAX_VALUE, (System.nanoTime() - baslangic) / 1_000_000);
-        String yanitModel = yanitModeli(yanit);
+        String yanitModel = yanit == null ? null : yanitModeli(yanit);
 
+        // Kullanım satırı boş-cevap kontrolünden ÖNCE yazılır: boş/süzülmüş (content-filter) completion'ın
+        // da ücreti ödenmiştir; kayıt düşerse maliyet raporu eksik kalır.
         kullanimRepo.save(AiKullanim.kayit(kullaniciId, islem.name(), model, input, output, sureMs, yanitModel));
         log.info("AI çağrısı: islem={} model={} yanitModel={} input={} output={} token sure={}ms",
                 islem, model, yanitModel, input, output, sureMs);
+
+        if (metin == null || metin.isBlank()) {
+            throw new tr.velzon.aiogretmen.types.AiCiktisiBozukException(
+                    "AI boş yanıt döndürdü. Tekrar dene.");
+        }
 
         return new AiYanit(metin, input, output, model);
     }

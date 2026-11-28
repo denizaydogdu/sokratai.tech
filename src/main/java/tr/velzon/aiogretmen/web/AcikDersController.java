@@ -51,9 +51,9 @@ public class AcikDersController {
     private static final Pattern SAYI = Pattern.compile("^[0-9]{1,3}$");
     private static final int ACIKLAMA_SINIRI = 155;
 
-    static final String PROGRAM_ADI = "AI Çağı Yazılım Mimarlığı — 12 Haftalık Yapay Zekâ Mühendisliği Programı";
+    static final String PROGRAM_ADI = "AI Çağı Yazılım Mimarlığı: 12 Haftalık Yapay Zekâ Mühendisliği Programı";
     static final String PROGRAM_OZETI = "Ücretsiz, Türkçe, 12 haftalık yapay zekâ mühendisliği ve yazılım mimarlığı "
-            + "programı: günlük dersler, görevler ve Türkçe kaynak metinleri; Sokratik AI öğretmenle.";
+            + "programı: günlük dersler, görevler, Türkçe kaynak metinleri ve Sokratik AI öğretmen.";
 
     private final AcikDersService icerik;
     private final String temelUrl;
@@ -152,7 +152,7 @@ public class AcikDersController {
             g.append("<li><a href=\"").append(AcikDersService.kaynakYolu(k.slug())).append("\">")
                     .append(AcikSayfa.kac(k.baslik())).append("</a>");
             if (!k.yazar().isBlank()) {
-                g.append(" <span class=\"acik-soluk\">— ").append(AcikSayfa.kac(k.yazar())).append("</span>");
+                g.append(" <span class=\"acik-soluk\">· ").append(AcikSayfa.kac(k.yazar())).append("</span>");
             }
             g.append("</li>\n");
         }
@@ -161,8 +161,8 @@ public class AcikDersController {
         Map<String, Object> ld = program();
         ld.put("@context", "https://schema.org");
         ld.put("hasPart", parcalar);
-        return sayfa(new AcikSayfa.Bilgi("Ders İçeriği — 12 Haftalık Yapay Zekâ Mühendisliği Programı | SokratAI",
-                "Ders İçeriği — 12 Haftalık Yapay Zekâ Mühendisliği Programı", PROGRAM_OZETI, TaramaYolu.DERSLER,
+        return sayfa(new AcikSayfa.Bilgi("Ders İçeriği: 12 Haftalık Yapay Zekâ Mühendisliği Programı | SokratAI",
+                "Ders İçeriği: 12 Haftalık Yapay Zekâ Mühendisliği Programı", PROGRAM_OZETI, TaramaYolu.DERSLER,
                 "website", ld, List.of(adim("SokratAI", "/"), adim("Ders içeriği", TaramaYolu.DERSLER)),
                 g.toString()));
     }
@@ -181,7 +181,7 @@ public class AcikDersController {
         for (Gun gun : h.gunler()) {
             String yol = AcikDersService.gunYolu(h.no(), gun.gun());
             g.append("<li><a href=\"").append(yol).append("\">Gün ").append(gun.gun()).append(": ")
-                    .append(AcikSayfa.kac(gun.baslik())).append("</a> <span class=\"acik-soluk\">— ")
+                    .append(AcikSayfa.kac(gun.baslik())).append("</a> <span class=\"acik-soluk\">· ")
                     .append(AcikSayfa.kac(icerik.ozet(gun.ders(), 140))).append("</span></li>\n");
             parcalar.add(parca("LearningResource", gun.baslik(), yol));
         }
@@ -204,7 +204,7 @@ public class AcikDersController {
         String aciklama = icerik.ozet(gun.ders(), ACIKLAMA_SINIRI);
         StringBuilder g = new StringBuilder();
         g.append("<article class=\"acik-icerik\">\n<p class=\"eyebrow\">Hafta ").append(h.no()).append(" · Gün ")
-                .append(gun.gun()).append(" — ").append(AcikSayfa.kac(h.baslik())).append("</p>\n<h1>")
+                .append(gun.gun()).append(" · ").append(AcikSayfa.kac(h.baslik())).append("</p>\n<h1>")
                 .append(AcikSayfa.kac(gun.baslik())).append("</h1>\n");
         etkilesimliBag(g, "/?hafta=" + h.no() + "&amp;gun=" + gun.gun(), "Bu dersi etkileşimli çalış →");
         g.append("<div class=\"ders oku-metin\">\n").append(icerik.html(gun.ders(), String.format("content/hafta-%02d", h.no()))).append("</div>\n");
@@ -213,7 +213,7 @@ public class AcikDersController {
             for (String gorev : gun.gorevler()) {
                 g.append("<li>").append(AcikSayfa.kac(gorev)).append("</li>\n");
             }
-            g.append("</ol>\n<p class=\"acik-soluk\">Görevleri işaretlemek, quiz ve AI öğretmenle sohbet için ")
+            g.append("</ol>\n<p class=\"acik-soluk\">Görevleri işaretlemek, quiz çözmek ve AI öğretmenle sohbet etmek için ")
                     .append("etkileşimli uygulamayı kullan.</p>\n");
         }
         kaynakListesi(g, h.no());
@@ -222,8 +222,8 @@ public class AcikDersController {
 
         Map<String, Object> ld = kaynakNesnesi(gun.baslik(), aciklama, yol);
         ld.put("position", gun.gun());
-        return sayfa(new AcikSayfa.Bilgi(gun.baslik() + " — Hafta " + h.no() + ", Gün " + gun.gun() + " | SokratAI",
-                gun.baslik() + " — Hafta " + h.no() + ", Gün " + gun.gun(), aciklama, yol, "article", ld,
+        return sayfa(new AcikSayfa.Bilgi(gun.baslik() + " · Hafta " + h.no() + ", Gün " + gun.gun() + " | SokratAI",
+                gun.baslik() + " · Hafta " + h.no() + ", Gün " + gun.gun(), aciklama, yol, "article", ld,
                 List.of(adim("SokratAI", "/"), adim("Ders içeriği", TaramaYolu.DERSLER),
                         adim("Hafta " + h.no(), AcikDersService.haftaYolu(h.no())), adim("Gün " + gun.gun(), yol)),
                 g.toString()));
@@ -309,14 +309,14 @@ public class AcikDersController {
         t.append("\n## Hakkında\n\n")
                 .append("- [Etkileşimli uygulama](").append(mutlak("/")).append("): ücretsiz ve Türkçe; giriş/kayıt ")
                 .append("yok, ilerleme tarayıcıda tutulur. Sokratik AI öğretmen hazır cevap vermez, sorularla ")
-                .append("öğrenciyi cevaba yürütür. Sohbet için öğrenci kendi OpenRouter anahtarını getirir ")
+                .append("öğrenciyi cevaba götürür. Sohbet için öğrenci kendi OpenRouter anahtarını kullanır ")
                 .append("(bring-your-own key); anahtar sunucuda saklanmaz.\n");
         return t.toString();
     }
 
     private String llmsFullUret() {
         StringBuilder t = new StringBuilder();
-        t.append("# SokratAI — tüm ders ve kaynak metinleri\n\n> ").append(PROGRAM_OZETI).append("\n\n")
+        t.append("# SokratAI: tüm ders ve kaynak metinleri\n\n> ").append(PROGRAM_OZETI).append("\n\n")
                 .append("Kaynak: ").append(mutlak(TaramaYolu.DERSLER)).append("\n\n# Program\n");
         for (Hafta h : icerik.haftalar()) {
             t.append("\n## Hafta ").append(h.no()).append(": ").append(tekSatir(h.baslik())).append("\n\n")

@@ -82,4 +82,18 @@ class AtolyeControllerTest {
                 .andExpect(jsonPath("$.hata").value("AI özellikleri devre dışı"))
                 .andExpect(jsonPath("$.detay").exists());
     }
+
+    @Test
+    void aiKapaliAlistirmada400VeTurkceDetay() throws Exception {
+        String mesaj = "Bu alıştırma AI ile değerlendirilmiyor; kendi prompt'unu ideal çözümle karşılaştır.";
+        when(atolyeService.degerlendir(eq("net-gorev"), anyString()))
+                .thenThrow(new IllegalArgumentException(mesaj));
+
+        mvc.perform(post("/api/atolye/degerlendir")
+                        .contentType("application/json")
+                        .content("{\"alistirmaId\":\"net-gorev\",\"ogrenciPrompt\":\"prompt\"}"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.hata").value("Geçersiz istek"))
+                .andExpect(jsonPath("$.detay").value(mesaj));
+    }
 }

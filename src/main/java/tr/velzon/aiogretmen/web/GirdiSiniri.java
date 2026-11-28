@@ -26,7 +26,7 @@ final class GirdiSiniri {
         }
         if (deger.length() > MAX_GIRDI) {
             throw new IllegalArgumentException(
-                    alanAdi + " çok uzun (%d karakter) — üst sınır %d.".formatted(deger.length(), MAX_GIRDI) + ek);
+                    alanAdi + " çok uzun (%d karakter). Üst sınır: %d karakter.".formatted(deger.length(), MAX_GIRDI) + ek);
         }
         return deger;
     }

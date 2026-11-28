@@ -147,7 +147,7 @@ const OPENROUTER_ANAHTAR_UCU = "https://openrouter.ai/api/v1/auth/keys";
 const OAUTH_DOGRULAYICI = "aio.oauth.dogrulayici";
 const OAUTH_DURUM = "aio.oauth.durum";
 const OAUTH_HATIRLA = "aio.oauth.hatirla";
-const OAUTH_YARIM = "OpenRouter bağlantısı tamamlanamadı. Bağlantı başka sekmede başlatılmış olabilir — "
+const OAUTH_YARIM = "OpenRouter bağlantısı tamamlanamadı. Bağlantı başka sekmede başlatılmış olabilir. "
     + "“OpenRouter ile bağlan”a yeniden bas.";
 
 function base64url(baytlar) {
@@ -232,7 +232,7 @@ async function oauthAnahtarAl(donus) {
       body: JSON.stringify({ code: donus.kod, code_verifier: donus.dogrulayici, code_challenge_method: "S256" }),
     });
   } catch (e) {
-    return "OpenRouter'a ulaşılamadı — internet bağlantını kontrol edip yeniden dene ya da anahtarını elle yapıştır.";
+    return "OpenRouter'a ulaşılamadı. İnternet bağlantını kontrol edip yeniden dene ya da anahtarını elle yapıştır.";
   }
   if (!yanit.ok) {
     return "OpenRouter bağlantıyı onaylamadı (HTTP " + yanit.status + "). Yeniden dene ya da anahtarını elle yapıştır.";
@@ -298,7 +298,7 @@ async function api(yol, secenekler = {}, timeoutMs = 180000) {
   try {
     yanit = await fetch(yol, { ...secenekler, headers: basliklar, signal: iptal.signal });
   } catch (h) {
-    throw h.name === "AbortError" ? new Error("İstek zaman aşımına uğradı — tekrar dene.") : h;
+    throw h.name === "AbortError" ? new Error("İstek zaman aşımına uğradı. Tekrar dene.") : h;
   } finally {
     clearTimeout(zamanlayici);
   }
@@ -338,15 +338,15 @@ function haritaCiz() {
   const bas0 = el("div", "layer baslangic");
   bas0.append(el("span", "no mono", "📘"), el("span", "nm", "Başlangıç Kılavuzu"),
       el("span", "pct mono", "oku →"));
-  bas0.title = "Neden bu eğitim, 12 haftada ne öğreneceksin — önce bunu oku";
+  bas0.title = "Önce bunu oku: bu eğitim neden var, 12 haftada ne öğreneceksin?";
   bas0.addEventListener("click", () => kaynakDrawerYukle(
-      { slug: "00-baslangic-kilavuzu", baslik: "Başlangıç Kılavuzu — 12 Haftada AI Çağı Yazılım Mimarı" }));
+      { slug: "00-baslangic-kilavuzu", baslik: "Başlangıç Kılavuzu: 12 Haftada AI Çağı Yazılım Mimarı" }));
   kok.appendChild(bas0);
   // Prompt Atölyesi — kilitsiz ayrı görünüm (Başlangıç Kılavuzu'nun altında; hafta/kilit mantığına dokunmaz)
   const atolyeRow = el("div", "layer atolye" + (durum.gorunum === "atolye" ? " active" : ""));
   atolyeRow.append(el("span", "no mono", "🧪"), el("span", "nm", "Prompt Atölyesi"),
       el("span", "pct mono", "aç →"));
-  atolyeRow.title = "Prompt (istem) yazma tekniklerini deneyerek öğren — kilitsiz laboratuvar";
+  atolyeRow.title = "Prompt (istem) yazma tekniklerini deneyerek öğren (kilitsiz alıştırmalar)";
   atolyeRow.addEventListener("click", atolyeAc);
   kok.appendChild(atolyeRow);
   // kullanıcı tercihi: hafta 1 en üstte, hafta 12 en altta (okuma sırası)
@@ -367,7 +367,7 @@ function haritaCiz() {
   const toplam = durum.ozetler.reduce((t, h) => t + h.toplamGorev, 0);
   const biten = durum.ozetler.reduce((t, h) => t + h.tamamlananGorev, 0);
   document.getElementById("toplam-ilerleme").textContent =
-      toplam ? Math.round((100 * biten) / toplam) + "%" : "—";
+      toplam ? Math.round((100 * biten) / toplam) + "%" : "-";
 
   if (durum.mulakatEtkin && window.mulakatHaritaCiz) mulakatHaritaCiz(); // mülakat sol-menüsü (mulakat.js) senkron kalsın
 }
@@ -603,7 +603,7 @@ async function okuSonrasiSohbet(baslik, gun) {
   if (nesil !== haftaSecNesli) return; // bu sırada hafta değişti — bayat okuma sorusunu basma (#4)
   // Görev HENÜZ tamamlanmadı — öğretmen samimi bir cevapla geçirecek (yumuşak kapı):
   mesajEkle("sistem", `📖 "${baslik}" yazısını okudun ✓`);
-  mesajEkle("asistan", "Şimdi kısaca üstünden geçelim: en kritik 1-2 nokta neydi? Kendi cümlelerinle yaz — yazınca bu görevi geçeceğiz.");
+  mesajEkle("asistan", "Şimdi kısaca üstünden geçelim: yazıdaki en önemli 1-2 nokta neydi? Kendi cümlelerinle yaz; yazınca bu görev tamamlanır.");
   panelFokusla();
 }
 
@@ -675,7 +675,7 @@ function gunCiz(g, kilitli = false, haftaKilitli = false) {
   const stat = el("span", "dstat mono" + (tumBitti ? " done" : ""), `${biten}/${g.gorevler.length}`);
   bas.append(el("span", "dno mono", "GÜN " + g.gun), el("span", "dtitle", g.baslik), stat,
       el("span", "chev", kilitli ? "🔒" : "▶"));
-  if (kilitli) bas.title = "Önce sıradaki günü bitir";
+  if (kilitli) bas.title = "Önce önceki günleri bitir";
   bas.addEventListener("click", () => {
     if (kilitli) return; // kilitli gün açılmaz
     const aciliyor = !gun.classList.contains("open");
@@ -709,11 +709,11 @@ function gunCiz(g, kilitli = false, haftaKilitli = false) {
   function tasklistCiz() {
     liste.innerHTML = "";
     liste.appendChild(el("div", "ipucu", haftaKilitli
-        ? "👁 Bu hafta henüz açık değil — görevleri okuyup inceleyebilirsin ama YAPAMAZSIN. Kaynakları aşağıdan okuyabilirsin."
+        ? "👁 Bu hafta henüz açık değil. Görevleri okuyup inceleyebilirsin ama henüz YAPAMAZSIN. Kaynakları aşağıdan okuyabilirsin."
         : durum.sunucuAi
-          ? "💡 Görevleri SIRAYLA yap — birini bitirince sıradaki açılır. Sağdaki butona bas; kutucuğu sistem doldurur."
-          : "💡 Görevleri SIRAYLA yap — birini bitirince sıradaki açılır. Bitirdiğin görevi ✓ düğmesiyle kendin işaretle."
-            + (durum.sohbetAcik ? " Oku ve tartış görevlerini istersen AI öğretmenle de geçebilirsin." : "")));
+          ? "💡 Görevleri SIRAYLA yap: birini bitirince sıradaki açılır. Sağdaki butona bas; kutucuğu sistem işaretler."
+          : "💡 Görevleri SIRAYLA yap: birini bitirince sıradaki açılır. Bitirdiğin görevi ✓ düğmesiyle kendin işaretle."
+            + (durum.sohbetAcik ? " Oku ve tartış görevlerini istersen AI öğretmenle de tamamlayabilirsin." : "")));
     const aktifIdx = g.gorevler.findIndex((t) => !t.tamamlandi);
     g.gorevler.forEach((t, i) => {
       const tip = gorevTipiCikar(t.metin);
@@ -734,7 +734,7 @@ function gunCiz(g, kilitli = false, haftaKilitli = false) {
         if (await gorevDurumuGonder(g.gun, t.index, kutu.checked, satir, kutu, stat, g)) haftaCiz();
       });
       const rozet = el("span", "tip-rozet " + meta.sinif, kilitli ? "🔒" : meta.ikon);
-      rozet.title = kilitli ? "Önce sıradaki görevi bitir" : meta.etiket;
+      rozet.title = kilitli ? "Önce önceki görevleri bitir" : meta.etiket;
       const metinEl = el("span", "task-metin", t.metin); // el() → textContent (XSS-güvenli)
       // Kendin işaretlenen yaz/tartış görevinde ana düğme doğrudan "Yaptım ✓"/"Tartıştım ✓" olur (bitince gizli);
       // oku görevinde ana düğme yazıyı açar, aktif satıra ayrıca "Okudum ✓" eklenir.
@@ -746,7 +746,7 @@ function gunCiz(g, kilitli = false, haftaKilitli = false) {
       aksiyon.disabled = haftaKilitli || kilitli; // kilitli hafta → görev eylemi yok
       aksiyon.addEventListener("click", () => gorevAksiyon(tip, g, t, kutu, satir, stat));
       satir.append(kutu, rozet, metinEl);
-      if (aktif) satir.appendChild(el("span", "simdi-rozet", "şimdi sende"));
+      if (aktif) satir.appendChild(el("span", "simdi-rozet", "sıra sende"));
       if (!(isaretDugmesi && t.tamamlandi)) satir.appendChild(aksiyon);
       if (kendin && tip === "oku" && aktif) {
         const okudum = el("button", "task-aksiyon task-isaretle", ISARETLE_METNI.oku);
@@ -863,7 +863,7 @@ function gorevBariGuncelle() {
     bar.hidden = false;
     bar.classList.add("onizleme");
     bar.appendChild(el("span", "gorev-bar-onizleme",
-      `📎 Hafta ${durum.aktifHafta}'yi önizliyorsun (kilitli). AI Öğretmen çalıştığın haftada: Hafta ${hafta}. Devam etmek için Hafta ${hafta}'e dön.`));
+      `📎 Hafta ${durum.aktifHafta} kilitli; şu an yalnız önizliyorsun. AI Öğretmen çalıştığın haftada kalır: Hafta ${hafta}. Devam etmek için sol menüden o haftayı seç.`));
     return;
   }
 
@@ -882,13 +882,13 @@ function gorevBariGuncelle() {
     bar.classList.add("bitti");
     const sonrakiGun = d.gunler.find((x) => x.gun > g.gun && x.gorevler.some((t) => !t.tamamlandi));
     if (sonrakiGun) {
-      bar.appendChild(el("span", "gorev-bar-metin", `🎯 Gün ${g.gun} tamam — sıradaki: Gün ${sonrakiGun.gun}`));
-      const b = el("button", "gorev-bar-btn", `→ Gün ${sonrakiGun.gun}'e geç`);
+      bar.appendChild(el("span", "gorev-bar-metin", `🎯 Gün ${g.gun} tamam. Sıradaki: Gün ${sonrakiGun.gun}`));
+      const b = el("button", "gorev-bar-btn", "→ Sıradaki güne geç");
       b.type = "button";
       b.addEventListener("click", () => gunKartinaGit(sonrakiGun.gun));
       bar.appendChild(b);
     } else {
-      bar.appendChild(el("span", "gorev-bar-metin", "🎯 Tüm günler tamam — sıradaki: haftalık quiz"));
+      bar.appendChild(el("span", "gorev-bar-metin", "🎯 Tüm günler tamam. Sıradaki: haftalık quiz"));
       const b = el("button", "gorev-bar-btn", "→ Haftalık quiz'e geç");
       b.type = "button";
       b.addEventListener("click", () => quizeGit());
@@ -918,7 +918,7 @@ function gorevBariGuncelle() {
     bar.classList.add("suruyor");
     const metin = bar.querySelector(".gorev-bar-metin");
     if (yazAlaniAcik) {
-      metin.textContent = `✍️ ${N}. görevi yazıyorsun — cevabını ortadaki alana yaz, sonra "değerlendirt"e bas.`;
+      metin.textContent = `✍️ ${N}. görevin cevabını yazıyorsun: ortadaki alana yaz, sonra "değerlendirt"e bas.`;
       const b = el("button", "gorev-bar-btn", "↓ Yazma alanına dön");
       b.type = "button";
       b.addEventListener("click", () => {
@@ -927,13 +927,13 @@ function gorevBariGuncelle() {
       });
       bar.appendChild(b);
     } else if (durum.gorevBekleyen.tip === "oku") {
-      metin.textContent = `📖 ${N}. görevi okudun ✓ — şimdi öğretmenin sorusuna kendi cümlelerinle cevap yaz (aşağıdaki kutu). Cevabını yazınca görev geçer.`;
+      metin.textContent = `📖 ${N}. görevdeki yazıyı okudun ✓. Şimdi öğretmenin sorusuna aşağıdaki kutuda kendi cümlelerinle cevap ver. Cevabını yazınca görev tamamlanır.`;
       const b = el("button", "gorev-bar-btn", "↓ Yazı kutusuna odaklan");
       b.type = "button";
       b.addEventListener("click", () => panelFokusla());
       bar.appendChild(b);
     } else {
-      metin.textContent = `💬 ${N}. görevi tartışıyorsun — görüşünü aşağıdaki kutuya yaz.`;
+      metin.textContent = `💬 ${N}. görevi tartışıyorsun. Görüşünü aşağıdaki kutuya yaz.`;
       const b = el("button", "gorev-bar-btn", "↓ Yazı kutusuna odaklan");
       b.type = "button";
       b.addEventListener("click", () => panelFokusla());
@@ -1004,7 +1004,7 @@ function quizeGit() {
 function tartisBaslat(g, t) {
   durum.gorevBekleyen = { hafta: sohbetHaftasi(), gun: g.gun, index: t.index, tip: "tartis" };
   // t.metin kullanıcı/görev metni → mesajEkle el()/textContent ile basar (XSS-güvenli).
-  mesajEkle("asistan", `💬 "${t.metin}" — bu konuda ne düşünüyorsun? Kendi görüşünü birkaç cümleyle yaz; birlikte üstünden geçip görevi geçelim.`);
+  mesajEkle("asistan", `💬 Tartışma görevi: "${t.metin}" Bu konuda ne düşünüyorsun? Kendi görüşünü birkaç cümleyle yaz; birlikte üstünden geçip görevi tamamlayalım.`);
   gorevBariGuncelle(); // bar artık "tartışma SÜRÜYOR" durumunu bilsin (→ "tartışıyorsun")
 }
 
@@ -1075,7 +1075,7 @@ function calismaGorunumuAc() {
   if (gv.g && gv.g.dersHtml) {
     const bag = el("details", "calisma-baglam");
     bag.open = true;
-    bag.appendChild(el("summary", null, "📎 Bu görev neye göre? — bu günün konusu"));
+    bag.appendChild(el("summary", null, "📎 Görevin dayandığı konu: bu günün dersi"));
     const ic = el("div", "calisma-baglam-ic");
     ic.innerHTML = gv.g.dersHtml; // güvenilir backend HTML'i
     bag.appendChild(ic);
@@ -1087,7 +1087,7 @@ function calismaGorunumuAc() {
   ipucu.append(
     el("span", null, "Görevi ya da bir terimi (ör. spec, harness, doğrulama) anlamadın mı? "),
     el("strong", null, "🔍 Soruyu aç"),
-    el("span", null, "'a bas — sade Türkçeyle açıklar. Bu göreve nasıl bir cevap yazılır görmek istersen "),
+    el("span", null, "'a bas; görevi sade Türkçeyle açıklar. Bu göreve nasıl bir cevap yazılacağını görmek istersen "),
     el("strong", null, "💡 Örnek cevap göster"),
     el("span", null, "'e bas (hazır bir taslak yazar; sen kendi cümlelerinle yeniden yaz)."),
   );
@@ -1310,8 +1310,8 @@ function quizCiz(d, tur = "STATIK", kilitli = false, haftaKilitli = false) {
   quiz.append(el("h3", null, tur === "STATIK" ? "Haftalık Quiz" : "AI'nın Ürettiği Quiz"));
   if (kilitli) {
     quiz.appendChild(el("p", "quiz-kilit", haftaKilitli
-        ? "🔒 Bu hafta henüz açık değil — quiz'i önceki haftayı bitirince çözebilirsin (içeriği inceleyebilirsin)."
-        : "🔒 Önce bu haftanın TÜM günlerini bitir — quiz o zaman açılır."));
+        ? "🔒 Bu hafta henüz açık değil. Quiz'i önceki haftayı bitirince çözebilirsin; içeriği şimdiden inceleyebilirsin."
+        : "🔒 Önce bu haftanın TÜM günlerini bitir; quiz ondan sonra açılır."));
     return quiz;
   }
   const meta = el("p", "qmeta mono",
@@ -1366,7 +1366,7 @@ async function quizBitir(d, quizEl, btn, yerel, tur) {
 
   const puan = Math.round((100 * dogru) / d.quiz.length);
   const sonuc = el("div", "quiz-sonuc " + (puan >= 60 ? "gecti" : "kaldi"),
-      `Puan: %${puan} — ${puan >= 60 ? "Geçtin! Bu hafta tamamlandı, sonraki hafta açıldı." : "Geçme eşiği %60. Dersleri tekrar edip yeniden dene."}`);
+      `Puan: %${puan}. ${puan >= 60 ? "Geçtin! Bu hafta tamamlandı, sonraki hafta açıldı." : "Geçme eşiği %60. Dersleri tekrar edip yeniden dene."}`);
   quizEl.appendChild(sonuc);
 
   try {
@@ -1446,8 +1446,9 @@ function atolyeCiz(kategoriler) {
   bas.append(el("span", "tag", "🧪 Atölye"), el("h2", null, "Prompt Atölyesi"));
   panel.appendChild(bas);
   panel.appendChild(el("p", "week-goal",
-      "Prompt (istem) yazma tekniklerini tek tek deneyerek öğren. Kilit yok, sıra yok — bir kartı seç, "
-      + "kendi prompt'unu yaz, ideal çözümle kıyasla. Bazı alıştırmalarda AI Öğretmen yazdığını değerlendirir."));
+      "Prompt (istem) yazma tekniklerini tek tek deneyerek öğren. Kilit yok, sıra yok: bir kartı seç, "
+      + "kendi prompt'unu yaz, ideal çözümle karşılaştır. Her bölümün son \"birleştir\" alıştırmasını AI Öğretmen "
+      + "değerlendirir. Bu değerlendirme yalnız kendi bilgisayarında, sunucu anahtarıyla çalışırken açıktır; sitede kapalı."));
 
   if (!kategoriler || kategoriler.length === 0) {
     panel.appendChild(el("p", "ipucu", "Henüz alıştırma yok."));
@@ -1543,8 +1544,13 @@ function atolyeKartCiz(a) {
   });
   kart.append(cozumBtn, cozum);
 
-  // AI değerlendir — HER alıştırmada (sunucu AI aktifken; sitede yok); kullanıcı isteği: her prompt'un altında olsun
-  if (durum.sunucuAi) {
+  // AI değerlendir: yalnız ai:true alıştırmada (her bölümün son "birleştir"i) ve sunucu AI aktifken; sitede yok.
+  // ai:false alıştırmada sunucu da reddeder (AI çağrısı yapılmaz); yerelde nerede olduğunu söyleyen kısa not.
+  if (durum.sunucuAi && !a.aiDegerlendir) {
+    kart.appendChild(el("p", "ipucu atolye-ai-not",
+        "Bu alıştırmada AI değerlendirmesi yok. AI Öğretmen bölümün son alıştırmasını değerlendirir."));
+  }
+  if (durum.sunucuAi && a.aiDegerlendir) {
     const aiBtn = el("button", "btn atolye-ai-btn", "🤖 AI Öğretmen değerlendirsin");
     aiBtn.type = "button";
     const aiSonuc = el("div", "atolye-ai-sonuc");
@@ -1628,7 +1634,7 @@ function panelOdakGuncelle() {
   }
   const gd = (durum.sohbetGun && durum.sohbetDetay) // AI çalışma bağlamı (görüntülenen kilitli hafta DEĞİL)
       ? durum.sohbetDetay.gunler.find((g) => g.gun === durum.sohbetGun) : null;
-  if (gd) { e.hidden = false; e.textContent = `📍 Şu an: Gün ${gd.gun} — ${gd.baslik}`; }
+  if (gd) { e.hidden = false; e.textContent = `📍 Şu an Gün ${gd.gun}: ${gd.baslik}`; }
   else { e.hidden = true; }
 }
 
@@ -1676,7 +1682,7 @@ function sohbetPaneliCiz(hataMetni) {
 function anahtarKartiCiz(hataMetni) {
   const kart = el("div", "anahtar-kart");
   kart.appendChild(el("h3", "anahtar-baslik", "AI öğretmenle sohbet (isteğe bağlı)"));
-  kart.appendChild(el("p", "anahtar-ozet", "Dersleri okuyup görevlerini kendin işaretleyebilirsin — sohbet şart değil. "
+  kart.appendChild(el("p", "anahtar-ozet", "Dersleri okuyup görevlerini kendin işaretleyebilirsin; sohbet şart değil. "
       + "AI öğretmenle konuşmak istersen kendi OpenRouter anahtarını ekle."));
   if (hataMetni) {
     const hata = el("p", "anahtar-hata", hataMetni);
@@ -1723,7 +1729,7 @@ function anahtarKartiCiz(hataMetni) {
     const anahtar = girdi.value.trim();
     girdi.value = ""; // anahtar DOM'da beklemesin
     if (!ANAHTAR_BICIMI.test(anahtar)) {
-      sohbetPaneliCiz("Bu bir OpenRouter anahtarına benzemiyor — 'sk-or-' ile başlamalı. OpenRouter'da Keys sayfasından kopyala.");
+      sohbetPaneliCiz("Bu bir OpenRouter anahtarına benzemiyor: anahtar 'sk-or-' ile başlamalı. Anahtarını OpenRouter'daki Keys sayfasından kopyala.");
       return;
     }
     if (!anahtarKaydet(anahtar, hatirla.checked)) {
@@ -1752,10 +1758,10 @@ function anahtarKartiCiz(hataMetni) {
   const adim2 = el("li");
   adim2.append(el("strong", null, "Keys → Create Key"), el("span", null, " ile yeni bir anahtar oluştur."));
   const adim3 = el("li");
-  adim3.append(el("strong", null, "Credit limit koy"), el("span", null, " (harcama limiti, ör. 5 $) — anahtar bu tutarı aşamaz."));
+  adim3.append(el("strong", null, "Credit limit koy"), el("span", null, " (harcama limiti, ör. 5 $). Anahtar bu tutarı aşamaz."));
   const adim4 = el("li");
   adim4.append(el("span", null, "“sk-or-…” ile başlayan anahtarı yukarıdaki alana yapıştır ve "),
-      el("strong", null, "Kaydet"), el("span", null, "e bas."));
+      el("strong", null, "Kaydet"), el("span", null, "'e bas."));
   adimlar.append(adim1, adim2, adim3, adim4);
   yardim.appendChild(adimlar);
   kart.appendChild(yardim);
@@ -1821,9 +1827,9 @@ async function sohbetGecmisiYukle(nesil = haftaSecNesli) {
     const gecmis = await api("/api/sohbet/" + hafta);
     if (nesil !== haftaSecNesli) return; // hafta değişti — bayat geçmişi basma
     if (gecmis.length === 0) {
-      mesajEkle("asistan", `Hafta ${hafta} üzerinde çalışıyorsun. Takıldığın yerde sor; bir görevi bitirince "şunu yaptım" diye anlat — seni takip ediyorum.`);
+      mesajEkle("asistan", `Hafta ${hafta} üzerinde çalışıyorsun. Takıldığın yerde sor; bir görevi bitirince "şunu yaptım" diye anlat. İlerlemeni takip ediyorum.`);
     } else {
-      chatMesajlar().appendChild(el("div", "chat-ayrac", "— bu hafta önceki konuşmalar —"));
+      chatMesajlar().appendChild(el("div", "chat-ayrac", "· bu haftanın önceki konuşmaları ·"));
       gecmis.forEach((m) => mesajEkle(m.rol === "USER" ? "user" : "asistan", m.icerik));
     }
   } catch (h) {
@@ -1881,7 +1887,7 @@ async function gonder() {
           durum.gorevBekleyen = null;
           const N = bek.index + 1;
           if (await gorevTamamla(bek.gun, bek.index)) {
-            mesajEkle("sistem", `✓ ${N}. görev tamamlandı — sıradaki görev açıldı.`);
+            mesajEkle("sistem", `✓ ${N}. görev tamamlandı. Sıradaki görev açıldı.`);
             haftaCiz();
           }
         }
@@ -1963,7 +1969,7 @@ function sifirlaButonuEkle() {
   const btn = el("button", "sifirla-btn", "🔄 Sıfırla");
   btn.id = "sifirla-ac";
   btn.type = "button";
-  btn.title = "İlerleme ve sohbet verini siler — temiz başlangıç (kitaplığın ve dersler korunur)";
+  btn.title = "Temiz başlangıç: ilerleme ve sohbet verini siler (kitaplığın ve dersler korunur)";
   btn.addEventListener("click", sifirla);
   kilavuz.parentNode.insertBefore(btn, kilavuz);
 }
@@ -2024,7 +2030,7 @@ function ilerlemeKoduKur() {
       mesaj(kodMesaj, "Kopyalandı ✓");
     } catch (e) { // pano izni yoksa: metni seçili bırak, kullanıcı kendisi kopyalasın
       kodDeger.select();
-      mesaj(kodMesaj, "Otomatik kopyalanamadı — kod seçildi, Ctrl+C (Mac'te ⌘+C) ile kopyala.", "hata");
+      mesaj(kodMesaj, "Otomatik kopyalanamadı. Kod seçili; Ctrl+C (Mac'te ⌘+C) ile kopyala.", "hata");
     }
   });
 
@@ -2032,7 +2038,7 @@ function ilerlemeKoduKur() {
     e.preventDefault();
     const kod = geriGirdi.value.trim();
     if (!kod) { mesaj(geriMesaj, "Önce ilerleme kodunu yapıştır.", "hata"); return; }
-    if (!confirm("Bu tarayıcıdaki ilerleme bu kodla değişecek — buradaki mevcut ilerleme bu tarayıcıda görünmez olur.\nDevam edilsin mi?")) return;
+    if (!confirm("Bu tarayıcıdaki ilerlemenin yerine bu kodun ilerlemesi gelecek. Buradaki mevcut ilerleme artık bu tarayıcıda görünmez.\nDevam edilsin mi?")) return;
     geriBtn.disabled = true;
     try {
       await api("/api/ziyaretci/geri-yukle", {
@@ -2040,7 +2046,7 @@ function ilerlemeKoduKur() {
       });
       location.reload(); // yeni çerezle her şey baştan yüklenir
     } catch (h) {
-      mesaj(geriMesaj, h.status === 400 ? "Bu bir ilerleme kodu değil — kodu eksiksiz yapıştırdığından emin ol." : h.message, "hata");
+      mesaj(geriMesaj, h.status === 400 ? "Bu bir ilerleme kodu değil. Kodu eksiksiz yapıştırdığından emin ol." : h.message, "hata");
       geriBtn.disabled = false;
     }
   });
@@ -2068,7 +2074,7 @@ function karsilamaCiz(ilkAcik) {
   const panel = document.getElementById("hafta-paneli");
   panel.innerHTML = "";
   const wrap = el("div", "karsilama");
-  wrap.appendChild(el("h2", "karsilama-baslik", "AI Öğretmen — Mimar Defteri"));
+  wrap.appendChild(el("h2", "karsilama-baslik", "AI Öğretmen · Mimar Defteri"));
   wrap.appendChild(el("p", "karsilama-ozet", durum.mulakatEtkin
       ? "İki bölüm var: 12 haftalık Eğitim programı ve Java Mülakat hazırlığı. "
         + "Soldaki menülerden gezinebilir ya da aşağıdan başlayabilirsin."
@@ -2078,12 +2084,12 @@ function karsilamaCiz(ilkAcik) {
 
   const egKart = el("div", "karsilama-kart");
   egKart.append(el("div", "kk-ikon", "📚"), el("h3", null, "Eğitim Programı"),
-      el("p", null, "12 haftada AI çağı yazılım mimarlığı — haftalık dersler, günlük görevler, "
+      el("p", null, "12 haftada AI çağı yazılım mimarlığı: haftalık dersler, günlük görevler, "
           + (durum.site
             ? "haftalık quizler; istersen kendi anahtarınla AI öğretmenle sohbet."
             : "AI öğretmenle üstünden geçme ve haftalık quizler.")));
   const egBtn = el("button", "btn",
-      ilkAcik ? `Hafta ${ilkAcik.no}'e devam et` : "Programa başla");
+      ilkAcik ? `Hafta ${ilkAcik.no} ile devam et` : "Programa başla");
   egBtn.addEventListener("click", () => haftaSec(ilkAcik ? ilkAcik.no : 1));
   egKart.appendChild(egBtn);
 

@@ -72,7 +72,7 @@ public class McpPromptServisi {
                 .orElseThrow(() -> new BulunamadiException("Alıştırma bulunamadı: " + alistirmaId));
 
         String sistem = promptFactory.doldur("sistem-kimlik", Map.of(
-                "hafta_icerik", "(Prompt Atölyesi — belirli bir haftaya bağlı değil, serbest pratik)",
+                "hafta_icerik", "(Prompt Atölyesi: belirli bir haftaya bağlı değil, serbest pratik)",
                 "gun_icerik", "(atölye)",
                 "ilerleme_ozeti", "(atölye: öğrenci teknikleri deneyerek öğreniyor)",
                 "hafiza", "", "kitaplar", "", "kaynaklar", ""));

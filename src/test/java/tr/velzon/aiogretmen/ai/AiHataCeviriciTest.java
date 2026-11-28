@@ -48,11 +48,11 @@ class AiHataCeviriciTest {
 
     @ParameterizedTest
     @CsvSource({
-            "401, ANAHTAR_GECERSIZ, AI anahtarı geçersiz — site sorumlusuna haber ver.",
-            "403, ANAHTAR_GECERSIZ, AI anahtarı geçersiz — site sorumlusuna haber ver.",
-            "402, KREDI_BITTI, AI kredisi bitti — site sorumlusuna haber ver.",
-            "429, YOGUN, AI şu an yoğun ya da aylık kullanım sınırına ulaşıldı — biraz sonra tekrar dene.",
-            "400, ISTEK_REDDEDILDI, AI isteği kabul etmedi — tekrar dene; sürerse site sorumlusuna haber ver.",
+            "401, ANAHTAR_GECERSIZ, AI anahtarı geçersiz. Site sorumlusuna haber ver.",
+            "403, ANAHTAR_GECERSIZ, AI anahtarı geçersiz. Site sorumlusuna haber ver.",
+            "402, KREDI_BITTI, AI kredisi bitti. Site sorumlusuna haber ver.",
+            "429, YOGUN, AI şu an yoğun ya da aylık kullanım sınırına ulaşıldı. Biraz sonra tekrar dene.",
+            "400, ISTEK_REDDEDILDI, AI isteği kabul etmedi. Tekrar dene; sorun sürerse site sorumlusuna haber ver.",
     })
     void dortyuzlukHatalarKategoriyeCevrilir(int kod, Neden beklenen, String mesaj) {
         AiSaglayiciException e = cagirVeYakala(new NonTransientAiException(kod + " - " + HAM_GOVDE));
@@ -69,7 +69,7 @@ class AiHataCeviriciTest {
         AiSaglayiciException e = cagirVeYakala(new TransientAiException("503 - upstream overloaded"));
         assertThat(e.neden()).isEqualTo(Neden.YANIT_YOK);
         assertThat(e.saglayiciKodu()).isEqualTo(503);
-        assertThat(e.getMessage()).isEqualTo("AI şu an yanıt vermiyor — biraz sonra tekrar dene.");
+        assertThat(e.getMessage()).isEqualTo("AI şu an yanıt vermiyor. Biraz sonra tekrar dene.");
     }
 
     @Test
@@ -102,8 +102,8 @@ class AiHataCeviriciTest {
             "401| ANAHTAR_GECERSIZ| OpenRouter anahtarın geçersiz ya da iptal edilmiş.",
             "403| ANAHTAR_GECERSIZ| OpenRouter anahtarın geçersiz ya da iptal edilmiş.",
             "402| KREDI_BITTI| OpenRouter kredin bitti ya da anahtarının harcama limitine ulaştın.",
-            "429| YOGUN| OpenRouter çok fazla istek dedi, biraz bekleyip tekrar dene.",
-            "400| ISTEK_REDDEDILDI| AI isteği kabul etmedi — tekrar dene; sürerse site sorumlusuna haber ver.",
+            "429| YOGUN| OpenRouter çok fazla istek gönderildiğini bildirdi. Biraz bekleyip tekrar dene.",
+            "400| ISTEK_REDDEDILDI| AI isteği kabul etmedi. Tekrar dene; sorun sürerse site sorumlusuna haber ver.",
     })
     void ziyaretciAnahtarindaMesajlarZiyaretciye(int kod, Neden beklenen, String mesaj) {
         ChatModelKaynagi ziyaretciKaynagi = new ChatModelKaynagi() {

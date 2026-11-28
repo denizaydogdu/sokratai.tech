@@ -471,6 +471,7 @@ body.oku-acik { overflow: hidden; }
 .atolye-cozum-btn { margin-left: 0; }
 .atolye-cozum { margin-top: 12px; border-top: 1px dashed var(--line); padding-top: 10px; }
 .atolye-ai-btn { margin-top: 12px; }
+.atolye-ai-not { margin-top: 12px; }
 .atolye-ai-sonuc { margin-top: 12px; }
 .atolye-ai-sonuc .dk { font-size: 14px; }
 

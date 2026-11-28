@@ -111,11 +111,10 @@ public class KitapService {
 
         AiNotIslem islem = parser.parse(yanit.metin(), AiNotIslem.class)
                 .orElseThrow(() -> {
-                    // teşhis: hangi çıktı parse edilemedi? (ilk 800 karakter yeter)
+                    // teşhis için yalnız uzunluk: ham yanıt kullanıcının notunu/OCR metnini içerebilir, log'a yazılmaz
                     String ham = yanit.metin();
-                    log.warn("Kitap notu parse edilemedi; ham yanıt ({} kr): {}",
-                            ham.length(), ham.substring(0, Math.min(800, ham.length())));
-                    return new AiCiktisiBozukException("Kitap notu işlenemedi — tekrar deneyin.");
+                    log.warn("Kitap notu parse edilemedi; ham yanıt {} karakter", ham == null ? 0 : ham.length());
+                    return new AiCiktisiBozukException("Kitap notu işlenemedi. Tekrar dene.");
                 });
 
         dosyayaEkle(kitap, islem);
@@ -127,7 +126,7 @@ public class KitapService {
     /** Kitap sayfası fotoğrafı: önce vision ile metin çıkar, sonra normal not hattına ver. */
     public IslenmisNot goruntudenEkle(String kitap, byte[] goruntu, String mimeType) {
         if (goruntu == null || goruntu.length == 0) {
-            throw new IllegalArgumentException("Görüntü boş — geçerli bir sayfa fotoğrafı yükleyin.");
+            throw new IllegalArgumentException("Görüntü boş. Geçerli bir sayfa fotoğrafı yükle.");
         }
         String sistem = promptFactory.doldur("goruntu-metin", Map.of("kitap", kitap));
         var metinYaniti = aiClient.cagirGoruntulu(
@@ -136,7 +135,7 @@ public class KitapService {
 
         String cikanMetin = metinYaniti.metin();
         if (cikanMetin == null || cikanMetin.isBlank()) {
-            throw new AiCiktisiBozukException("Fotoğraftan metin çıkarılamadı — daha net bir fotoğraf deneyin.");
+            throw new AiCiktisiBozukException("Fotoğraftan metin çıkarılamadı. Daha net bir fotoğraf dene.");
         }
 
         IslenmisNot not = notEkle(kitap, cikanMetin);

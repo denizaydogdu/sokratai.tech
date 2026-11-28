@@ -33,6 +33,10 @@ public class AtolyeService {
     /** Değerlendirme kısa ve odaklı — atölye "az token" hedefi (brief 2.). */
     static final int MAX_TOKENS = 800;
 
+    /** ai:false alıştırmada AI çağrısı yapılmaz; web katmanı bu metni 400 gövdesinin {@code detay}'ında gösterir. */
+    static final String AI_KAPALI_MESAJ = "Bu alıştırma AI ile değerlendirilmiyor; kendi prompt'unu ideal çözümle "
+            + "karşılaştır. AI değerlendirmesi her bölümün son \"birleştir\" alıştırmasında.";
+
     private final AtolyeRepo atolyeRepo;
     private final OgretmenAiClient aiClient;
     private final PromptFactory promptFactory;
@@ -54,15 +58,21 @@ public class AtolyeService {
      * Öğrencinin bir alıştırma için yazdığı prompt'u değerlendirir.
      *
      * @throws BulunamadiException alıştırma id'si yoksa (web → 404)
+     * @throws IllegalArgumentException alıştırma {@code ai:false} ise (web → 400); AI çağrısı YAPILMAZ.
+     *         Her bölümde yalnız son "birleştir" alıştırması ai:true'dur (az token hedefi).
      * @throws tr.velzon.aiogretmen.types.AiDevreDisiException anahtar yoksa (web → 503)
      */
     public AtolyeDegerlendirme degerlendir(String alistirmaId, String ogrenciPrompt) {
         AtolyeAlistirma a = alistirmaBul(alistirmaId)
                 .orElseThrow(() -> new BulunamadiException("Alıştırma bulunamadı: " + alistirmaId));
+        if (!a.aiDegerlendir()) {
+            // Ücretli model çağrısından ÖNCE reddet: ai:false alıştırma öğrencinin kendi karşılaştırmasıyla çalışılır.
+            throw new IllegalArgumentException(AI_KAPALI_MESAJ);
+        }
 
         // Atölye haftadan bağımsız — sistem kimliği nötr bağlamla doldurulur (hafta/gün yok).
         String sistem = promptFactory.doldur("sistem-kimlik", Map.of(
-                "hafta_icerik", "(Prompt Atölyesi — belirli bir haftaya bağlı değil, serbest pratik)",
+                "hafta_icerik", "(Prompt Atölyesi: belirli bir haftaya bağlı değil, serbest pratik)",
                 "gun_icerik", "(atölye)",
                 "ilerleme_ozeti", "(atölye: öğrenci teknikleri deneyerek öğreniyor)",
                 "hafiza", "",

@@ -56,7 +56,7 @@ class BaslikAiAnahtarBaglamiTest {
         IllegalArgumentException e = catchThrowableOfType(IllegalArgumentException.class, baglam::anahtar);
 
         assertThat(e).isNotNull();
-        assertThat(e.getMessage()).isEqualTo("OpenRouter anahtarının biçimi geçersiz — 'sk-or-' ile başlamalı.")
+        assertThat(e.getMessage()).isEqualTo("OpenRouter anahtarının biçimi geçersiz: anahtar 'sk-or-' ile başlamalı.")
                 .doesNotContain("GIZLI");
 
         istek("sk-or-kisa");

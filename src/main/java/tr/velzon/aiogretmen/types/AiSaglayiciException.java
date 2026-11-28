@@ -10,18 +10,18 @@ public class AiSaglayiciException extends RuntimeException {
     /** Sağlayıcı hatasının kullanıcıya anlatılan kategorisi. */
     public enum Neden {
         /** 401/403 — anahtar geçersiz, iptal edilmiş ya da yetkisiz. */
-        ANAHTAR_GECERSIZ("AI anahtarı geçersiz — site sorumlusuna haber ver.",
+        ANAHTAR_GECERSIZ("AI anahtarı geçersiz. Site sorumlusuna haber ver.",
                 "OpenRouter anahtarın geçersiz ya da iptal edilmiş."),
         /** 402 — OpenRouter bakiyesi bitti. */
-        KREDI_BITTI("AI kredisi bitti — site sorumlusuna haber ver.",
+        KREDI_BITTI("AI kredisi bitti. Site sorumlusuna haber ver.",
                 "OpenRouter kredin bitti ya da anahtarının harcama limitine ulaştın."),
         /** 429 — istek sınırı ya da anahtarın harcama tavanı. */
-        YOGUN("AI şu an yoğun ya da aylık kullanım sınırına ulaşıldı — biraz sonra tekrar dene.",
-                "OpenRouter çok fazla istek dedi, biraz bekleyip tekrar dene."),
+        YOGUN("AI şu an yoğun ya da aylık kullanım sınırına ulaşıldı. Biraz sonra tekrar dene.",
+                "OpenRouter çok fazla istek gönderildiğini bildirdi. Biraz bekleyip tekrar dene."),
         /** Zaman aşımı, bağlantı hatası, 408 ya da 5xx. */
-        YANIT_YOK("AI şu an yanıt vermiyor — biraz sonra tekrar dene."),
+        YANIT_YOK("AI şu an yanıt vermiyor. Biraz sonra tekrar dene."),
         /** Diğer 4xx (ör. 400 bozuk istek/bağlam aşımı, 404 model yok) — tekrar denemek çoğu zaman yetmez. */
-        ISTEK_REDDEDILDI("AI isteği kabul etmedi — tekrar dene; sürerse site sorumlusuna haber ver.");
+        ISTEK_REDDEDILDI("AI isteği kabul etmedi. Tekrar dene; sorun sürerse site sorumlusuna haber ver.");
 
         private final String mesaj;
         /** Ziyaretçinin kendi anahtarıyla yapılan çağrıda (Faz 10, ADR-0017) gösterilen mesaj. */

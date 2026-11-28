@@ -448,6 +448,45 @@ class OnYuzDavranisTest {
         assertThat(konsolHatalari).isEmpty();
     }
 
+    // ---------- Prompt Atölyesi: ai:true/false bayrağı ----------
+
+    /** Sol menüden atölyeyi açar ve seçili bölümün kartlarını bekler. */
+    private void atolyeAc() {
+        sayfa.click("#katman-haritasi .layer.atolye");
+        sayfa.locator(".atolye-kart").first().waitFor();
+    }
+
+    /** Sitede (sunucuAi=false) davranış değişmez: hiçbir kartta değerlendir düğmesi de not da yok. */
+    @Test
+    void sitedeAtolyedeAiDegerlendirDugmesiVeNotuYok() {
+        anaSayfa("/");
+        atolyeAc();
+        assertThat(sayfa.locator(".week-goal").textContent()).contains("son \"birleştir\" alıştırmasını");
+        assertThat(sayfa.locator(".atolye-ai-btn").count()).isZero();
+        assertThat(sayfa.locator(".atolye-ai-not").count()).isZero();
+        assertThat(konsolHatalari).isEmpty();
+    }
+
+    /**
+     * Yerel mod (sunucuAi=true; {@code /api/ozellikler} taklit edilir): düğme yalnız ai:true alıştırmada (bölümün son
+     * "birleştir"i), ai:false alıştırmalarda düğme yerine kısa not.
+     */
+    @Test
+    void yerelModdaDegerlendirDugmesiYalnizAiAcikAlistirmada() {
+        sayfa.route(Pattern.compile(".*/api/ozellikler$"), r -> r.fulfill(new Route.FulfillOptions().setStatus(200)
+                .setContentType("application/json").setBody("{\"site\":false,\"sunucuAi\":true,\"mulakat\":false}")));
+        anaSayfa("/");
+        atolyeAc();
+        var kartlar = sayfa.locator(".atolye-kart");
+        int adet = kartlar.count();
+        assertThat(adet).isGreaterThan(1);
+        assertThat(sayfa.locator(".atolye-ai-btn").count()).isEqualTo(1);
+        assertThat(kartlar.nth(adet - 1).locator(".atolye-ai-btn").count()).as("son kartta düğme").isEqualTo(1);
+        assertThat(kartlar.nth(0).locator(".atolye-ai-btn").count()).as("ilk kartta düğme yok").isZero();
+        assertThat(sayfa.locator(".atolye-ai-not").count()).isEqualTo(adet - 1);
+        assertThat(kartlar.nth(0).locator(".atolye-ai-not").textContent()).contains("bölümün son alıştırmasını");
+    }
+
     // ---------- yardımcılar ----------
 
     private static Map<String, String> sorgu(String url) {

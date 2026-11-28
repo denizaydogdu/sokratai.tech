@@ -187,10 +187,10 @@ class OgretmenControllerTest {
         var N = tr.velzon.aiogretmen.types.AiSaglayiciException.Neden.class;
         org.assertj.core.api.Assertions.assertThat(java.util.Arrays.stream(N.getEnumConstants())
                         .map(tr.velzon.aiogretmen.types.AiSaglayiciException.Neden::mesaj))
-                .contains("AI anahtarı geçersiz — site sorumlusuna haber ver.",
-                        "AI kredisi bitti — site sorumlusuna haber ver.",
-                        "AI şu an yoğun ya da aylık kullanım sınırına ulaşıldı — biraz sonra tekrar dene.",
-                        "AI şu an yanıt vermiyor — biraz sonra tekrar dene.");
+                .contains("AI anahtarı geçersiz. Site sorumlusuna haber ver.",
+                        "AI kredisi bitti. Site sorumlusuna haber ver.",
+                        "AI şu an yoğun ya da aylık kullanım sınırına ulaşıldı. Biraz sonra tekrar dene.",
+                        "AI şu an yanıt vermiyor. Biraz sonra tekrar dene.");
     }
 
     // ---- Genel hata işleyici: istisna mesajı (sunucu yolu vb.) istemciye SIZMAZ ----
@@ -218,7 +218,7 @@ class OgretmenControllerTest {
                         .contentType("application/json")
                         .content("{\"hafta\":null,\"gun\":null,\"mesaj\":\"selam\"}"))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.detay").value("hafta alanı eksik — önce bir hafta seç."));
+                .andExpect(jsonPath("$.detay").value("hafta alanı eksik. Önce bir hafta seç."));
     }
 
     @Test
