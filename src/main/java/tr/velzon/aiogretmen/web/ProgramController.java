@@ -64,13 +64,16 @@ public class ProgramController {
         return Map.of("durum", "sifirlandi");
     }
 
-    /** {@code tamamlandi} kutulu (Boolean): eksikse sessizce false'a düşmesin — 400 dönsün. */
-    public record GorevDurumIstek(int hafta, int gun, int gorevIndex, Boolean tamamlandi) {
+    /** Alanlar kutulu: eksik alan sessizce 0/false'a düşmesin, 400 dönsün (tamamlandi; konum alanları Faz 15). */
+    public record GorevDurumIstek(Integer hafta, Integer gun, Integer gorevIndex, Boolean tamamlandi) {
     }
 
     /** İdempotent: görevi istenen duruma ayarlar (tekrar denenen istek işareti geri almaz). */
     @PostMapping("/gorev/durum")
     public Map<String, Object> gorevDurumu(@RequestBody GorevDurumIstek istek) {
+        if (istek.hafta() == null || istek.gun() == null || istek.gorevIndex() == null) {
+            throw new IllegalArgumentException("hafta, gun ve gorevIndex alanları zorunludur");
+        }
         if (istek.tamamlandi() == null) {
             throw new IllegalArgumentException("tamamlandi alanı zorunludur (true/false)");
         }

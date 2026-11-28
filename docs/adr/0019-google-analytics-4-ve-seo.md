@@ -37,6 +37,16 @@ Uygulayıcı kararları:
   olmadığından KVKK/GDPR açısından risk kullanıcı tarafından kabul edildi. Geri alma: değişkeni silip Redeploy.
 - GA verisi Google'ın ABD altyapısında işlenir (yurt dışına aktarım); kullanıcı kararıyla aydınlatma metni/onay
   penceresi yok.
+- **Kabul edilen risk (2026-11-28, kullanıcı kararı; Faz 15 tehdit modelinde bulundu):** ölçüm kimliği verilince Google'ın
+  etiketi (gtag) sayfaya yüklenir. Bu betik sayfanın kendi betiğiyle aynı origin'de çalışır; ziyaretçinin
+  tarayıcıda tuttuğu OpenRouter anahtarını (`localStorage` "Bu cihazda hatırla" ya da sekme ömürlü `sessionStorage`, ikisi
+  de aynı ölçüde okunabilir) okuyabilir. Google'a anahtar **gönderilmez**, ama anahtarın güvenliği yüklenen üçüncü taraf
+  betiğe duyulan güvene bağlıdır. Kabul gerekçesi: tek üçüncü taraf betik Google'ın kendi etiketi; anahtar kartı harcama
+  limiti öneriyor. Reddedilen seçenekler: sohbet açıkken GA'yı yüklememek (kod değişikliği), GA'yı kapatmak. Yeniden
+  açma koşulu: sayfaya başka bir üçüncü taraf betik (etiket yöneticisi, reklam, sohbet aracı) eklenmesi.
+  Ek not: `index.html`'deki CSP sabittir; `script-src` içindeki `www.googletagmanager.com` ve GA alanları ölçüm
+  kimliği verilmese de listededir. Bir HTML enjeksiyonu olursa bu izin CSP'yi aşmaya yarayabilir; bugün güvenilmeyen
+  metin `textContent` ile basıldığı için açık delik değil. Kimliğe bağlı CSP yalnız JS'siz sayfalarda (`AcikSayfa`).
 - `og:image` yok: ikili PNG sızıntı taramasının ikili izin listesine girmeden işlenemez (ayrı iş).
 - SPA sınırı: site haritasında yalnız ana sayfa; ders sayfalarının dizine girmesi sunucuda üretilen sayfalar ister.
   → Çözüldü: ADR-0020 (herkese açık JS'siz ders sayfaları, llms.txt, genişletilmiş site haritası).

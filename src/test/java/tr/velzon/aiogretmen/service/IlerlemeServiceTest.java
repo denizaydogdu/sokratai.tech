@@ -10,7 +10,7 @@ import tr.velzon.aiogretmen.repo.QuizSonucRepo;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJdbcTest
-@Import(IlerlemeService.class)
+@Import({IlerlemeService.class, TestIcerikYapilandirma.class})
 class IlerlemeServiceTest {
 
     @Autowired
@@ -36,11 +36,11 @@ class IlerlemeServiceTest {
     @Test
     void ayniAyarlamaIkiKez_tekSatirAyniDurum() {
         // idempotent: tekrar denenen çağrı (zaman aşımı + retry) işareti GERİ ALMAZ
-        service.gorevDurumuAyarla(YEREL, 2, 3, 1, true);
-        boolean durum = service.gorevDurumuAyarla(YEREL, 2, 3, 1, true);
+        service.gorevDurumuAyarla(YEREL, 1, 1, 1, true);
+        boolean durum = service.gorevDurumuAyarla(YEREL, 1, 1, 1, true);
 
         assertThat(durum).isTrue();
-        assertThat(ilerlemeRepo.findByKullaniciIdAndHafta(YEREL, 2)).singleElement()
+        assertThat(ilerlemeRepo.findByKullaniciIdAndHafta(YEREL, 1)).singleElement()
                 .satisfies(k -> assertThat(k.tamamlandi()).isTrue()); // upsert — ikinci kayıt açılmadı
     }
 

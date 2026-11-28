@@ -89,6 +89,26 @@ class ProgramControllerTest {
     }
 
     @Test
+    void gorevDurumundaKonumAlanlariZorunlu_yoksa400() throws Exception {
+        // Faz 15 (API metni bulgusu): eksik hafta/gun/gorevIndex eskiden sessizce 0 sayılırdı
+        mvc.perform(post("/api/gorev/durum")
+                        .contentType("application/json")
+                        .content("{\"gun\":2,\"gorevIndex\":0,\"tamamlandi\":true}"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.detay").value(org.hamcrest.Matchers.containsString("hafta")));
+        org.mockito.Mockito.verifyNoInteractions(ilerlemeService);
+    }
+
+    @Test
+    void gorevDurumundaNullGovde400_500Degil() throws Exception {
+        // Codex incelemesi (Faz 15): gövde JSON null ise istek nesnesi null olur mu? Zorunlu @RequestBody
+        // bunu 400'e çevirmeli; NPE ile 500 dönmemeli.
+        mvc.perform(post("/api/gorev/durum").contentType("application/json").content("null"))
+                .andExpect(status().isBadRequest());
+        org.mockito.Mockito.verifyNoInteractions(ilerlemeService);
+    }
+
+    @Test
     void eskiToggleUcuKaldirildi() throws Exception {
         mvc.perform(post("/api/gorev/toggle")
                         .contentType("application/json")

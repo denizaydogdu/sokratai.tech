@@ -64,6 +64,22 @@ class QuizUretimServiceTest {
     }
 
     @Test
+    void dogruIndexSinirlari_0ve3Gecer_eksi1ve4Ayiklanir() {
+        // Sınır testi (Faz 15, test kalitesi metni): "< 4" yerine "<= 4" ya da ">= 0" yerine ">= -1" yazılsa yakalanır.
+        when(aiClient.cagir(any())).thenReturn(new AiYanit("""
+                {"sorular": [
+                  {"soru": "üst sınır", "secenekler": ["a","b","c","d"], "dogru_index": 3, "aciklama": ""},
+                  {"soru": "üst sınırın bir fazlası", "secenekler": ["a","b","c","d"], "dogru_index": 4, "aciklama": ""},
+                  {"soru": "alt sınırın bir eksiği", "secenekler": ["a","b","c","d"], "dogru_index": -1, "aciklama": ""},
+                  {"soru": "alt sınır", "secenekler": ["a","b","c","d"], "dogru_index": 0, "aciklama": ""}
+                ]}""", 1, 1, "m"));
+
+        UretilenQuiz quiz = servis.uret(1, 5);
+
+        assertThat(quiz.sorular()).extracting(s -> s.dogruIndex()).containsExactly(3, 0);
+    }
+
+    @Test
     void soruListesiYoksaNpeDegilBozukCiktiHatasi() {
         when(aiClient.cagir(any())).thenReturn(new AiYanit("{\"sorular\": null}", 1, 1, "m"));
 

@@ -42,4 +42,11 @@ Yukarıdaki yerel model `local` için geçerlidir. `site` profili internete (ngi
   zarar sınırlı (yanlış yönlendirme); dosyalar `data/` altında elle düzeltilebilir/silinebilir.
 - **MIME magic-byte doğrulaması yok:** Baytlar yerelde parse edilmeden sağlayıcıya gider;
   bilinen image-parsing zafiyet zinciri yok.
-- **500 yanıtında `detay: e.getMessage()`:** Yerel araçta hata ayıklanabilirlik tercih edildi.
+- ~~**500 yanıtında `detay: e.getMessage()`**~~ (kapandı): beklenmeyen hatada istemciye istisna mesajı gitmez; sabit
+  Türkçe metin + kısa referans döner, aynı referans log satırındadır (`web/HataYonetimi`). Bu madde kod düzeldikten sonra
+  da burada kalmıştı; Faz 15 tehdit modeli yakaladı (2026-11-28).
+- **Sitede GA betiği ve tarayıcıdaki ziyaretçi anahtarı (2026-11-28, kullanıcı kararı):** GA ölçüm kimliği verilince
+  Google'ın betiği sayfaya yüklenir, aynı origin'de çalışır ve tarayıcıda tutulan anahtarı (`localStorage` ya da `sessionStorage`)
+  okuyabilir. Anahtar Google'a gönderilmez; risk üçüncü taraf betiğe güvendir. Ana sayfanın CSP'si sabittir ve
+  `www.googletagmanager.com`'a kimlik olmasa da izin verir (HTML enjeksiyonunda CSP'yi aşma kapısı; bugün `textContent`
+  sayesinde açık değil). Kabul edildi, ayrıntı ve yeniden açma koşulu ADR-0019 "Sonuçlar".

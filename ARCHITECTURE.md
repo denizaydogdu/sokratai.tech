@@ -53,6 +53,7 @@ types → config → repo → service → ai → web
 - **`mcp` / `mcp-http`** (ADR-0007/0008): MCP sunucusu; `mcp-http` JWT kimlikli.
 
 ## Doğrulama
-`./mvnw verify`: 537 test (5 atlanan PostgreSQL opt-in) + ön yüz için 16 Playwright gerçek tarayıcı testi (ADR-0021).
-Bu kurallar `src/test/java/tr/velzon/aiogretmen/MimariTestleri.java` (ArchUnit) ile
-CI'da bloklayıcı olarak test edilir. Kural ihlali = build kırmızı.
+`./mvnw verify`: 542 test (5 atlanan PostgreSQL opt-in) + ön yüz için 16 Playwright gerçek tarayıcı testi (ADR-0021).
+Bu kurallar `src/test/java/tr/velzon/aiogretmen/MimariTestleri.java` (ArchUnit) ile test edilir; kural ihlali =
+build kırmızı. Sunucu tarafı CI yok: kapı, merge/push öncesi yerelde koşan `./mvnw verify` ve push öncesi sızıntı
+taraması kancasıdır (AGENTS.md "PR / commit kuralları").

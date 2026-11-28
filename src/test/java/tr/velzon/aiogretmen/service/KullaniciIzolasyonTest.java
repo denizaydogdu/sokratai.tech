@@ -21,7 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * </ol>
  */
 @DataJdbcTest
-@Import(IlerlemeService.class)
+@Import({IlerlemeService.class, TestIcerikYapilandirma.class})
 class KullaniciIzolasyonTest {
 
     @Autowired

@@ -341,7 +341,7 @@ tarayıcı ──https──▶ Traefik (Dokploy, TLS, Let's Encrypt) ──http
 - Dokploy'da **Application** oluştur; derleme türü **Dockerfile** (repo kökündeki `Dockerfile`). Kaynak: Git
   deposu (dal seçilir) ya da önceden derlenmiş bir imaj (`docker build -t ai-ogretmen .` ile kendi kayıt
   defterine itilmiş).
-- İmaj: çok aşamalı (Maven derleme → `eclipse-temurin:17-jre`), root olmayan kullanıcı `uid 10001`, `WORKDIR /app`
+- İmaj: çok aşamalı (Maven derleme → `eclipse-temurin:17.0.21_9-jre`; sürüm `Dockerfile`'da etiketle sabit), root olmayan kullanıcı `uid 10001`, `WORKDIR /app`
   (`uygulama.jar`, `content/`, `prompts/`). Testler imajda koşmaz — dağıtımdan önce yerelde `./mvnw verify`.
   `thoughts/`, `data/`, `.git`, `.env*` imaja girmez (`.dockerignore`).
 - İmaj kendisi verir: `SPRING_PROFILES_ACTIVE=site`, `SERVER_ADDRESS=0.0.0.0` (yalnız konteyner içinde — ADR-0018),

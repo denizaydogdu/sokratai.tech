@@ -25,7 +25,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * olmasına ve yarışa bağlıydı.) Test-işlemi YOK: iş parçacıkları kendi bağlantılarında commit eder.
  */
 @DataJdbcTest
-@Import(IlerlemeService.class)
+@Import({IlerlemeService.class, TestIcerikYapilandirma.class})
 @Transactional(propagation = Propagation.NOT_SUPPORTED)
 class IlerlemeServiceEszamanliTest {
 
@@ -52,7 +52,7 @@ class IlerlemeServiceEszamanliTest {
             for (int i = 0; i < N; i++) {
                 sonuclar.add(havuz.submit(() -> {
                     baslat.await(); // hepsi aynı anda — ilk INSERT yarışını zorla
-                    return service.gorevDurumuAyarla(KULLANICI, 3, 1, 0, true);
+                    return service.gorevDurumuAyarla(KULLANICI, 1, 2, 0, true);
                 }));
             }
             baslat.countDown();
@@ -63,7 +63,7 @@ class IlerlemeServiceEszamanliTest {
             havuz.shutdownNow();
         }
 
-        assertThat(ilerlemeRepo.findByKullaniciIdAndHafta(KULLANICI, 3)).singleElement()
+        assertThat(ilerlemeRepo.findByKullaniciIdAndHafta(KULLANICI, 1)).singleElement()
                 .satisfies(k -> assertThat(k.tamamlandi()).isTrue());
     }
 }

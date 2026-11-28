@@ -5,19 +5,24 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.relational.core.conversion.DbAction;
 import org.springframework.data.relational.core.conversion.DbActionExecutionException;
 import org.springframework.data.relational.core.conversion.IdValueSource;
+import tr.velzon.aiogretmen.repo.ContentRepo;
 import tr.velzon.aiogretmen.repo.IlerlemeRepo;
 import tr.velzon.aiogretmen.repo.QuizSonucRepo;
+import tr.velzon.aiogretmen.types.BulunamadiException;
 import tr.velzon.aiogretmen.types.GorevIlerlemeKaydi;
 
+import java.nio.file.Path;
 import java.time.Instant;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 /**
@@ -30,7 +35,23 @@ class IlerlemeServiceYarisTest {
 
     IlerlemeRepo ilerlemeRepo = mock(IlerlemeRepo.class);
     QuizSonucRepo quizSonucRepo = mock(QuizSonucRepo.class);
-    IlerlemeService servis = new IlerlemeService(ilerlemeRepo, quizSonucRepo);
+    // test-content: hafta 1, gün 1'de 2 görev (0, 1) var
+    IlerlemeService servis = new IlerlemeService(ilerlemeRepo, quizSonucRepo,
+            new ContentRepo(Path.of("src/test/resources/test-content")));
+
+    @Test
+    void mufredattaOlmayanGorevIcinKayitYazilmaz() {
+        // Faz 15 (API metni bulgusu): olmayan görev için de satır yazılıyordu; web ve MCP aynı yoldan geçer
+        assertThatThrownBy(() -> servis.gorevDurumuAyarla("yerel", 1, 1, 2, true))
+                .isInstanceOf(BulunamadiException.class);
+        assertThatThrownBy(() -> servis.gorevDurumuAyarla("yerel", 1, 1, -1, true))
+                .isInstanceOf(BulunamadiException.class);
+        assertThatThrownBy(() -> servis.gorevDurumuAyarla("yerel", 1, 9, 0, true))
+                .isInstanceOf(BulunamadiException.class);
+        assertThatThrownBy(() -> servis.gorevDurumuAyarla("yerel", 0, 1, 0, true))
+                .isInstanceOf(BulunamadiException.class);
+        verifyNoInteractions(ilerlemeRepo);
+    }
 
     @Test
     void uniqueIhlalindeYenidenOkuyupHedefDurumaAyarlar() {

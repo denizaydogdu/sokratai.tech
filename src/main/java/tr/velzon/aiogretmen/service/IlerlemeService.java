@@ -1,8 +1,10 @@
 package tr.velzon.aiogretmen.service;
 
 import org.springframework.stereotype.Service;
+import tr.velzon.aiogretmen.repo.ContentRepo;
 import tr.velzon.aiogretmen.repo.IlerlemeRepo;
 import tr.velzon.aiogretmen.repo.QuizSonucRepo;
+import tr.velzon.aiogretmen.types.BulunamadiException;
 import tr.velzon.aiogretmen.types.GorevIlerlemeKaydi;
 import tr.velzon.aiogretmen.types.QuizSonucKaydi;
 
@@ -11,10 +13,12 @@ public class IlerlemeService {
 
     private final IlerlemeRepo ilerlemeRepo;
     private final QuizSonucRepo quizSonucRepo;
+    private final ContentRepo contentRepo;
 
-    public IlerlemeService(IlerlemeRepo ilerlemeRepo, QuizSonucRepo quizSonucRepo) {
+    public IlerlemeService(IlerlemeRepo ilerlemeRepo, QuizSonucRepo quizSonucRepo, ContentRepo contentRepo) {
         this.ilerlemeRepo = ilerlemeRepo;
         this.quizSonucRepo = quizSonucRepo;
+        this.contentRepo = contentRepo;
     }
 
     /**
@@ -27,9 +31,13 @@ public class IlerlemeService {
      * UPDATE yapar (tekil indeks yalnız INSERT'te çakışır); set semantiğinde rakibin yazdığı değer
      * ne olursa olsun sonuç hedeftir — yeniden deneme güvenlidir.
      *
+     * Müfredatta olmayan görev (hafta/gün yok ya da indeks aralık dışı) {@link BulunamadiException} → 404;
+     * hiçbir satır yazılmaz (Faz 15; web ve MCP aynı yoldan geçer).
+     *
      * @return görevin yeni (= istenen) durumu
      */
     public boolean gorevDurumuAyarla(String kullaniciId, int hafta, int gun, int gorevIndex, boolean tamamlandi) {
+        gorevMufredattaVar(hafta, gun, gorevIndex);
         try {
             return okuVeAyarla(kullaniciId, hafta, gun, gorevIndex, tamamlandi);
         } catch (RuntimeException e) {
@@ -37,6 +45,17 @@ public class IlerlemeService {
                 throw e;
             }
             return okuVeAyarla(kullaniciId, hafta, gun, gorevIndex, tamamlandi);
+        }
+    }
+
+    private void gorevMufredattaVar(int hafta, int gun, int gorevIndex) {
+        boolean var = contentRepo.hafta(hafta)
+                .flatMap(h -> h.gunler().stream().filter(g -> g.gun() == gun).findFirst())
+                .map(g -> gorevIndex >= 0 && gorevIndex < g.gorevler().size())
+                .orElse(false);
+        if (!var) {
+            throw new BulunamadiException(
+                    "Görev bulunamadı: hafta " + hafta + ", gün " + gun + ", görev " + gorevIndex);
         }
     }
 

@@ -837,7 +837,7 @@ istekler 403 ile reddedilir; yerel modda `curl` gibi araçlar etkilenmez.
 | GET | `/api/hafta/{no}` | Haftanın tüm detayı: günler (HTML), görevler ve durumları, quiz |
 | GET | `/api/kaynaklar` | Çalışma metinlerinin listesi |
 | GET | `/api/kaynak/{slug}` | Bir çalışma metninin HTML'i |
-| POST | `/api/gorev/durum` | Görevi istenen duruma ayarlar (idempotent; tekrar denemek sonucu değiştirmez) — gövde: `{hafta, gun, gorevIndex, tamamlandi}`; `tamamlandi` zorunlu, yoksa 400 |
+| POST | `/api/gorev/durum` | Görevi istenen duruma ayarlar (idempotent; tekrar denemek sonucu değiştirmez) — gövde: `{hafta, gun, gorevIndex, tamamlandi}`; dört alan da zorunlu, eksikse 400; müfredatta olmayan görev 404 ve kayıt yazılmaz (Faz 15) |
 | POST | `/api/quiz/statik-sonuc` | Quiz sonucunu kaydeder — gövde: `{hafta, puan, detay, tur}` |
 | POST | `/api/sifirla` | Temiz başlangıç (bkz. Özellikler) |
 
@@ -892,8 +892,9 @@ curl -s -X POST http://127.0.0.1:8090/api/kitap-notu/goruntu \
 ### Girdi sınırları ve hata kodları
 - Metin girdileri en fazla **20.000** karakter, kitap adı en fazla **200** karakter (aşılırsa 400).
 - `HataYonetimi` eşlemeleri: bulunamadı → **404**, bozuk istek / geçersiz argüman → **400**,
-  YZ devre dışı veya sağlayıcıya ulaşılamıyor → **503**, sağlayıcı hatası ya da bozuk YZ çıktısı →
-  **502**, dosya çok büyük → **413**.
+  YZ devre dışı → **503**; sağlayıcı hatası sunucu anahtarıyla → **503** (yanıt yok, yoğun, kredi bitti, anahtar
+  geçersiz), yalnız sağlayıcının reddettiği istek → **502**; bozuk YZ çıktısı → **502**; dosya çok büyük → **413**.
+  Ziyaretçi anahtarıyla gelen sağlayıcı hataları `neden` koduyla ayrışır (`HataYonetimi.aiSaglayiciHatasi`).
 - Zaman aşımları: sağlayıcıya bağlantı 10 sn, okuma 150 sn; arayüz isteği 180 sn'de keser.
 
 ---
@@ -1119,7 +1120,7 @@ yetkilidir) — ADR-0017.
 ./mvnw -Dtest='DegerlendirmeServiceTest#*' test # bir sınıfın tüm metotları (desen örneği)
 ```
 
-- `./mvnw clean verify` şu an **537 test** çalıştırır (0 hata) ve yeşildir; bunların **5'i
+- `./mvnw clean verify` şu an **542 test** çalıştırır (0 hata) ve yeşildir; bunların **5'i
   atlanır** (aşağıdaki isteğe bağlı PostgreSQL testi). Ayrıca **16 Playwright gerçek tarayıcı testi** koşar
   (`OnYuzDavranisTest`, ADR-0021; Chromium kurulu olmalı — kurulu değilse CI'da hata verir).
 - Testler katman katman düzenlenmiştir: `ai/` (prompt doldurma, JSON ayrıştırma, anlam araması),

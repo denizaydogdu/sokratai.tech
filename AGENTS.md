@@ -3,7 +3,7 @@
 > Pera (pera-soft) ile ilişik kalmadı (2026-11-27); repo denizaydogdu/sokratai.tech; deploy: Hostinger VPS üzerinde Dokploy.
 
 ## Komutlar
-- Derle+test: `./mvnw verify` (537 test, 5 atlanan PostgreSQL opt-in; 16 Playwright ön yüz testi dahil)
+- Derle+test: `./mvnw verify` (542 test, 5 atlanan PostgreSQL opt-in; 16 Playwright ön yüz testi dahil)
 - Çalıştır: `OPENROUTER_API_KEY=... ./mvnw spring-boot:run`  (http://127.0.0.1:8090; sağlayıcı: OpenRouter, ADR-0004)
   - Mülakat modülü varsayılan KAPALI; açmak için başına `APP_MULAKAT_ETKIN=true` ekle (ADR-0011)
   - Girişsiz çok ziyaretçili site (ADR-0017): `--spring.profiles.active=site` + `SPRING_DATASOURCE_URL`
