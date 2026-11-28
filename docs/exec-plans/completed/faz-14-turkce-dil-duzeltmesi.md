@@ -27,7 +27,7 @@ istenebilir. Kod yorumları ve geliştirici belgeleri de kapsam dışı (okuyucu
 - [x] **14.3 Atölye, arayüz, herkese açık sayfa metinleri, AI prompt'ları:** AI öğretmenin kendi çıktısında da
   uzun çizgi kullanmaması için sistem prompt'una kural.
 - [x] **14.4 Denetim:** yapı denetimi 119 dosyada temiz (3 bilinçli istisna: iki SVG aria-label metni, bir atölye başlığı), `IcerikYazimKurallariTest` eklendi, `./mvnw clean verify` 530 test yeşil. Codex'in bulduğu iki eski sorun da kapandı (QuizUretimService null liste, KitapService ham AI yanıtını log'lama).
-- [ ] **14.5 Yayın:** commit, push, Dokploy'da Redeploy (kullanıcı onayıyla).
+- [x] **14.5 Yayın:** `f3b4fc6` (içerik) + `f59b992` (kod/belge) push edildi, sızıntı taraması temiz; Dokploy'da Redeploy, sağlık 200, `/hafta/1/gun/1` yeni metinle ve uzun çizgisiz (2026-11-28).
 
 ## Notlar
 
@@ -49,3 +49,4 @@ istenebilir. Kod yorumları ve geliştirici belgeleri de kapsam dışı (okuyucu
 - **Codex bulgusu:** boş/süzülmüş completion'da kullanım satırı artık hata fırlatılmadan önce yazılıyor (+1 test).
 - **Son durum:** `./mvnw clean verify` 537 test, 0 hata, 5 atlanan (16 Playwright).
 - **Kapsam dışı (kullanıcı kararı):** `content/mulakat/`.
+- **Sonra:** yapı denetimi yöntemi vault'ta kavram sayfası oldu (`wiki/concepts/mekanik-yapi-bekcisi.md`); betikler (`denetle.py`, `uygula.py`) oturum geçiciydi, repoda yok. Mülakat dil temizliği yapılacaksa yöntem o sayfada.

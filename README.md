@@ -15,14 +15,14 @@ Uygulama iki biçimde çalışır; her ikisinde de süreç yalnızca `127.0.0.1`
 | Mod | Nasıl açılır | Kimin için |
 |---|---|---|
 | **Yerel mod** (varsayılan) | profilsiz: `./mvnw spring-boot:run` | **Tek kişi, kendi bilgisayarında.** Giriş yok, kimlik sabit `yerel`, H2 dosya veritabanı. |
-| **Site modu** (`site` profili, Faz 10) | `--spring.profiles.active=site` | **Herkese açık, girişsiz eğitim sitesi.** Hesap/kayıt/e-posta yok: ziyaretçi tarayıcısındaki rastgele çerezle tanınır, ilerlemesi sunucuda saklanır ve "ilerleme kodu" ile başka tarayıcıya taşınır. YZ yalnız isteğe bağlı sohbet botu — ziyaretçinin **kendi** OpenRouter anahtarıyla; sunucuda anahtar yok. PostgreSQL, önde nginx/TLS (ADR-0014/0017). |
+| **Site modu** (`site` profili, Faz 10) | `--spring.profiles.active=site` | **Herkese açık, girişsiz eğitim sitesi.** Hesap/kayıt/e-posta yok: ziyaretçi tarayıcısındaki rastgele çerezle tanınır, ilerlemesi sunucuda saklanır ve "ilerleme kodu" ile başka tarayıcıya taşınır. YZ yalnız isteğe bağlı sohbet botu — ziyaretçinin **kendi** OpenRouter anahtarıyla; sunucuda anahtar yok. PostgreSQL; önde TLS sonlandıran ters vekil: canlıda Traefik (Docker + Dokploy, ADR-0018), alternatif nginx (ADR-0014/0017). |
 
 Aynı içerik, isteğe bağlı bir **MCP sunucusu (Model Context Protocol server)** olarak da
 sunulabilir (yalnız yerel kullanım; site moduyla birlikte açılamaz); bu modda sunucu hiçbir YZ
 modeli çağırmaz, muhakemeyi bağlanan istemci (ör. Claude Code) yapar.
 
 Program 12 haftadan, her hafta 5 günden oluşur: **60 günlük ders**, **60 statik quiz sorusu**,
-**34 Türkçe çalışma metni** ve **8 kategoride 59 alıştırmalı bir Prompt Atölyesi**.
+**38 Türkçe çalışma metni** ve **8 kategoride 59 alıştırmalı bir Prompt Atölyesi**.
 
 ---
 
@@ -116,8 +116,10 @@ Program 12 haftadan, her hafta 5 günden oluşur: **60 günlük ders**, **60 sta
 - 8 kategori: Temel Yapı, Muhakeme, Yapılandırma, Kısıtlama & Kontrol, Yazılım-Özel,
   İleri / Ajansal, Bağlam Mühendisliği, Anti-Pattern'ler — toplam **59 alıştırma**.
 - Her alıştırma: teknik, görev, (varsa) kötü örnek, ipucu, ideal çözüm ve gerekçe. "İdeal çözümü
-  göster" tamamen istemci tarafında çalışır (**token harcamaz**). "AI Öğretmen değerlendirsin"
-  düğmesi, yazdığınız prompt'u ideal çözümle kıyaslayıp rubrikle değerlendirir (API anahtarı gerekir).
+  göster" tamamen istemci tarafında çalışır (**token harcamaz**). Her kategorinin son "birleştir"
+  alıştırmasında (`ai:true`) "AI Öğretmen değerlendirsin" düğmesi çıkar: yazdığınız prompt'u ideal
+  çözümle kıyaslayıp rubrikle değerlendirir. Yalnız yerel modda, sunucu anahtarıyla çalışır; sitede
+  kapalıdır. `ai:false` alıştırma için uç 400 döner, AI çağrısı yapılmaz (Faz 14).
 
 ### İlerleme takibi
 - Görev tamamlanma durumu, gün kartlarındaki sayaç (ör. "1/3"), sol menüdeki hafta yüzdesi ve
@@ -685,7 +687,7 @@ dokunmadan 200 döner (canlılık, Docker `HEALTHCHECK`). İkisi de çerez yazma
 | (varsayılan / web) | `application.yml` | Web arayüzü + REST API, `127.0.0.1:8090`. MCP kapalı, kimlik doğrulama yok. |
 | `mcp` | `application-mcp.yml` | MCP sunucusu, **stdio** taşıması. Web sunucusu kapalı (`web-application-type: none`), banner ve konsol logu kapalı (stdout yalnız JSON-RPC'ye ayrılır), loglar `data/mcp-server.log` dosyasına. |
 | `mcp-http` | `application-mcp-http.yml` | MCP sunucusu, **streamable-HTTP** taşıması, `127.0.0.1:8091/mcp`. Uç nokta OAuth 2.1 bearer JWT ile korunur; loglar `data/mcp-http-server.log`. |
-| `site` | `application-site.yml` | Girişsiz çok ziyaretçili eğitim sitesi, `127.0.0.1:8090` (önde nginx/TLS). Ziyaretçi çerezi + ilerleme kodu, CSRF token, PostgreSQL zorunlu; YZ yalnız sohbet ve ziyaretçinin kendi anahtarıyla; sohbet dışı YZ uçları, kitap notları, MCP ve mülakat kapalı. MCP profilleriyle birlikte açılamaz (ADR-0017). |
+| `site` | `application-site.yml` | Girişsiz çok ziyaretçili eğitim sitesi, `127.0.0.1:8090` (önde nginx/TLS; Docker'da `0.0.0.0` + Traefik/TLS, ADR-0018). Ziyaretçi çerezi + ilerleme kodu, CSRF token, PostgreSQL zorunlu; YZ yalnız sohbet ve ziyaretçinin kendi anahtarıyla; sohbet dışı YZ uçları, kitap notları, MCP ve mülakat kapalı. MCP profilleriyle birlikte açılamaz (ADR-0017). |
 
 ---
 
@@ -695,13 +697,17 @@ dokunmadan 200 döner (canlılık, Docker `HEALTHCHECK`). İkisi de çerez yazma
 sürümlenir, elle düzenlenebilir, YZ prompt'larına doğrudan enjekte edilir. Uygulama içeriği
 açılışta belleğe okur; değişiklikler için uygulamayı yeniden başlatmanız gerekir.
 
+Türkçe metin yazarken (ders, kaynak, atölye, arayüz, prompt) **`docs/yazim-kilavuzu.md`** bağlayıcıdır:
+uzun çizgi (—) yok, çeviri kokan cümle yok, terimler kılavuzdaki sözlükle tutarlı. Uzun çizgiyi
+`IcerikYazimKurallariTest` yakalar (`content/mulakat/` hariç); anlamı inceleme denetler (Faz 14).
+
 ```
 content/
 ├── program.md                 # program tanıtımı ve hafta indeksi
 ├── hafta-01/ … hafta-12/
 │   ├── hafta.md               # hafta frontmatter'ı + statik quiz
 │   └── gun-1.md … gun-5.md    # gün dersi + görevler
-├── kaynaklar/                 # 34 Türkçe çalışma metni
+├── kaynaklar/                 # 38 Türkçe çalışma metni
 ├── prompt-atolyesi/           # 8 atölye kategorisi (01-…08-*.md)
 └── mulakat/                   # mülakat modülünün içeriği (modül kapalıyken okunmaz)
 ```
@@ -795,7 +801,10 @@ Her şablonun ilk satırı sürüm notudur.
 | `prompt-degerlendirme.st` | Prompt Atölyesi rubrikli değerlendirmesi |
 | `mulakat-acikla.st` | Mülakat modülü sonuç açıklaması (modül kapalıyken kullanılmaz) |
 
-### Müfredatı HTML kaynağından üretmek
+### Müfredatı HTML kaynağından üretmek (ÇALIŞTIRMAYIN)
+> **Faz 14'ten beri `content/` tek doğruluk kaynağıdır** ve elle düzeltilmiştir. Aşağıdaki betik yalnız
+> ilk üretim içindi; bugün çalıştırmak hafta dizinlerindeki bütün düzeltmeleri siler.
+
 ```bash
 node tools/html-to-content.mjs [html-yolu] [cikti-dizini]
 ```

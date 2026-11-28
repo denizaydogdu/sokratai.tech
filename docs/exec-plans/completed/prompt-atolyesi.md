@@ -86,6 +86,14 @@ Her kategori ~7 alıştırma; her kategoride 1-2'si `aiDegerlendir: true`.
       içerik büyümesine dayanıklı (sabit "2 kategori" yerine yapısal doğrulama). ./mvnw verify YEŞİL
       (139 test). Tarayıcı: 7 sekme render oluyor, yeni kategoriler kart mekaniğiyle çalışıyor.
 
+## Sonradan değişenler (2026-11-28)
+- 8. kategori eklendi (`07-context-muhendisligi.md`); bugün **8 kategori / 59 alıştırma**.
+- **Faz 14:** "AI Öğretmen değerlendirsin" artık HER alıştırmada değil, yalnız `ai:true` olan alıştırmada
+  (her kategorinin son "birleştir" alıştırması) ve yalnız yerel modda (sunucu anahtarı) görünür. Sitede
+  kapalı. `AtolyeService.degerlendir` `ai:false` alıştırmayı 400 ile reddeder, AI çağrısı yapmaz.
+  Atölye metinlerinin dili `docs/yazim-kilavuzu.md`'ye göre düzeltildi.
+- Plan bu yüzden `active/`'den `completed/`'e taşındı (iş 2026-07'de bitmişti).
+
 ## Sonuç
 7 kategori × 7 = **49 alıştırma** (04/05/06'ya öncelik-ver / llm-dostu-hata / zero-shot-once eklendi).
 Atölye tamamlandı; ileride yeni kategori/alıştırma eklemek yalnızca content/prompt-atolyesi/'ye md

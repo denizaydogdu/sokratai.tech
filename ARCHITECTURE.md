@@ -46,6 +46,10 @@ types → config → repo → service → ai → web
   (onay bandı yok); canonical/sitemap `APP_SITE_TEMEL_URL` ile; `/api/**` `X-Robots-Tag: noindex`.
 - **"OpenRouter ile bağlan" (Faz 13):** OAuth PKCE tamamen tarayıcıda (CSP `connect-src` + `openrouter.ai`); sunucu
   anahtarı görmez, yalnız sohbet isteğinin `X-OpenRouter-Anahtar` başlığında gelir.
+- **Prompt Atölyesi AI değerlendirmesi (Faz 14):** yalnız yerel modda ve yalnız `ai:true` alıştırmada (her
+  kategorinin son "birleştir" alıştırması); `AtolyeService.degerlendir` `ai:false` için model çağırmadan 400 döner.
+- **İçerik ve dil (Faz 14):** `content/` tek doğruluk kaynağı (HTML dönüştürücü çalıştırılmaz). Türkçe metin
+  `docs/yazim-kilavuzu.md`'ye uyar; `IcerikYazimKurallariTest` içerik, prompt ve HTML'de uzun çizgiyi (—) yakalar.
 - **`mcp` / `mcp-http`** (ADR-0007/0008): MCP sunucusu; `mcp-http` JWT kimlikli.
 
 ## Doğrulama
