@@ -47,7 +47,7 @@
     YAML'a 404; "root@ SSH hedefi"; SRE Bölüm 3.
   - Sonuç: dört metin `/api/kaynak/{slug}` → 3 svg; kaynak sayısı 38 → 42; `./mvnw verify` **542 test**, 0 hata,
     5 atlanan; qa-code-reviewer: engelleyici bulgu kapandı (`KullaniciIzolasyonTest` bağlamı).
-- [ ] **15.6 Yayın:** içerik commit'i, push, Dokploy Redeploy (kullanıcı onayıyla)
+- [x] **15.6 Yayın:** `2978fe2` (içerik) + `01242df` (kod/belge) push, sızıntı taraması temiz; Dokploy Redeploy (2026-11-28): konteyner sağlıklı, `/api/saglik` 200, dört sayfa 200 ve 3 svg, sitemap 116 adres
 - [ ] **15.7 Küçük eklemeler:** Hafta 3 Gün 1 spec şablonuna GIVEN/WHEN/THEN; `harness-mekanigi`'ne alt ajan / worktree
   bölümü; `model-ve-caba`'ya yerel model ödünleşimi; Hafta 12'ye "SokratAI deposunda bir işin yolu"; atölyeye 4–6 alıştırma
 

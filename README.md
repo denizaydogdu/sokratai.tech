@@ -22,7 +22,7 @@ sunulabilir (yalnız yerel kullanım; site moduyla birlikte açılamaz); bu modd
 modeli çağırmaz, muhakemeyi bağlanan istemci (ör. Claude Code) yapar.
 
 Program 12 haftadan, her hafta 5 günden oluşur: **60 günlük ders**, **60 statik quiz sorusu**,
-**38 Türkçe çalışma metni** ve **8 kategoride 59 alıştırmalı bir Prompt Atölyesi**.
+**42 Türkçe çalışma metni** ve **8 kategoride 59 alıştırmalı bir Prompt Atölyesi**.
 
 ---
 
@@ -707,7 +707,7 @@ content/
 ├── hafta-01/ … hafta-12/
 │   ├── hafta.md               # hafta frontmatter'ı + statik quiz
 │   └── gun-1.md … gun-5.md    # gün dersi + görevler
-├── kaynaklar/                 # 38 Türkçe çalışma metni
+├── kaynaklar/                 # 42 Türkçe çalışma metni
 ├── prompt-atolyesi/           # 8 atölye kategorisi (01-…08-*.md)
 └── mulakat/                   # mülakat modülünün içeriği (modül kapalıyken okunmaz)
 ```
